@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductsPage() {
+  const { addItem, openCart } = useCart();
   const [products, setProducts] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,14 +171,23 @@ export default function ProductsPage() {
                         </div>
                         <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
                         {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
-                        <a
-                          href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-3 block text-center bg-green-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                        <button
+                          onClick={() => {
+                            addItem({
+                              id: product.id,
+                              name: product.name,
+                              color: product.color || "",
+                              size: product.size || "",
+                              price: product.price,
+                              imageUrl: product.imageUrl || "",
+                              brand: product.brand?.name,
+                            });
+                            openCart();
+                          }}
+                          className="mt-3 block w-full text-center bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
                         >
-                          Enquire on WhatsApp
-                        </a>
+                          Add to Cart
+                        </button>
                       </div>
                     </div>
                   ))}
