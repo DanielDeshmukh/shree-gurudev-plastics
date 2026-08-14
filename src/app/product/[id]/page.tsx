@@ -142,6 +142,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="text-3xl font-bold text-orange-500 mb-2">₹{product.price}</p>
               <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
 
+              {product.moq > 1 && (
+                <div className="mb-4 inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-3 py-1 rounded-full">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Minimum Order Quantity: {product.moq} units
+                </div>
+              )}
+
               <div className="mb-6">
                 {product.stock > 0 ? (
                   <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
@@ -164,6 +173,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 price={product.price}
                 imageUrl={product.imageUrl || ""}
                 brand={brand?.name}
+                moq={product.moq}
               />
               <CompareButton
                 product={{

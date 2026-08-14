@@ -10,6 +10,7 @@ export interface ProductType {
   stock: number;
   category: string;
   description: string | null;
+  moq: number;
   createdAt: Date;
   updatedAt: Date;
 }
