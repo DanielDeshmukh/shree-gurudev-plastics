@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
     const brand = searchParams.get("brand");
     const search = searchParams.get("search");
     const category = searchParams.get("category");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "24");
+    const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};
 
@@ -26,13 +29,26 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
-    const products = await db.product.findMany({
-      where,
-      include: { brand: true },
-      orderBy: { createdAt: "desc" },
-    });
+    const [products, total] = await Promise.all([
+      db.product.findMany({
+        where,
+        include: { brand: true },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      db.product.count({ where }),
+    ]);
 
-    return NextResponse.json({ products });
+    return NextResponse.json({
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch products" },
