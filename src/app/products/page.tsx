@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import CompareButton from "@/components/CompareButton";
 
 export default function ProductsPage() {
   const { addItem, openCart } = useCart();
@@ -188,6 +189,19 @@ export default function ProductsPage() {
                         >
                           Add to Cart
                         </button>
+                        <CompareButton
+                          product={{
+                            id: product.id,
+                            name: product.name,
+                            color: product.color || "",
+                            size: product.size || "",
+                            price: product.price,
+                            imageUrl: product.imageUrl || "",
+                            brand: product.brand?.name,
+                            stock: product.stock ?? 0,
+                            category: product.category || "",
+                          }}
+                        />
                       </div>
                     </div>
                   ))}

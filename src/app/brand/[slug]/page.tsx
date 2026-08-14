@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import CompareButton from "@/components/CompareButton";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -97,6 +98,19 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     price={product.price}
                     imageUrl={product.imageUrl || ""}
                     brand={brand?.name}
+                  />
+                  <CompareButton
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      color: product.color || "",
+                      size: product.size || "",
+                      price: product.price,
+                      imageUrl: product.imageUrl || "",
+                      brand: brand?.name,
+                      stock: product.stock ?? 0,
+                      category: product.category || "",
+                    }}
                   />
                 </div>
               </div>
