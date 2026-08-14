@@ -1,5 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });
+  const data = await res.json();
+  const brands = data.brands || [];
+  const brand = brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug);
+  if (!brand) return { title: "Brand Not Found" };
+  return {
+    title: brand.name,
+    description: `Browse ${brand.name} plastic products at Shree Gurudev Plastics. Quality chairs, tables, and more.`,
+    openGraph: { title: `${brand.name} | Shree Gurudev Plastics`, description: `Browse ${brand.name} plastic products.` },
+  };
+}
 
 async function getBrand(slug: string) {
   const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });
