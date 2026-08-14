@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
 import AddToCartButton from "@/components/AddToCartButton";
+import CompareButton from "@/components/CompareButton";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -215,6 +216,19 @@ export default async function Home() {
                     price={product.price}
                     imageUrl={product.imageUrl || ""}
                     brand={product.brand?.name}
+                  />
+                  <CompareButton
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      color: product.color || "",
+                      size: product.size || "",
+                      price: product.price,
+                      imageUrl: product.imageUrl || "",
+                      brand: product.brand?.name,
+                      stock: product.stock ?? 0,
+                      category: product.category || "",
+                    }}
                   />
                 </div>
               </div>

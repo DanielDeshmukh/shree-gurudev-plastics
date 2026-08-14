@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ProductCartSection from "@/components/ProductCartSection";
+import CompareButton from "@/components/CompareButton";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -163,6 +164,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 price={product.price}
                 imageUrl={product.imageUrl || ""}
                 brand={brand?.name}
+              />
+              <CompareButton
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  color: product.color || "",
+                  size: product.size || "",
+                  price: product.price,
+                  imageUrl: product.imageUrl || "",
+                  brand: brand?.name,
+                  stock: product.stock ?? 0,
+                  category: product.category || "",
+                }}
               />
             </div>
           </div>
