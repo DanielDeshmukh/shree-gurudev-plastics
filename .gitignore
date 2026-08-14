@@ -23,3 +23,10 @@ node_modules/
 .next/
 out/
 *.tsbuildinfo
+
+# SQLite database
+prisma/dev.db
+prisma/dev.db-journal
+
+# Placeholder images (seeded from catalog output, not source-controlled)
+public/products/

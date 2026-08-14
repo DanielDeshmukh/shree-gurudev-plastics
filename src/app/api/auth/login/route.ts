@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { generateToken, verifyPassword } from "@/lib/auth";
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { username, password } = body;
+
+    const admin = await db.admin.findUnique({
+      where: { username },
+    });
+
+    if (!admin) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const valid = await verifyPassword(password, admin.password);
+
+    if (!valid) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const token = generateToken(admin.username);
+
+    const response = NextResponse.json({ success: true, username: admin.username });
+
+    response.cookies.set("admin_token", token, {
+      httpOnly: true,
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return response;
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Login failed" },
+      { status: 500 }
+    );
+  }
+}

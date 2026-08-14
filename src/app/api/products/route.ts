@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const brand = searchParams.get("brand");
+    const search = searchParams.get("search");
+    const category = searchParams.get("category");
+
+    const where: Record<string, unknown> = {};
+
+    if (brand) {
+      where.brand = { slug: brand };
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { color: { contains: search } },
+        { description: { contains: search } },
+      ];
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    const products = await db.product.findMany({
+      where,
+      include: { brand: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ products });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, color, size, brandId, imageUrl, price, stock, category, description } = body;
+
+    const product = await db.product.create({
+      data: {
+        name,
+        color,
+        size,
+        brandId: parseInt(brandId),
+        imageUrl,
+        price: parseFloat(price) || 0,
+        stock: parseInt(stock) || 0,
+        category: category || "general",
+        description: description || null,
+      },
+      include: { brand: true },
+    });
+
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create product" },
+      { status: 500 }
+    );
+  }
+}

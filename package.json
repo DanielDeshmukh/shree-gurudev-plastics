@@ -1,0 +1,38 @@
+{
+  "name": "shree-gurudev-plastics",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:push": "prisma db push",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "next": "15.5.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@prisma/client": "^6.12.0",
+    "cloudinary": "^2.5.0",
+    "recharts": "^2.15.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.9",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.13",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "prisma": "^6.12.0",
+    "tsx": "^4.0.0"
+  }
+}
