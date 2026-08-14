@@ -6,6 +6,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
     { url: `${SITE_URL}/products`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.9 },
+    { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${SITE_URL}/category/furniture`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${SITE_URL}/category/containers`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${SITE_URL}/category/storage`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${SITE_URL}/category/kitchen`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${SITE_URL}/category/accessories`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
   ];
 
   let brandPages: MetadataRoute.Sitemap = [];
