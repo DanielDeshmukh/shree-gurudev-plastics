@@ -10,13 +10,14 @@ type AddToCartButtonProps = {
   price: number;
   imageUrl: string;
   brand?: string;
+  moq?: number;
 };
 
-export default function AddToCartButton({ id, name, color, size, price, imageUrl, brand }: AddToCartButtonProps) {
+export default function AddToCartButton({ id, name, color, size, price, imageUrl, brand, moq }: AddToCartButtonProps) {
   const { addItem, openCart } = useCart();
 
   const handleAdd = () => {
-    addItem({ id, name, color, size, price, imageUrl, brand });
+    addItem({ id, name, color, size, price, imageUrl, brand, moq: moq || 1 });
     openCart();
   };
 

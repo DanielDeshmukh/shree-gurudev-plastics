@@ -208,6 +208,9 @@ export default async function Home() {
                   </div>
                   <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
                   {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
+                  {product.moq > 1 && (
+                    <span className="inline-block mt-1 text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
+                  )}
                   <AddToCartButton
                     id={product.id}
                     name={product.name}
@@ -216,6 +219,7 @@ export default async function Home() {
                     price={product.price}
                     imageUrl={product.imageUrl || ""}
                     brand={product.brand?.name}
+                    moq={product.moq}
                   />
                   <CompareButton
                     product={{

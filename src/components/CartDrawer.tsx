@@ -101,6 +101,14 @@ export default function CartDrawer() {
                           </svg>
                         </button>
                       </div>
+                      {item.moq > 1 && (
+                        <div className="flex items-center gap-1 mt-1">
+                          {item.quantity === item.moq && (
+                            <span className="text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">(Min)</span>
+                          )}
+                          <span className="text-[10px] text-gray-400">MOQ: {item.moq}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
