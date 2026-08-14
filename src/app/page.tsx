@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Shop premium plastic products from Shree Gurudev Plastics. Browse chairs, tables, buckets, containers from trusted brands — Aristo, KG Plast, Mango Chairs.",
+  openGraph: { title: "Shree Gurudev Plastics | Premium Plastic Products", description: "Shop premium plastic products from Shree Gurudev Plastics." },
+};
 
 async function getBrands() {
   const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });

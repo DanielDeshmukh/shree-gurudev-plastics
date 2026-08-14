@@ -1,5 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const res = await fetch(`http://localhost:3000/api/products/${id}`, { cache: "no-store" });
+  const data = await res.json();
+  const product = data.product;
+  if (!product) return { title: "Product Not Found" };
+  return {
+    title: product.name,
+    description: `${product.name} — ${product.color}, ${product.size}. ₹${product.price}. ${product.brand?.name || ""} brand. Shop at Shree Gurudev Plastics.`,
+    openGraph: {
+      title: `${product.name} | Shree Gurudev Plastics`,
+      description: `${product.name} — ${product.color}, ${product.size}. ₹${product.price}.`,
+      images: product.imageUrl ? [{ url: product.imageUrl, width: 800, height: 800, alt: product.name }] : [],
+    },
+  };
+}
 
 async function getProduct(id: string) {
   const res = await fetch(`http://localhost:3000/api/products/${id}`, { cache: "no-store" });
@@ -37,6 +55,22 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const brand = product.brand;
   const brandSlug = brand?.slug || "";
   const related = brand ? await getRelatedProducts(brand.id, product.id) : [];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || `${product.name} — ${product.color}, ${product.size}`,
+    image: product.imageUrl,
+    brand: product.brand ? { "@type": "Brand", name: product.brand.name } : undefined,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "INR",
+      price: product.price,
+      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: "Shree Gurudev Plastics" },
+    },
+  };
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -154,6 +188,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </section>
         )}
       </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </main>
   );
 }
