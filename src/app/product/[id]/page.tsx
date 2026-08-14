@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -8,12 +10,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const data = await res.json();
   const product = data.product;
   if (!product) return { title: "Product Not Found" };
+  const brandName = product.brand?.name || "";
+  const cat = product.category || "";
   return {
-    title: product.name,
-    description: `${product.name} — ${product.color}, ${product.size}. ₹${product.price}. ${product.brand?.name || ""} brand. Shop at Shree Gurudev Plastics.`,
+    title: `${product.name} — ${brandName} ${cat} | Buy Online at ${BUSINESS_NAME}`,
+    description: `Buy ${product.name} by ${brandName} at ${BUSINESS_NAME}, ${CITY}. ₹${product.price} | ${product.color || ""} ${product.size || ""} | Bulk orders available. Plastic ${cat.toLowerCase()} distributor in Bhayander, Mumbai. Free delivery on bulk orders. Best price guarantee.`,
+    keywords: [product.name, brandName, cat, `${cat} Bhayander`, `buy ${product.name} online`, `${cat} distributor`, `plastic ${cat.toLowerCase()} bulk`, `${product.name} price`, `${BUSINESS_NAME}`, `plastic products ${CITY}`, `bulk plastic seller`, `wholesale ${cat.toLowerCase()}`],
+    alternates: { canonical: `${SITE_URL}/product/${id}` },
     openGraph: {
-      title: `${product.name} | Shree Gurudev Plastics`,
-      description: `${product.name} — ${product.color}, ${product.size}. ₹${product.price}.`,
+      title: `${product.name} | ${BUSINESS_NAME} — ${CITY}`,
+      description: `Buy ${product.name} — ₹${product.price}. Bulk orders available. ${BUSINESS_NAME}, ${CITY}.`,
+      url: `${SITE_URL}/product/${id}`,
+      siteName: BUSINESS_NAME,
+      locale: "en_IN",
+      type: "website",
       images: product.imageUrl ? [{ url: product.imageUrl, width: 800, height: 800, alt: product.name }] : [],
     },
   };
@@ -26,12 +36,14 @@ async function getProduct(id: string) {
   return data.product || null;
 }
 
-async function getRelatedProducts(brandId: number, excludeId: number) {
+async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
   const res = await fetch(`http://localhost:3000/api/products`, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   const products = data.products || [];
-  return products.filter((p: any) => p.brandId === brandId && p.id !== excludeId).slice(0, 4);
+  const sameBrand = products.filter((p: any) => p.brandId === brandId && p.id !== excludeId);
+  const sameCategory = products.filter((p: any) => p.category === category && p.id !== excludeId && p.brandId !== brandId);
+  return [...sameBrand, ...sameCategory].slice(0, 8);
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -53,35 +65,34 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   const brand = product.brand;
-  const brandSlug = brand?.slug || "";
-  const related = brand ? await getRelatedProducts(brand.id, product.id) : [];
+  const related = brand ? await getRelatedProducts(brand.id, product.id, product.category || "") : [];
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    description: product.description || `${product.name} — ${product.color}, ${product.size}`,
-    image: product.imageUrl,
-    brand: product.brand ? { "@type": "Brand", name: product.brand.name } : undefined,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "INR",
-      price: product.price,
-      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      seller: { "@type": "Organization", name: "Shree Gurudev Plastics" },
-    },
-  };
+  const productSchema = getProductSchema(product);
+  const breadcrumbs = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Products", url: "/products" },
+    { name: product.name, url: `/product/${product.id}` },
+  ]);
+
+  const productFaqs = [
+    { question: `Is ${product.name} available in bulk?`, answer: `Yes, ${BUSINESS_NAME} offers bulk pricing on ${product.name}. Contact us on WhatsApp at +91 ${PHONE.slice(2)} for bulk order quotes and discounts.` },
+    { question: `What is the delivery time for ${product.name}?`, answer: `We deliver ${product.name} across ${CITY}, Naigaon, Vasai, Virar, Mumbai, and Thane. Delivery typically takes 1-3 days depending on your location.` },
+    { question: `What brand is ${product.name}?`, answer: product.brand ? `${product.name} is manufactured by ${product.brand.name}, one of the leading plastic product brands available at ${BUSINESS_NAME}.` : `${product.name} is available at ${BUSINESS_NAME}, your trusted plastic products distributor in ${CITY}.` },
+    { question: `What is the price of ${product.name}?`, answer: `The price of ${product.name} is ₹${product.price}. For bulk orders, contact us for special wholesale pricing.` },
+  ];
+  const faqSchema = getFAQSchema(productFaqs);
+
+  const breadcrumbItems = [
+    { label: "Products", href: "/products" },
+    { label: product.name },
+  ];
+
+  const categorySlug = (product.category || "").toLowerCase().replace(/\s+/g, "");
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <nav className="text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-orange-500 transition-colors">Home</Link>
-          <span className="mx-2">/</span>
-          <Link href="/products" className="hover:text-orange-500 transition-colors">Products</Link>
-          <span className="mx-2">/</span>
-          <span className="text-gray-900">{product.name}</span>
-        </nav>
+        <Breadcrumbs items={breadcrumbItems} />
 
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -117,7 +128,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 {product.category && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Category</span>
-                    <span className="text-gray-900 text-sm font-medium">{product.category}</span>
+                    <Link href={`/category/${categorySlug}`} className="text-orange-500 text-sm font-medium hover:underline">{product.category}</Link>
                   </div>
                 )}
               </div>
@@ -127,12 +138,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               )}
 
               <p className="text-3xl font-bold text-orange-500 mb-2">₹{product.price}</p>
+              <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
 
               <div className="mb-6">
                 {product.stock > 0 ? (
                   <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
                     <span className="w-2 h-2 bg-green-500 rounded-full" />
-                    In Stock
+                    In Stock — Ready to Ship
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700 bg-red-100 px-3 py-1 rounded-full">
@@ -143,7 +155,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <a
-                href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}`)}`}
+                href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}. Please share details.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-600 transition-colors text-lg"
@@ -157,9 +169,61 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
 
+        <section className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Product Details</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {product.brand && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Brand:</span>
+                <Link href={`/brand/${brand.slug}`} className="text-orange-500 hover:underline">{product.brand.name}</Link>
+              </div>
+            )}
+            {product.color && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Color:</span>
+                <span className="text-gray-900">{product.color}</span>
+              </div>
+            )}
+            {product.size && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Size:</span>
+                <span className="text-gray-900">{product.size}</span>
+              </div>
+            )}
+            {product.category && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Category:</span>
+                <Link href={`/category/${categorySlug}`} className="text-orange-500 hover:underline">{product.category}</Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">About This Product</h2>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            Buy {product.name} from {BUSINESS_NAME}, Bhayander&apos;s trusted plastic products distributor.
+            {brand ? ` This is a ${brand.name} brand product` : ""}.
+            {product.stock > 0 ? " Currently in stock and ready to ship." : " Contact us for availability."}
+            We offer bulk pricing for retailers and businesses. Serving {CITY}, Naigaon, Vasai, Virar, Mumbai, and Thane.
+          </p>
+        </section>
+
+        <section className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {productFaqs.map((faq, i) => (
+              <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <h3 className="font-semibold text-gray-900 mb-2">{faq.question}</h3>
+                <p className="text-gray-600 text-sm">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {related.length > 0 && (
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">You May Also Like</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {related.map((rp: any) => (
                 <div key={rp.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
@@ -187,8 +251,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </div>
           </section>
         )}
+
+        {product.category && (
+          <section className="mt-8 text-center">
+            <Link href={`/category/${categorySlug}`} className="text-orange-500 hover:underline font-medium">
+              Browse More {product.category} Products →
+            </Link>
+          </section>
+        )}
       </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     </main>
   );
 }
