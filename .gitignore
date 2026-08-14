@@ -30,3 +30,6 @@ prisma/dev.db-journal
 
 # Placeholder images (seeded from catalog output, not source-controlled)
 public/products/
+
+# Project documentation (internal)
+PROJECT_DOCUMENTATION.md
