@@ -28,6 +28,7 @@ const quickLinks = [
   { name: "All Products", href: "/products" },
   { name: "About Us", href: "/about" },
   { name: "Contact", href: "/contact" },
+  { name: "Request a Quote", href: "/quote" },
 ];
 
 export default function Footer() {

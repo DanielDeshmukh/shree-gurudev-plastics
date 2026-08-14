@@ -274,6 +274,22 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="bg-orange-50 py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Need a Custom Quote?</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+            Looking for bulk pricing or custom orders? Request a quote and we&apos;ll provide competitive pricing
+            for your specific requirements. Serving {CITY}, Naigaon, Vasai, Virar, and all of Mumbai.
+          </p>
+          <Link
+            href="/quote"
+            className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+          >
+            Request a Quote
+          </Link>
+        </div>
+      </section>
+
       <section className="bg-gray-900 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Order Plastic Products in Bulk?</h2>
