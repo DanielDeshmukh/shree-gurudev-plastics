@@ -1,8 +1,22 @@
+<div align="center">
+
 # Shree Gurudev Plastics
 
 Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. Browse 866+ products from Aristo, KG Plast, and Mango Chairs — chairs, tables, buckets, containers, storage, kitchenware, and accessories.
 
 ---
+
+[![CI](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml/badge.svg)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml)
+[![Deploy](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/deploy.yml/badge.svg)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/deploy.yml)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-6.12-2D3748?logo=prisma)](https://prisma.io)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)](https://sqlite.org)
+[![Cloudinary](https://img.shields.io/badge/Cloudinary-Image_Storage-FD9A00?logo=cloudinary)](https://cloudinary.com)
+[![License](https://img.shields.io/badge/License-Private-red)](#)
+
+</div>
 
 ## Client Profile
 
