@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CartButton from "@/components/CartButton";
+import { CartProvider } from "@/context/CartContext";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -53,10 +55,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
       </head>
       <body>
-        <Navbar />
-        {children}
-        <Footer />
-        <WhatsAppButton />
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <WhatsAppButton />
+          <CartButton />
+        </CartProvider>
       </body>
     </html>
   );

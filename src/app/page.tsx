@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -206,14 +207,15 @@ export default async function Home() {
                   </div>
                   <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
                   {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
-                  <a
-                    href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 block text-center bg-green-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                  >
-                    Enquire on WhatsApp
-                  </a>
+                  <AddToCartButton
+                    id={product.id}
+                    name={product.name}
+                    color={product.color || ""}
+                    size={product.size || ""}
+                    price={product.price}
+                    imageUrl={product.imageUrl || ""}
+                    brand={product.brand?.name}
+                  />
                 </div>
               </div>
             ))}
