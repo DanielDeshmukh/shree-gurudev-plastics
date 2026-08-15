@@ -274,6 +274,37 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">We Deliver Across Mumbai</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Same-day delivery in Bhayander & Naigaon. Fast delivery across Vasai, Virar, Mumbai, Thane, and Palghar.
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {["Bhayander", "Naigaon", "Vasai", "Virar", "Mumbai", "Thane", "Palghar"].map((area) => (
+            <span
+              key={area}
+              className={`inline-block text-sm font-medium px-4 py-2 rounded-full border ${
+                area === "Bhayander"
+                  ? "bg-orange-500 text-white border-orange-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:text-orange-500 transition-colors"
+              }`}
+            >
+              {area}
+            </span>
+          ))}
+        </div>
+        <div className="text-center">
+          <Link
+            href="/locations"
+            className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+          >
+            View All Service Areas
+          </Link>
+        </div>
+      </section>
+
       <section className="bg-orange-50 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Need a Custom Quote?</h2>

@@ -26,6 +26,7 @@ const serviceAreas = [
 const quickLinks = [
   { name: "Home", href: "/" },
   { name: "All Products", href: "/products" },
+  { name: "Service Areas", href: "/locations" },
   { name: "About Us", href: "/about" },
   { name: "Contact", href: "/contact" },
   { name: "Request a Quote", href: "/quote" },
