@@ -173,3 +173,31 @@ model RecurringOrder {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
+
+model Supplier {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String?
+  address   String?
+  gstNumber String?
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model PurchaseOrder {
+  id            Int      @id @default(autoincrement())
+  supplierId    Int
+  productId     Int
+  productName   String
+  quantity      Int
+  unitCost      Float
+  totalCost     Float
+  status        String   @default("pending")
+  expectedDate  DateTime?
+  receivedDate  DateTime?
+  invoiceNumber String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
