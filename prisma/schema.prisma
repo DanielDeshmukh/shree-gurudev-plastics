@@ -30,6 +30,8 @@ model Product {
   description String?
   moq         Int      @default(1)
   tags        String   @default("")
+  hsnCode     String   @default("3924")
+  gstRate     Float    @default(18.0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orderItems  OrderItem[]
@@ -90,4 +92,40 @@ model Admin {
   id       Int    @id @default(autoincrement())
   username String @unique
   password String
+}
+
+model Invoice {
+  id             Int          @id @default(autoincrement())
+  invoiceNumber  String       @unique
+  orderId        Int?
+  customerName   String
+  customerPhone  String
+  customerAddress String?
+  customerGstin  String?
+  placeOfSupply  String       @default("Maharashtra")
+  subtotal       Float
+  cgst           Float
+  sgst           Float
+  igst           Float
+  total          Float
+  status         String       @default("draft")
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  items          InvoiceItem[]
+}
+
+model InvoiceItem {
+  id          Int     @id @default(autoincrement())
+  invoiceId   Int
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productName String
+  hsnCode     String
+  quantity    Int
+  unitPrice   Float
+  gstRate     Float
+  cgst        Float
+  sgst        Float
+  igst        Float
+  total       Float
 }
