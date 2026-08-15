@@ -9,6 +9,7 @@ import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import CompareBar from "@/components/CompareBar";
+import SWRegister from "@/components/SWRegister";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -57,6 +58,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f97316" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="SGP Plastics" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
       </head>
       <body>
@@ -71,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <WhatsAppButton />
                   <CartButton />
                   <CompareBar />
+                  <SWRegister />
                 </WishlistProvider>
               </RecentlyViewedProvider>
             </CompareProvider>
