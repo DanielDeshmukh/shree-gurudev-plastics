@@ -51,7 +51,7 @@ export default function ContactPage() {
                 <p className="text-green-600 text-sm">We&apos;ll get back to you on WhatsApp shortly.</p>
                 <button
                   onClick={() => { setSubmitted(false); setName(""); setPhone(""); setMessage(""); }}
-                  className="mt-4 text-orange-500 hover:underline text-sm"
+                  className="mt-4 text-primary-500 hover:underline text-sm"
                 >
                   Send Another Message
                 </button>
@@ -66,7 +66,7 @@ export default function ContactPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Enter your name"
                   />
                 </div>
@@ -78,7 +78,7 @@ export default function ContactPage() {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Your phone number"
                   />
                 </div>
@@ -90,13 +90,13 @@ export default function ContactPage() {
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Tell us about your requirements (products, quantity, etc.)"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                  className="w-full bg-primary-500 text-white font-semibold py-3 rounded-lg hover:bg-primary-600 transition-colors"
                 >
                   Send via WhatsApp
                 </button>
@@ -114,7 +114,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 mb-1">Phone</h3>
-                  <a href={`tel:${PHONE}`} className="text-orange-500 hover:underline text-sm">{PHONE_DISPLAY}</a>
+                  <a href={`tel:${PHONE}`} className="text-primary-500 hover:underline text-sm">{PHONE_DISPLAY}</a>
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 mb-1">WhatsApp</h3>
@@ -122,7 +122,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 mb-1">Email</h3>
-                  <a href="mailto:info@shreegurudevplastics.com" className="text-orange-500 hover:underline text-sm">info@shreegurudevplastics.com</a>
+                  <a href="mailto:info@shreegurudevplastics.com" className="text-primary-500 hover:underline text-sm">info@shreegurudevplastics.com</a>
                 </div>
               </div>
             </div>
@@ -163,12 +163,12 @@ export default function ContactPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             {["Plastic Chairs", "Plastic Tables", "Plastic Buckets", "Plastic Containers", "Plastic Stools", "Plastic Storage", "Plastic Kitchenware", "Plastic Baskets", "Plastic Trays"].map((item) => (
               <div key={item} className="flex items-center gap-2">
-                <span className="text-orange-500"><MdCheck /></span>
+                <span className="text-primary-500"><MdCheck /></span>
                 <span className="text-gray-700">{item}</span>
               </div>
             ))}
           </div>
-          <Link href="/products" className="inline-block mt-4 text-orange-500 hover:underline text-sm font-medium">Browse All Products →</Link>
+          <Link href="/products" className="inline-block mt-4 text-primary-500 hover:underline text-sm font-medium">Browse All Products →</Link>
         </section>
 
         <section className="bg-gray-900 text-white rounded-xl p-8 text-center">
@@ -188,7 +188,7 @@ export default function ContactPage() {
             </a>
             <Link
               href="/quote"
-              className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
             >
               Request a Quote
             </Link>

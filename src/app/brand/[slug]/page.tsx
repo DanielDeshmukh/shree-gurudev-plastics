@@ -46,7 +46,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Brand Not Found</h1>
           <p className="text-gray-500 mb-6">The brand you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+          <Link href="/" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
             Go Home
           </Link>
         </div>
@@ -58,7 +58,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <nav className="text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-orange-500 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
           <span className="mx-2">/</span>
           <span className="text-gray-900">{brand.name}</span>
         </nav>
@@ -87,7 +87,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                   <ProductTags tags={product.tags || ""} />
                   <div className="flex items-start justify-between gap-2">
                     <Link href={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
+                      <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
                     </Link>
                     <WishlistButton
                       product={{
@@ -105,9 +105,9 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
                   </div>
-                  <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
+                  <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
                   {product.moq > 1 && (
-                    <span className="inline-block mt-1 text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
+                    <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
                   )}
                   <AddToCartButton
                     id={product.id}

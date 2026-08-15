@@ -101,7 +101,7 @@ export default function BrandsPage() {
         <h2 className="text-2xl font-bold">Brands</h2>
         <button
           onClick={openAdd}
-          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
+          className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors"
         >
           + Add Brand
         </button>
@@ -109,7 +109,7 @@ export default function BrandsPage() {
 
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
         </div>
       ) : brands.length === 0 ? (
         <div className="rounded-lg bg-gray-900 border border-gray-800 p-8 text-center text-gray-400">
@@ -190,7 +190,7 @@ export default function BrandsPage() {
                     setName(val);
                     if (!editingId) setSlug(generateSlug(val));
                   }}
-                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
+                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
                 />
               </div>
               <div>
@@ -199,7 +199,7 @@ export default function BrandsPage() {
                   type="text"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
+                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
                 />
               </div>
               <div>
@@ -208,7 +208,7 @@ export default function BrandsPage() {
                   type="text"
                   value={logo}
                   onChange={(e) => setLogo(e.target.value)}
-                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
+                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
                 />
               </div>
               {error && (
@@ -226,7 +226,7 @@ export default function BrandsPage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50 transition-colors"
+                  className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-50 transition-colors"
                 >
                   {saving ? "Saving..." : editingId ? "Update" : "Create"}
                 </button>

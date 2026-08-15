@@ -17,10 +17,10 @@ export default function CompareButton({ product }: CompareButtonProps) {
       disabled={disabled}
       className={`mt-3 block w-full text-center py-2 rounded-lg text-sm font-medium transition-colors border ${
         active
-          ? "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
+          ? "bg-primary-500 text-white border-primary-500 hover:bg-primary-600"
           : disabled
             ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-            : "bg-white text-orange-500 border-orange-300 hover:bg-orange-50"
+            : "bg-white text-primary-500 border-primary-300 hover:bg-primary-50"
       }`}
     >
       {active ? "Added \u2713" : "Compare"}

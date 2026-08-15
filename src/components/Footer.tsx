@@ -74,7 +74,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             {productCategories.map((cat) => (
               <li key={cat.name}>
-                <Link href={cat.href} className="hover:text-orange-400 transition-colors">{cat.name}</Link>
+                <Link href={cat.href} className="hover:text-primary-400 transition-colors">{cat.name}</Link>
               </li>
             ))}
           </ul>
@@ -85,7 +85,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             {brands.map((brand) => (
               <li key={brand.name}>
-                <Link href={brand.href} className="hover:text-orange-400 transition-colors">{brand.name}</Link>
+                <Link href={brand.href} className="hover:text-primary-400 transition-colors">{brand.name}</Link>
               </li>
             ))}
           </ul>
@@ -96,7 +96,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             {translatedQuickLinks.map((link) => (
               <li key={link.name}>
-                <Link href={link.href} className="hover:text-orange-400 transition-colors">{link.name}</Link>
+                <Link href={link.href} className="hover:text-primary-400 transition-colors">{link.name}</Link>
               </li>
             ))}
           </ul>

@@ -96,7 +96,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {serviceAreas.map((area) => (
               <div key={area.city} className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-bold text-orange-500 mb-1">{area.city}</h3>
+                <h3 className="font-bold text-primary-500 mb-1">{area.city}</h3>
                 <p className="text-gray-600 text-sm">{area.desc}</p>
               </div>
             ))}
@@ -115,7 +115,7 @@ export default function AboutPage() {
               { title: "Trusted by Thousands", desc: "Thousands of happy customers trust us for their plastic product needs." },
             ].map((item) => (
               <div key={item.title} className="flex gap-3">
-                <div className="w-8 h-8 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 bg-primary-100 text-primary-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                 </div>
                 <div>
@@ -131,19 +131,19 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Information</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="text-orange-500 font-bold w-20">Address:</span>
+              <span className="text-primary-500 font-bold w-20">Address:</span>
               <span className="text-gray-600">{ADDRESS}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-orange-500 font-bold w-20">Phone:</span>
-              <a href={`tel:${PHONE}`} className="text-orange-500 hover:underline">{PHONE_DISPLAY}</a>
+              <span className="text-primary-500 font-bold w-20">Phone:</span>
+              <a href={`tel:${PHONE}`} className="text-primary-500 hover:underline">{PHONE_DISPLAY}</a>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-orange-500 font-bold w-20">WhatsApp:</span>
+              <span className="text-primary-500 font-bold w-20">WhatsApp:</span>
               <a href={`https://wa.me/${PHONE}`} target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline">{PHONE_DISPLAY}</a>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-orange-500 font-bold w-20">Hours:</span>
+              <span className="text-primary-500 font-bold w-20">Hours:</span>
               <span className="text-gray-600">Mon–Sat: 9:00 AM – 8:00 PM</span>
             </div>
           </div>

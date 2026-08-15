@@ -75,7 +75,7 @@ export default function ReviewForm({ productId, onSubmitted }: ReviewFormProps) 
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
           placeholder="Your name"
         />
       </div>
@@ -89,7 +89,7 @@ export default function ReviewForm({ productId, onSubmitted }: ReviewFormProps) 
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none resize-none"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none resize-none"
           placeholder="Share your experience (min 10 characters)"
         />
       </div>
@@ -101,7 +101,7 @@ export default function ReviewForm({ productId, onSubmitted }: ReviewFormProps) 
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50 transition-colors"
+        className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-50 transition-colors"
       >
         {saving ? "Submitting..." : "Submit Review"}
       </button>

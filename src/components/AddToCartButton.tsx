@@ -24,7 +24,7 @@ export default function AddToCartButton({ id, name, color, size, price, imageUrl
   return (
     <button
       onClick={handleAdd}
-      className="mt-3 block w-full text-center bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+      className="mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
     >
       Add to Cart
     </button>

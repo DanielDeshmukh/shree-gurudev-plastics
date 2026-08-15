@@ -109,7 +109,7 @@ export default function OrdersPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+          className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
         >
           <option value="">All Status</option>
           {statusOptions.map((s) => (
@@ -122,7 +122,7 @@ export default function OrdersPage() {
 
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-lg bg-gray-900 border border-gray-800 p-8 text-center text-gray-400">

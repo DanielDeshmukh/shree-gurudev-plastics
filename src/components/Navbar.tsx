@@ -18,17 +18,17 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="font-bold text-xl text-gray-900">
-          <span className="text-orange-500">Shree Gurudev</span> Plastics
+          <span className="text-primary-500">Shree Gurudev</span> Plastics
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+          <Link href="/" className="text-sm font-medium text-gray-600 hover:text-primary-500 transition-colors">
             {t(translations.nav.home.en, translations.nav.home.hi)}
           </Link>
-          <Link href="/products" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+          <Link href="/products" className="text-sm font-medium text-gray-600 hover:text-primary-500 transition-colors">
             {t(translations.nav.products.en, translations.nav.products.hi)}
           </Link>
-          <Link href="/locations" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+          <Link href="/locations" className="text-sm font-medium text-gray-600 hover:text-primary-500 transition-colors">
             {t(translations.nav.locations.en, translations.nav.locations.hi)}
           </Link>
           <a
@@ -43,22 +43,22 @@ export default function Navbar() {
             WhatsApp
           </a>
           <LanguageToggle />
-          <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
+          <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-primary-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
             {wishlist.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {wishlist.length > 99 ? "99+" : wishlist.length}
               </span>
             )}
           </Link>
-          <button onClick={openCart} className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
+          <button onClick={openCart} className="relative p-2 text-gray-600 hover:text-primary-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {totalItems > 99 ? "99+" : totalItems}
               </span>
             )}
@@ -67,22 +67,22 @@ export default function Navbar() {
 
         <div className="flex md:hidden items-center gap-2">
           <LanguageToggle />
-          <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
+          <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-primary-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
             {wishlist.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {wishlist.length > 99 ? "99+" : wishlist.length}
               </span>
             )}
           </Link>
-          <button onClick={openCart} className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
+          <button onClick={openCart} className="relative p-2 text-gray-600 hover:text-primary-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {totalItems > 99 ? "99+" : totalItems}
               </span>
             )}
@@ -101,13 +101,13 @@ export default function Navbar() {
 
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
-          <Link href="/" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
+          <Link href="/" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-primary-500">
             {t(translations.nav.home.en, translations.nav.home.hi)}
           </Link>
-          <Link href="/products" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
+          <Link href="/products" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-primary-500">
             {t(translations.nav.products.en, translations.nav.products.hi)}
           </Link>
-          <Link href="/locations" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
+          <Link href="/locations" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-primary-500">
             {t(translations.nav.locations.en, translations.nav.locations.hi)}
           </Link>
           <a

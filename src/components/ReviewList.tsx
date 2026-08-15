@@ -49,7 +49,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
         <h2 className="text-xl font-bold text-gray-900">Customer Reviews</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
+          className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors"
         >
           Write a Review
         </button>
@@ -57,7 +57,7 @@ export default function ReviewList({ productId }: ReviewListProps) {
 
       {loading ? (
         <div className="flex h-20 items-center justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
         </div>
       ) : (
         <>

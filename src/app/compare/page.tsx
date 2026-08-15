@@ -14,7 +14,7 @@ export default function ComparePage() {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">No Products to Compare</h1>
           <p className="text-gray-500 mb-6">Add products to your comparison list to see them side by side.</p>
-          <Link href="/products" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium">
+          <Link href="/products" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium">
             Browse Products
           </Link>
         </div>
@@ -46,7 +46,7 @@ export default function ComparePage() {
           </div>
           <div className="flex items-center gap-3">
             {compareCount < 4 && (
-              <Link href="/products" className="px-4 py-2 text-sm font-medium text-orange-500 border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors">
+              <Link href="/products" className="px-4 py-2 text-sm font-medium text-primary-500 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors">
                 + Add Product
               </Link>
             )}
@@ -57,9 +57,9 @@ export default function ComparePage() {
         </div>
 
         {compareCount < 2 && (
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-6 text-center">
-            <p className="text-orange-700 font-medium">Add more products to compare them side by side.</p>
-            <Link href="/products" className="inline-block mt-3 text-orange-500 hover:text-orange-600 font-medium underline">
+          <div className="bg-primary-50 border border-primary-200 rounded-xl p-6 mb-6 text-center">
+            <p className="text-primary-700 font-medium">Add more products to compare them side by side.</p>
+            <Link href="/products" className="inline-block mt-3 text-primary-500 hover:text-primary-600 font-medium underline">
               Browse Products
             </Link>
           </div>
@@ -93,7 +93,7 @@ export default function ComparePage() {
                         </div>
                       )}
                       {attr.key === "name" && (
-                        <Link href={`/product/${item.id}`} className="font-semibold text-gray-900 hover:text-orange-500 transition-colors text-sm">
+                        <Link href={`/product/${item.id}`} className="font-semibold text-gray-900 hover:text-primary-500 transition-colors text-sm">
                           {item.name}
                         </Link>
                       )}
@@ -101,7 +101,7 @@ export default function ComparePage() {
                         <span className="text-sm text-gray-700">{item.brand || "—"}</span>
                       )}
                       {attr.key === "price" && (
-                        <span className="text-sm font-bold text-orange-500">₹{item.price}</span>
+                        <span className="text-sm font-bold text-primary-500">₹{item.price}</span>
                       )}
                       {attr.key === "color" && (
                         <span className="text-sm text-gray-700">{item.color || "—"}</span>

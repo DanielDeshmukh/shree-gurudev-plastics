@@ -129,7 +129,7 @@ export default function InvoicesPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function InvoicesPage() {
         <h2 className="text-2xl font-bold">Invoices</h2>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
+          className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors"
         >
           + Create Invoice
         </button>
@@ -152,7 +152,7 @@ export default function InvoicesPage() {
             key={f}
             onClick={() => setFilter(f)}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              filter === f ? "bg-orange-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"
+              filter === f ? "bg-primary-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -181,7 +181,7 @@ export default function InvoicesPage() {
                       key={inv.id}
                       onClick={() => setSelectedInvoice(inv)}
                       className={`cursor-pointer transition-colors ${
-                        selectedInvoice?.id === inv.id ? "bg-orange-500/10" : "hover:bg-gray-800"
+                        selectedInvoice?.id === inv.id ? "bg-primary-500/10" : "hover:bg-gray-800"
                       }`}
                     >
                       <td className="px-4 py-3 font-mono text-xs">{inv.invoiceNumber}</td>
@@ -309,7 +309,7 @@ export default function InvoicesPage() {
                   <div className="flex justify-between"><span className="text-gray-400">SGST</span><span>₹{selectedInvoice.sgst.toLocaleString("en-IN")}</span></div>
                 </>
               )}
-              <div className="flex justify-between border-t border-gray-700 pt-2 mt-2 font-bold text-orange-400">
+              <div className="flex justify-between border-t border-gray-700 pt-2 mt-2 font-bold text-primary-400">
                 <span>Total</span><span>₹{selectedInvoice.total.toLocaleString("en-IN")}</span>
               </div>
             </div>
@@ -325,26 +325,26 @@ export default function InvoicesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Customer Name *</label>
-                  <input type="text" value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="text" value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Phone *</label>
-                  <input type="text" value={form.customerPhone} onChange={(e) => setForm({ ...form, customerPhone: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="text" value={form.customerPhone} onChange={(e) => setForm({ ...form, customerPhone: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Address</label>
-                  <input type="text" value={form.customerAddress} onChange={(e) => setForm({ ...form, customerAddress: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="text" value={form.customerAddress} onChange={(e) => setForm({ ...form, customerAddress: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">GSTIN</label>
-                  <input type="text" value={form.customerGstin} onChange={(e) => setForm({ ...form, customerGstin: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="text" value={form.customerGstin} onChange={(e) => setForm({ ...form, customerGstin: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Place of Supply</label>
-                <select value={form.placeOfSupply} onChange={(e) => setForm({ ...form, placeOfSupply: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500">
+                <select value={form.placeOfSupply} onChange={(e) => setForm({ ...form, placeOfSupply: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500">
                   <option value="Maharashtra">Maharashtra</option>
                   <option value="Gujarat">Gujarat</option>
                   <option value="Karnataka">Karnataka</option>
@@ -357,17 +357,17 @@ export default function InvoicesPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm text-gray-300">Line Items</label>
-                  <button onClick={addItem} className="text-xs text-orange-400 hover:text-orange-300">+ Add Item</button>
+                  <button onClick={addItem} className="text-xs text-primary-400 hover:text-primary-300">+ Add Item</button>
                 </div>
                 <div className="space-y-2">
                   {form.items.map((item, i) => (
                     <div key={i} className="grid grid-cols-6 gap-2 items-end">
                       <div className="col-span-2">
-                        <input placeholder="Product" value={item.productName} onChange={(e) => updateItem(i, "productName", e.target.value)} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
+                        <input placeholder="Product" value={item.productName} onChange={(e) => updateItem(i, "productName", e.target.value)} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-primary-500" />
                       </div>
-                      <input placeholder="HSN" value={item.hsnCode} onChange={(e) => updateItem(i, "hsnCode", e.target.value)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
-                      <input type="number" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
-                      <input type="number" placeholder="Rate" value={item.unitPrice || ""} onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
+                      <input placeholder="HSN" value={item.hsnCode} onChange={(e) => updateItem(i, "hsnCode", e.target.value)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-primary-500" />
+                      <input type="number" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-primary-500" />
+                      <input type="number" placeholder="Rate" value={item.unitPrice || ""} onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-primary-500" />
                       <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-300 text-xs"><MdClose /></button>
                     </div>
                   ))}
@@ -376,7 +376,7 @@ export default function InvoicesPage() {
 
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setShowCreateModal(false)} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">Cancel</button>
-                <button onClick={handleCreate} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">Create Invoice</button>
+                <button onClick={handleCreate} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">Create Invoice</button>
               </div>
             </div>
           </div>

@@ -32,7 +32,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
 
   return (
     <>
-      <section className="relative bg-gradient-to-br from-orange-500 to-orange-600 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary-500 to-primary-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
@@ -41,10 +41,10 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             {t(translations.hero.title.en, translations.hero.title.hi)} | Bulk Seller & Distributor in {CITY}
           </h1>
-          <p className="text-xl md:text-2xl text-orange-100 mb-4">
+          <p className="text-xl md:text-2xl text-primary-100 mb-4">
             {BUSINESS_NAME} — {t(translations.hero.subtitle.en, translations.hero.subtitle.hi)}
           </p>
-          <p className="text-orange-200 mb-8 max-w-2xl mx-auto">
+          <p className="text-primary-200 mb-8 max-w-2xl mx-auto">
             Plastic chairs, tables, buckets, containers, and more from top brands.
             Serving {CITY}, Naigaon, Vasai, Virar, Mumbai, and Thane.
             Best wholesale prices on bulk plastic products.
@@ -52,7 +52,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/products"
-              className="inline-block bg-white text-orange-600 font-semibold px-8 py-3 rounded-lg hover:bg-orange-50 transition-colors"
+              className="inline-block bg-white text-primary-600 font-semibold px-8 py-3 rounded-lg hover:bg-primary-50 transition-colors"
             >
               {t(translations.hero.shopNow.en, translations.hero.shopNow.hi)}
             </Link>
@@ -96,18 +96,18 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
               href={`/category/${cat.slug}`}
               className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
             >
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{cat.name}</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-500 transition-colors">{cat.name}</h3>
               <p className="text-gray-500 mt-2 text-sm">{cat.desc}</p>
-              <span className="inline-block mt-4 text-orange-500 font-medium group-hover:underline">{t("Browse Collection →", "संग्रह देखें →")}</span>
+              <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">{t("Browse Collection →", "संग्रह देखें →")}</span>
             </Link>
           ))}
           <Link
             href="/products"
-            className="block bg-orange-50 border border-orange-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
+            className="block bg-primary-50 border border-primary-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
           >
-            <h3 className="text-xl font-bold text-orange-600 group-hover:text-orange-700 transition-colors">{t("All Products", "सभी उत्पादन")}</h3>
+            <h3 className="text-xl font-bold text-primary-600 group-hover:text-primary-700 transition-colors">{t("All Products", "सभी उत्पादन")}</h3>
             <p className="text-gray-500 mt-2 text-sm">Browse our complete catalog of 500+ plastic products</p>
-            <span className="inline-block mt-4 text-orange-500 font-medium group-hover:underline">{t("View All →", "सभी देखें →")}</span>
+            <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">{t("View All →", "सभी देखें →")}</span>
           </Link>
         </div>
       </section>
@@ -146,9 +146,9 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                 href={`/brand/${brand.slug}`}
                 className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
               >
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{brand.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-500 transition-colors">{brand.name}</h3>
                 <p className="text-gray-500 mt-2">{brand._count?.products ?? 0} Products</p>
-                <span className="inline-block mt-4 text-orange-500 font-medium group-hover:underline">Explore →</span>
+                <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">Explore →</span>
               </Link>
             ))}
           </div>
@@ -177,7 +177,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                   <ProductTags tags={product.tags || ""} />
                   <div className="flex items-start justify-between gap-2">
                     <Link href={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
+                      <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
                     </Link>
                     <WishlistButton
                       product={{
@@ -195,10 +195,10 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
                   </div>
-                  <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
+                  <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
                   {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
                   {product.moq > 1 && (
-                    <span className="inline-block mt-1 text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
+                    <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
                   )}
                   <AddToCartButton
                     id={product.id}
@@ -228,7 +228,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             ))}
           </div>
           <div className="text-center mt-10">
-            <Link href="/products" className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors">
+            <Link href="/products" className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors">
               {t(translations.brands.viewAll.en, translations.brands.viewAll.hi)}
             </Link>
           </div>
@@ -286,8 +286,8 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
               key={area}
               className={`inline-block text-sm font-medium px-4 py-2 rounded-full border ${
                 area === "Bhayander"
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:text-orange-500 transition-colors"
+                  ? "bg-primary-500 text-white border-primary-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-primary-400 hover:text-primary-500 transition-colors"
               }`}
             >
               {area}
@@ -297,14 +297,14 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
         <div className="text-center">
           <Link
             href="/locations"
-            className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+            className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
           >
             {t("View All Service Areas", "सभी सेवा क्षेत्र देखें")}
           </Link>
         </div>
       </section>
 
-      <section className="bg-orange-50 py-16">
+      <section className="bg-primary-50 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("Need a Custom Quote?", "कस्टम कोटेशन चाहिए?")}</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -313,7 +313,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           </p>
           <Link
             href="/quote"
-            className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+            className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
           >
             {t(translations.quote.title.en, translations.quote.title.hi)}
           </Link>
@@ -341,7 +341,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             </a>
             <Link
               href="/products"
-              className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
             >
               {t(translations.hero.shopNow.en, translations.hero.shopNow.hi)}
             </Link>

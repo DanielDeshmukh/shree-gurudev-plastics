@@ -11,7 +11,7 @@ export default function RequestQuoteButton({ category, className }: RequestQuote
   return (
     <Link
       href={href}
-      className={className || "inline-block bg-orange-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"}
+      className={className || "inline-block bg-primary-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"}
     >
       Request a Quote
     </Link>

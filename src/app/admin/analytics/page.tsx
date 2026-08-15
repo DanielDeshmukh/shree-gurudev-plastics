@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Total Revenue</p>
-          <p className="mt-1 text-2xl font-bold text-orange-400">₹{summary.totalRevenue.toLocaleString("en-IN")}</p>
+          <p className="mt-1 text-2xl font-bold text-primary-400">₹{summary.totalRevenue.toLocaleString("en-IN")}</p>
         </div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Revenue (30d)</p>
@@ -177,7 +177,7 @@ export default function AnalyticsPage() {
                     <p className="text-xs text-gray-400">{c.phone}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-orange-400">₹{c.totalSpent.toLocaleString("en-IN")}</p>
+                    <p className="text-sm font-bold text-primary-400">₹{c.totalSpent.toLocaleString("en-IN")}</p>
                     <p className="text-xs text-gray-400">{c.totalOrders} orders</p>
                   </div>
                 </div>

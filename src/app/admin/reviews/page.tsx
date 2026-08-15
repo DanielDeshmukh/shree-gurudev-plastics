@@ -68,7 +68,7 @@ export default function AdminReviewsPage() {
             onClick={() => setFilter(f)}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               filter === f
-                ? "bg-orange-500 text-white"
+                ? "bg-primary-500 text-white"
                 : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}
           >
@@ -84,7 +84,7 @@ export default function AdminReviewsPage() {
 
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-lg bg-gray-900 border border-gray-800 p-8 text-center text-gray-400">

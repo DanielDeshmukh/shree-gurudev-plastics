@@ -34,7 +34,7 @@ export default function CartDrawer() {
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
               </svg>
               <h2 className="text-lg font-bold text-gray-900">Your Cart</h2>
@@ -74,12 +74,12 @@ export default function CartDrawer() {
                         {item.color && item.size && <span>•</span>}
                         {item.size && <span>{item.size}</span>}
                       </div>
-                      <p className="text-sm font-bold text-orange-500 mt-1">₹{item.price}</p>
+                      <p className="text-sm font-bold text-primary-500 mt-1">₹{item.price}</p>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-500 transition-colors rounded-l-lg hover:bg-gray-50"
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary-500 transition-colors rounded-l-lg hover:bg-gray-50"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -88,7 +88,7 @@ export default function CartDrawer() {
                           <span className="text-sm font-medium text-gray-900 w-6 text-center">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-500 transition-colors rounded-r-lg hover:bg-gray-50"
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary-500 transition-colors rounded-r-lg hover:bg-gray-50"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -104,7 +104,7 @@ export default function CartDrawer() {
                       {item.moq > 1 && (
                         <div className="flex items-center gap-1 mt-1">
                           {item.quantity === item.moq && (
-                            <span className="text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">(Min)</span>
+                            <span className="text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">(Min)</span>
                           )}
                           <span className="text-[10px] text-gray-400">MOQ: {item.moq}</span>
                         </div>

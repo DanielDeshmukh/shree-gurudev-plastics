@@ -108,7 +108,7 @@ export default function ReportsPage() {
                 type="date"
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
-                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
               />
             </div>
             <div>
@@ -117,7 +117,7 @@ export default function ReportsPage() {
                 type="date"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
               />
             </div>
             <button
@@ -142,7 +142,7 @@ export default function ReportsPage() {
               <select
                 value={monthlyMonth}
                 onChange={(e) => setMonthlyMonth(Number(e.target.value))}
-                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
               >
                 {monthNames.map((name, i) => (
                   <option key={i} value={i + 1}>{name}</option>
@@ -154,7 +154,7 @@ export default function ReportsPage() {
               <select
                 value={monthlyYear}
                 onChange={(e) => setMonthlyYear(Number(e.target.value))}
-                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
               >
                 {years.map((y) => (
                   <option key={y} value={y}>{y}</option>
@@ -185,7 +185,7 @@ export default function ReportsPage() {
               type="date"
               value={from}
               onChange={(e) => setFrom(e.target.value)}
-              className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
             />
           </div>
           <div>
@@ -194,13 +194,13 @@ export default function ReportsPage() {
               type="date"
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
             />
           </div>
           <button
             onClick={fetchReport}
             disabled={loading}
-            className="rounded-lg bg-orange-500 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50 transition-colors"
+            className="rounded-lg bg-primary-500 px-6 py-2 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-50 transition-colors"
           >
             {loading ? "Loading..." : "Generate Report"}
           </button>
@@ -218,7 +218,7 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
               <p className="text-sm text-gray-400">Total Revenue</p>
-              <p className="mt-1 text-2xl font-bold text-orange-400">
+              <p className="mt-1 text-2xl font-bold text-primary-400">
                 ₹{data.totalRevenue.toLocaleString("en-IN")}
               </p>
             </div>

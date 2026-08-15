@@ -76,7 +76,7 @@ export default function FollowupPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function FollowupPage() {
                 }}
                 className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
                   selectedOrder?.id === order.id
-                    ? "border-orange-500 bg-orange-500/10"
+                    ? "border-primary-500 bg-primary-500/10"
                     : "border-gray-700 bg-gray-800 hover:border-gray-600"
                 }`}
               >
@@ -133,7 +133,7 @@ export default function FollowupPage() {
                   }}
                   className={`rounded-lg border px-3 py-2.5 text-left text-sm transition-colors ${
                     selectedTemplate === key
-                      ? "border-orange-500 bg-orange-500/10 text-orange-400"
+                      ? "border-primary-500 bg-primary-500/10 text-primary-400"
                       : "border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600"
                   }`}
                 >
@@ -156,7 +156,7 @@ export default function FollowupPage() {
                 }}
                 rows={3}
                 placeholder="Type your custom WhatsApp message..."
-                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
+                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
               />
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function FollowupPage() {
                 <button
                   onClick={handleGenerate}
                   disabled={sending}
-                  className="w-full rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors disabled:opacity-50"
+                  className="w-full rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 transition-colors disabled:opacity-50"
                 >
                   {sending ? "Generating..." : "Generate Message"}
                 </button>

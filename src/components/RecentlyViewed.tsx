@@ -34,17 +34,17 @@ export default function RecentlyViewed() {
             </Link>
             <div className="p-3">
               <Link href={`/product/${product.id}`}>
-                <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1 text-sm">
+                <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1 text-sm">
                   {product.name}
                 </h3>
               </Link>
-              <p className="text-lg font-bold text-orange-500 mt-1">₹{product.price}</p>
+              <p className="text-lg font-bold text-primary-500 mt-1">₹{product.price}</p>
               {product.brand && (
                 <p className="text-xs text-gray-400 mt-1">{product.brand}</p>
               )}
               <Link
                 href={`/product/${product.id}`}
-                className="inline-block mt-2 text-xs font-medium text-orange-500 hover:underline"
+                className="inline-block mt-2 text-xs font-medium text-primary-500 hover:underline"
               >
                 View →
               </Link>

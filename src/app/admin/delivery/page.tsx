@@ -53,17 +53,17 @@ export default function DeliveryPage() {
 
   const filtered = statusFilter === "all" ? schedules : schedules.filter(s => s.status === statusFilter);
 
-  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" /></div>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Delivery Management</h2>
-        <button onClick={() => tab === "slots" ? setShowSlotForm(true) : setShowAssign(true)} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">{tab === "slots" ? "+ Add Slot" : "+ Assign Delivery"}</button>
+        <button onClick={() => tab === "slots" ? setShowSlotForm(true) : setShowAssign(true)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">{tab === "slots" ? "+ Add Slot" : "+ Assign Delivery"}</button>
       </div>
       <div className="flex gap-2">
         {(["schedule", "slots"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${tab === t ? "bg-orange-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{t === "schedule" ? "Delivery Schedule" : "Time Slots"}</button>
+          <button key={t} onClick={() => setTab(t)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${tab === t ? "bg-primary-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{t === "schedule" ? "Delivery Schedule" : "Time Slots"}</button>
         ))}
       </div>
 
@@ -92,7 +92,7 @@ export default function DeliveryPage() {
         <>
           <div className="flex gap-2">
             {["all", "scheduled", "dispatched", "delivered", "cancelled"].map(s => (
-              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-orange-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{s}</button>
+              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-primary-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{s}</button>
             ))}
           </div>
           <div className="rounded-xl bg-gray-900 border border-gray-800 overflow-hidden">
@@ -125,15 +125,15 @@ export default function DeliveryPage() {
           <div className="w-full max-w-md rounded-2xl bg-gray-900 border border-gray-800 p-6">
             <h3 className="mb-4 text-lg font-bold">Add Delivery Slot</h3>
             <div className="space-y-4">
-              <div><label className="block text-sm text-gray-300 mb-1">Label</label><input type="text" value={slotForm.label} onChange={e => setSlotForm({...slotForm, label: e.target.value})} placeholder="e.g. Morning Slot" className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Label</label><input type="text" value={slotForm.label} onChange={e => setSlotForm({...slotForm, label: e.target.value})} placeholder="e.g. Morning Slot" className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-sm text-gray-300 mb-1">Start Time</label><input type="time" value={slotForm.startTime} onChange={e => setSlotForm({...slotForm, startTime: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-                <div><label className="block text-sm text-gray-300 mb-1">End Time</label><input type="time" value={slotForm.endTime} onChange={e => setSlotForm({...slotForm, endTime: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Start Time</label><input type="time" value={slotForm.startTime} onChange={e => setSlotForm({...slotForm, startTime: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">End Time</label><input type="time" value={slotForm.endTime} onChange={e => setSlotForm({...slotForm, endTime: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               </div>
-              <div><label className="block text-sm text-gray-300 mb-1">Max Orders</label><input type="number" value={slotForm.maxOrders} onChange={e => setSlotForm({...slotForm, maxOrders: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Max Orders</label><input type="number" value={slotForm.maxOrders} onChange={e => setSlotForm({...slotForm, maxOrders: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setShowSlotForm(false)} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700">Cancel</button>
-                <button onClick={handleCreateSlot} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600">Create</button>
+                <button onClick={handleCreateSlot} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600">Create</button>
               </div>
             </div>
           </div>
@@ -146,19 +146,19 @@ export default function DeliveryPage() {
             <h3 className="mb-4 text-lg font-bold">Assign Delivery</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-sm text-gray-300 mb-1">Order ID *</label><input type="number" value={assignForm.orderId} onChange={e => setAssignForm({...assignForm, orderId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-                <div><label className="block text-sm text-gray-300 mb-1">Customer ID *</label><input type="number" value={assignForm.customerId} onChange={e => setAssignForm({...assignForm, customerId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Order ID *</label><input type="number" value={assignForm.orderId} onChange={e => setAssignForm({...assignForm, orderId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Customer ID *</label><input type="number" value={assignForm.customerId} onChange={e => setAssignForm({...assignForm, customerId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               </div>
-              <div><label className="block text-sm text-gray-300 mb-1">Slot *</label><select value={assignForm.slotId} onChange={e => setAssignForm({...assignForm, slotId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"><option value="">Select slot</option>{slots.filter(s => s.active).map(s => <option key={s.id} value={s.id}>{s.label} ({s.startTime}-{s.endTime})</option>)}</select></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Date *</label><input type="date" value={assignForm.date} onChange={e => setAssignForm({...assignForm, date: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Address *</label><input type="text" value={assignForm.address} onChange={e => setAssignForm({...assignForm, address: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Slot *</label><select value={assignForm.slotId} onChange={e => setAssignForm({...assignForm, slotId: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"><option value="">Select slot</option>{slots.filter(s => s.active).map(s => <option key={s.id} value={s.id}>{s.label} ({s.startTime}-{s.endTime})</option>)}</select></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Date *</label><input type="date" value={assignForm.date} onChange={e => setAssignForm({...assignForm, date: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Address *</label><input type="text" value={assignForm.address} onChange={e => setAssignForm({...assignForm, address: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-sm text-gray-300 mb-1">Pincode *</label><input type="text" value={assignForm.pincode} onChange={e => setAssignForm({...assignForm, pincode: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-                <div><label className="block text-sm text-gray-300 mb-1">Phone *</label><input type="text" value={assignForm.contactPhone} onChange={e => setAssignForm({...assignForm, contactPhone: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Pincode *</label><input type="text" value={assignForm.pincode} onChange={e => setAssignForm({...assignForm, pincode: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Phone *</label><input type="text" value={assignForm.contactPhone} onChange={e => setAssignForm({...assignForm, contactPhone: e.target.value})} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               </div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setShowAssign(false)} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700">Cancel</button>
-                <button onClick={handleAssign} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600">Assign</button>
+                <button onClick={handleAssign} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600">Assign</button>
               </div>
             </div>
           </div>

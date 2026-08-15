@@ -127,17 +127,17 @@ const whatsappUrl = (area: string) =>
 export default function LocationsPage() {
   return (
     <main className="min-h-screen">
-      <section className="relative bg-gradient-to-br from-orange-500 to-orange-600 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary-500 to-primary-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
         </div>
         <div className="max-w-7xl mx-auto px-4 py-24 md:py-32 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">Our Service Areas</h1>
-          <p className="text-xl md:text-2xl text-orange-100 mb-4">
+          <p className="text-xl md:text-2xl text-primary-100 mb-4">
             Delivering premium plastic products across the Mumbai region
           </p>
-          <p className="text-orange-200 mb-8 max-w-2xl mx-auto">
+          <p className="text-primary-200 mb-8 max-w-2xl mx-auto">
             From our headquarters in {CITY}, we serve customers across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar.
             Same-day delivery available for local areas.
           </p>
@@ -155,16 +155,16 @@ export default function LocationsPage() {
               key={area.name}
               className={`rounded-xl p-6 border transition-shadow ${
                 area.isHQ
-                  ? "bg-orange-50 border-orange-300 shadow-md ring-2 ring-orange-200"
+                  ? "bg-primary-50 border-primary-300 shadow-md ring-2 ring-primary-200"
                   : "bg-white border-gray-200 hover:shadow-lg"
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
-                <h3 className={`text-xl font-bold ${area.isHQ ? "text-orange-600" : "text-gray-900"}`}>
+                <h3 className={`text-xl font-bold ${area.isHQ ? "text-primary-600" : "text-gray-900"}`}>
                   {area.name}
                 </h3>
                 {area.isHQ && (
-                  <span className="text-xs font-semibold bg-orange-500 text-white px-2 py-1 rounded-full">
+                  <span className="text-xs font-semibold bg-primary-500 text-white px-2 py-1 rounded-full">
                     Headquarters
                   </span>
                 )}
@@ -195,7 +195,7 @@ export default function LocationsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {benefits.map((benefit) => (
               <div key={benefit.title} className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-                <div className="text-orange-500 mb-4">{benefit.icon}</div>
+                <div className="text-primary-500 mb-4">{benefit.icon}</div>
                 <h3 className="font-bold text-gray-900 mb-2 text-lg">{benefit.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{benefit.description}</p>
               </div>
@@ -227,7 +227,7 @@ export default function LocationsPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Phone</p>
-                  <a href={`tel:${PHONE}`} className="text-orange-500 hover:text-orange-600 transition-colors">+91 85520 84251</a>
+                  <a href={`tel:${PHONE}`} className="text-primary-500 hover:text-primary-600 transition-colors">+91 85520 84251</a>
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Business Hours</p>
@@ -252,7 +252,7 @@ export default function LocationsPage() {
                 </a>
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center bg-orange-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                  className="inline-flex items-center justify-center bg-primary-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
                 >
                   Browse Products
                 </Link>
@@ -276,7 +276,7 @@ export default function LocationsPage() {
         </div>
       </section>
 
-      <section className="bg-orange-50 py-16">
+      <section className="bg-primary-50 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Order?</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -297,7 +297,7 @@ export default function LocationsPage() {
             </a>
             <Link
               href="/products"
-              className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
             >
               Browse Products
             </Link>

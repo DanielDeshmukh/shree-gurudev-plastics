@@ -51,7 +51,7 @@ export default function WishlistPage() {
             <p className="text-gray-500 mb-6">Save products you love by tapping the heart icon.</p>
             <Link
               href="/products"
-              className="inline-block bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
             >
               Browse Products
             </Link>
@@ -72,18 +72,18 @@ export default function WishlistPage() {
                   </Link>
                   <div className="p-4">
                     <Link href={`/product/${item.id}`}>
-                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{item.name}</h3>
+                      <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{item.name}</h3>
                     </Link>
                     <div className="flex gap-2 mt-1 text-sm text-gray-500">
                       {item.color && <span>{item.color}</span>}
                       {item.size && <span>• {item.size}</span>}
                     </div>
                     {item.brand && <p className="text-xs text-gray-400 mt-1">{item.brand}</p>}
-                    <p className="text-lg font-bold text-orange-500 mt-2">₹{item.price}</p>
+                    <p className="text-lg font-bold text-primary-500 mt-2">₹{item.price}</p>
                     <div className="flex gap-2 mt-3">
                       <button
                         onClick={() => handleAddToCart(item)}
-                        className="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                        className="flex-1 bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
                       >
                         Add to Cart
                       </button>
@@ -104,7 +104,7 @@ export default function WishlistPage() {
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="inline-block bg-white text-orange-500 border border-orange-300 font-semibold px-8 py-3 rounded-lg hover:bg-orange-50 transition-colors text-center"
+                className="inline-block bg-white text-primary-500 border border-primary-300 font-semibold px-8 py-3 rounded-lg hover:bg-primary-50 transition-colors text-center"
               >
                 Continue Shopping
               </Link>

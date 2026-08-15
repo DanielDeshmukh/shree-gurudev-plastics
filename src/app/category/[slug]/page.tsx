@@ -112,7 +112,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Category Not Found</h1>
           <p className="text-gray-500 mb-6">The category you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+          <Link href="/" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
             Go Home
           </Link>
         </div>
@@ -163,13 +163,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                   </Link>
                   <div className="p-4">
                     <Link href={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
+                      <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
                     </Link>
                     <div className="flex gap-2 mt-1 text-sm text-gray-500">
                       {product.color && <span>{product.color}</span>}
                       {product.size && <span>• {product.size}</span>}
                     </div>
-                    <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
+                    <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
                     {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
                     <a
                       href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}`)}`}
@@ -186,7 +186,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           ) : (
             <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
               <p className="text-gray-500">No products found in this category yet. Check back soon!</p>
-              <Link href="/products" className="mt-4 inline-block text-orange-500 hover:underline">Browse All Products →</Link>
+              <Link href="/products" className="mt-4 inline-block text-primary-500 hover:underline">Browse All Products →</Link>
             </div>
           )}
         </section>
@@ -220,7 +220,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             </a>
             <Link
               href={`/quote?category=${encodeURIComponent(slug)}`}
-              className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
             >
               Need Bulk Pricing? Request a Quote
             </Link>

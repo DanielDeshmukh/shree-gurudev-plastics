@@ -36,22 +36,22 @@ export default function PurchaseOrdersPage() {
   const filtered = statusFilter === "all" ? orders : orders.filter((o) => o.status === statusFilter);
   const totalPending = orders.filter((o) => o.status === "pending" || o.status === "ordered").reduce((sum, o) => sum + o.totalCost, 0);
 
-  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" /></div>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Purchase Orders</h2>
-        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">+ New PO</button>
+        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">+ New PO</button>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5"><p className="text-sm text-gray-400">Pending</p><p className="mt-1 text-2xl font-bold text-yellow-400">{orders.filter((o) => o.status === "pending").length}</p></div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5"><p className="text-sm text-gray-400">In Transit</p><p className="mt-1 text-2xl font-bold text-blue-400">{orders.filter((o) => o.status === "ordered").length}</p></div>
-        <div className="rounded-xl bg-gray-900 border border-gray-800 p-5"><p className="text-sm text-gray-400">Total Value (Pending)</p><p className="mt-1 text-2xl font-bold text-orange-400">₹{totalPending.toLocaleString("en-IN")}</p></div>
+        <div className="rounded-xl bg-gray-900 border border-gray-800 p-5"><p className="text-sm text-gray-400">Total Value (Pending)</p><p className="mt-1 text-2xl font-bold text-primary-400">₹{totalPending.toLocaleString("en-IN")}</p></div>
       </div>
       <div className="flex gap-2">
         {["all", "pending", "ordered", "received", "cancelled"].map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-orange-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{s}</button>
+          <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-primary-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>{s}</button>
         ))}
       </div>
       <div className="rounded-xl bg-gray-900 border border-gray-800 overflow-hidden">
@@ -83,18 +83,18 @@ export default function PurchaseOrdersPage() {
           <div className="w-full max-w-md rounded-2xl bg-gray-900 border border-gray-800 p-6">
             <h3 className="mb-4 text-lg font-bold">New Purchase Order</h3>
             <div className="space-y-4">
-              <div><label className="block text-sm text-gray-300 mb-1">Supplier ID *</label><input type="number" value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Product ID *</label><input type="number" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Product Name *</label><input type="text" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Supplier ID *</label><input type="number" value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Product ID *</label><input type="number" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Product Name *</label><input type="text" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-sm text-gray-300 mb-1">Quantity</label><input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-                <div><label className="block text-sm text-gray-300 mb-1">Unit Cost (₹) *</label><input type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Quantity</label><input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+                <div><label className="block text-sm text-gray-300 mb-1">Unit Cost (₹) *</label><input type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               </div>
-              <div><label className="block text-sm text-gray-300 mb-1">Expected Date</label><input type="date" value={form.expectedDate} onChange={(e) => setForm({ ...form, expectedDate: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Invoice Number</label><input type="text" value={form.invoiceNumber} onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Expected Date</label><input type="date" value={form.expectedDate} onChange={(e) => setForm({ ...form, expectedDate: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Invoice Number</label><input type="text" value={form.invoiceNumber} onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setShowCreate(false)} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">Cancel</button>
-                <button onClick={handleCreate} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">Create</button>
+                <button onClick={handleCreate} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">Create</button>
               </div>
             </div>
           </div>

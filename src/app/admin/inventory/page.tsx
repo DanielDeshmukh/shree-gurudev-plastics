@@ -34,7 +34,7 @@ export default function InventoryPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default function InventoryPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Total Alerts</p>
-          <p className="mt-1 text-2xl font-bold text-orange-400">{products.length}</p>
+          <p className="mt-1 text-2xl font-bold text-primary-400">{products.length}</p>
         </div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Out of Stock</p>
@@ -103,7 +103,7 @@ export default function InventoryPage() {
       )}
 
       <div className="text-sm text-gray-500">
-        <Link href="/admin/products" className="text-orange-400 hover:underline">
+        <Link href="/admin/products" className="text-primary-400 hover:underline">
           Go to Products
         </Link>{" "}
         to update stock levels.

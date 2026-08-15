@@ -34,13 +34,13 @@ export default function SuppliersPage() {
     setSuppliers((prev) => prev.filter((s) => s.id !== id));
   };
 
-  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" /></div>;
+  if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" /></div>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Suppliers</h2>
-        <button onClick={() => { setShowCreate(true); setEditId(null); setForm({ name: "", phone: "", email: "", address: "", gstNumber: "", notes: "" }); }} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">+ Add Supplier</button>
+        <button onClick={() => { setShowCreate(true); setEditId(null); setForm({ name: "", phone: "", email: "", address: "", gstNumber: "", notes: "" }); }} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">+ Add Supplier</button>
       </div>
       <div className="rounded-xl bg-gray-900 border border-gray-800 overflow-hidden">
         {suppliers.length === 0 ? (
@@ -56,7 +56,7 @@ export default function SuppliersPage() {
                   <td className="px-4 py-3 text-gray-400">{s.email || "—"}</td>
                   <td className="px-4 py-3 text-gray-400">{s.gstNumber || "—"}</td>
                   <td className="px-4 py-3 flex gap-3">
-                    <button onClick={() => handleEdit(s)} className="text-xs text-orange-400 hover:text-orange-300">Edit</button>
+                    <button onClick={() => handleEdit(s)} className="text-xs text-primary-400 hover:text-primary-300">Edit</button>
                     <button onClick={() => handleDelete(s.id)} className="text-xs text-red-400 hover:text-red-300">Delete</button>
                   </td>
                 </tr>
@@ -70,15 +70,15 @@ export default function SuppliersPage() {
           <div className="w-full max-w-md rounded-2xl bg-gray-900 border border-gray-800 p-6">
             <h3 className="mb-4 text-lg font-bold">{editId ? "Edit Supplier" : "Add Supplier"}</h3>
             <div className="space-y-4">
-              <div><label className="block text-sm text-gray-300 mb-1">Name *</label><input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Phone *</label><input type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Address</label><input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">GST Number</label><input type="text" value={form.gstNumber} onChange={(e) => setForm({ ...form, gstNumber: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
-              <div><label className="block text-sm text-gray-300 mb-1">Notes</label><input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Name *</label><input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Phone *</label><input type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Email</label><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Address</label><input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">GST Number</label><input type="text" value={form.gstNumber} onChange={(e) => setForm({ ...form, gstNumber: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
+              <div><label className="block text-sm text-gray-300 mb-1">Notes</label><input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" /></div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => { setShowCreate(false); setEditId(null); }} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">Cancel</button>
-                <button onClick={handleSave} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">{editId ? "Update" : "Create"}</button>
+                <button onClick={handleSave} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">{editId ? "Update" : "Create"}</button>
               </div>
             </div>
           </div>

@@ -51,7 +51,7 @@ export default function CustomersPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function CustomersPage() {
         </div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Total Revenue</p>
-          <p className="mt-1 text-2xl font-bold text-orange-400">₹{totalSpent.toLocaleString("en-IN")}</p>
+          <p className="mt-1 text-2xl font-bold text-primary-400">₹{totalSpent.toLocaleString("en-IN")}</p>
         </div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <p className="text-sm text-gray-400">Repeat Customers</p>
@@ -83,7 +83,7 @@ export default function CustomersPage() {
           placeholder="Search by name, phone, or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-white text-sm outline-none focus:border-orange-500 sm:max-w-sm"
+          className="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2.5 text-white text-sm outline-none focus:border-primary-500 sm:max-w-sm"
         />
       </div>
 

@@ -63,7 +63,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Product Not Found</h1>
           <p className="text-gray-500 mb-6">The product you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+          <Link href="/" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
             Go Home
           </Link>
         </div>
@@ -113,7 +113,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <div className="p-8 flex flex-col justify-center">
               {brand && (
-                <Link href={`/brand/${brand.slug}`} className="text-orange-500 text-sm font-medium hover:underline mb-2">
+                <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
                   {brand.name}
                 </Link>
               )}
@@ -151,7 +151,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         {product.category && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Category</span>
-                    <Link href={`/category/${categorySlug}`} className="text-orange-500 text-sm font-medium hover:underline">{product.category}</Link>
+                    <Link href={`/category/${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
                   </div>
                 )}
               </div>
@@ -160,7 +160,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
               )}
 
-              <p className="text-3xl font-bold text-orange-500 mb-2">₹{product.price}</p>
+              <p className="text-3xl font-bold text-primary-500 mb-2">₹{product.price}</p>
               <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
 
               <div className="mb-4">
@@ -169,7 +169,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
 
               {product.moq > 1 && (
-                <div className="mb-4 inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-3 py-1 rounded-full">
+                <div className="mb-4 inline-flex items-center gap-1.5 bg-primary-50 border border-primary-200 text-primary-700 text-sm font-medium px-3 py-1 rounded-full">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -224,7 +224,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {product.brand && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Brand:</span>
-                <Link href={`/brand/${brand.slug}`} className="text-orange-500 hover:underline">{product.brand.name}</Link>
+                <Link href={`/brand/${brand.slug}`} className="text-primary-500 hover:underline">{product.brand.name}</Link>
               </div>
             )}
             {product.color && (
@@ -242,7 +242,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {product.category && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Category:</span>
-                <Link href={`/category/${categorySlug}`} className="text-orange-500 hover:underline">{product.category}</Link>
+                <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline">{product.category}</Link>
               </div>
             )}
           </div>
@@ -287,13 +287,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </Link>
                   <div className="p-4">
                     <Link href={`/product/${rp.id}`}>
-                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{rp.name}</h3>
+                      <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{rp.name}</h3>
                     </Link>
                     <div className="flex gap-2 mt-1 text-sm text-gray-500">
                       {rp.color && <span>{rp.color}</span>}
                       {rp.size && <span>• {rp.size}</span>}
                     </div>
-                    <p className="text-lg font-bold text-orange-500 mt-2">₹{rp.price}</p>
+                    <p className="text-lg font-bold text-primary-500 mt-2">₹{rp.price}</p>
                   </div>
                 </div>
               ))}
@@ -303,7 +303,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {product.category && (
           <section className="mt-8 text-center">
-            <Link href={`/category/${categorySlug}`} className="text-orange-500 hover:underline font-medium">
+            <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline font-medium">
               Browse More {product.category} Products →
             </Link>
           </section>

@@ -17,7 +17,7 @@ export default function WishlistButton({ product }: WishlistButtonProps) {
         e.stopPropagation();
         toggleWishlist(product);
       }}
-      className="p-2 rounded-full hover:bg-orange-50 transition-colors"
+      className="p-2 rounded-full hover:bg-primary-50 transition-colors"
       aria-label={active ? "Remove from wishlist" : "Add to wishlist"}
     >
       {active ? (

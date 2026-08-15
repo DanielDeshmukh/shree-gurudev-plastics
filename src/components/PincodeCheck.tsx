@@ -56,12 +56,12 @@ export default function PincodeCheck() {
             setError(false);
           }}
           placeholder="Enter pincode"
-          className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         />
         <button
           type="submit"
           disabled={pincode.length !== 6 || loading}
-          className="px-5 py-2.5 bg-orange-500 text-white font-medium text-sm rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-5 py-2.5 bg-primary-500 text-white font-medium text-sm rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? (
             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">

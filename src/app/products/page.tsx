@@ -78,7 +78,7 @@ export default function ProductsPage() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-96 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="w-full md:w-96 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
 
@@ -90,7 +90,7 @@ export default function ProductsPage() {
                 <li>
                   <button
                     onClick={() => setSelectedBrand("")}
-                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedBrand ? "bg-orange-100 text-orange-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedBrand ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
                   >
                     All Brands
                   </button>
@@ -99,7 +99,7 @@ export default function ProductsPage() {
                   <li key={brand.id}>
                     <button
                       onClick={() => setSelectedBrand(brand.slug || brand.name)}
-                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedBrand === (brand.slug || brand.name) ? "bg-orange-100 text-orange-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedBrand === (brand.slug || brand.name) ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
                     >
                       {brand.name}
                     </button>
@@ -112,7 +112,7 @@ export default function ProductsPage() {
                 <li>
                   <button
                     onClick={() => setSelectedCategory("")}
-                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedCategory ? "bg-orange-100 text-orange-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedCategory ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
                   >
                     All Categories
                   </button>
@@ -121,7 +121,7 @@ export default function ProductsPage() {
                   <li key={cat}>
                     <button
                       onClick={() => setSelectedCategory(cat)}
-                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedCategory === cat ? "bg-orange-100 text-orange-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedCategory === cat ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
                     >
                       {cat}
                     </button>
@@ -168,7 +168,7 @@ export default function ProductsPage() {
                         <ProductTags tags={product.tags || ""} />
                         <div className="flex items-start justify-between gap-2">
                           <Link href={`/product/${product.id}`}>
-                            <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
+                            <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
                           </Link>
                           <WishlistButton
                             product={{
@@ -186,10 +186,10 @@ export default function ProductsPage() {
                           {product.color && <span>{product.color}</span>}
                           {product.size && <span>• {product.size}</span>}
                         </div>
-                        <p className="text-lg font-bold text-orange-500 mt-2">₹{product.price}</p>
+                        <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
                         {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
                         {product.moq > 1 && (
-                          <span className="inline-block mt-1 text-[10px] font-semibold bg-orange-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
+                          <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
                         )}
                         <button
                           onClick={() => {
@@ -205,7 +205,7 @@ export default function ProductsPage() {
                             });
                             openCart();
                           }}
-                          className="mt-3 block w-full text-center bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                          className="mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
                         >
                           Add to Cart
                         </button>
@@ -255,7 +255,7 @@ export default function ProductsPage() {
                             onClick={() => handlePageChange(p)}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               page === p
-                                ? "bg-orange-500 text-white"
+                                ? "bg-primary-500 text-white"
                                 : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                             }`}
                           >

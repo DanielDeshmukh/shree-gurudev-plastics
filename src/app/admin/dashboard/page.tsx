@@ -46,7 +46,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     {
       label: "Total Revenue",
       value: `₹${data.totalRevenue.toLocaleString("en-IN")}`,
-      color: "text-orange-400",
+      color: "text-primary-400",
     },
     { label: "Total Brands", value: data.totalBrands, color: "text-purple-400" },
     { label: "Total Customers", value: data.totalCustomers, color: "text-cyan-400" },
@@ -130,7 +130,7 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium">{product.name}</p>
                   <p className="text-xs text-gray-400">₹{product.price.toLocaleString("en-IN")}</p>
                 </div>
-                <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-400">
+                <span className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-400">
                   {product.orderCount} orders
                 </span>
               </div>

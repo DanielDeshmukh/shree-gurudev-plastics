@@ -141,7 +141,7 @@ export default function QuotePage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={resetForm}
-                className="bg-orange-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                className="bg-primary-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
               >
                 Send Another Request
               </button>
@@ -179,7 +179,7 @@ export default function QuotePage() {
                 required
                 value={form.fullName}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.fullName ? "border-red-400" : "border-gray-300"}`}
                 placeholder="Your full name"
               />
               {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
@@ -193,7 +193,7 @@ export default function QuotePage() {
                 required
                 value={form.phone}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${errors.phone ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.phone ? "border-red-400" : "border-gray-300"}`}
                 placeholder="Your phone number"
               />
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
@@ -209,7 +209,7 @@ export default function QuotePage() {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="your@email.com"
               />
             </div>
@@ -221,7 +221,7 @@ export default function QuotePage() {
                 name="company"
                 value={form.company}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Your company name"
               />
             </div>
@@ -235,7 +235,7 @@ export default function QuotePage() {
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
                 <option value="">Select a category</option>
                 {CATEGORIES.map((cat) => (
@@ -253,7 +253,7 @@ export default function QuotePage() {
                 min={10}
                 value={form.quantity}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${errors.quantity ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.quantity ? "border-red-400" : "border-gray-300"}`}
                 placeholder="Minimum 10 units"
               />
               {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
@@ -269,7 +269,7 @@ export default function QuotePage() {
               rows={4}
               value={form.description}
               onChange={handleChange}
-              className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${errors.description ? "border-red-400" : "border-gray-300"}`}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.description ? "border-red-400" : "border-gray-300"}`}
               placeholder="Describe the products you need — colors, sizes, specifications, or any other requirements"
             />
             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
@@ -283,7 +283,7 @@ export default function QuotePage() {
               name="brand"
               value={form.brand}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="e.g. Aristo, Milton, KG Plast"
             />
           </div>
@@ -297,7 +297,7 @@ export default function QuotePage() {
                 name="location"
                 value={form.location}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="City or area for delivery"
               />
             </div>
@@ -309,14 +309,14 @@ export default function QuotePage() {
                 name="deliveryDate"
                 value={form.deliveryDate}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-colors"
+            className="w-full bg-primary-500 text-white font-semibold py-3 rounded-lg hover:bg-primary-600 transition-colors"
           >
             Submit Quote Request
           </button>

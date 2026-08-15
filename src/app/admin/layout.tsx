@@ -81,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (checking) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -90,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex h-screen overflow-hidden bg-gray-950 text-gray-100">
       <aside className="flex w-64 flex-col bg-gray-900 border-r border-gray-800">
         <div className="flex h-16 items-center border-b border-gray-800 px-6">
-          <span className="text-lg font-bold text-orange-500">Shree Gurudev</span>
+          <span className="text-lg font-bold text-primary-500">Shree Gurudev</span>
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navLinks.map((link) => {
@@ -102,7 +102,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href={link.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   active
-                    ? "bg-orange-500/10 text-orange-500"
+                    ? "bg-primary-500/10 text-primary-500"
                     : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
                 }`}
               >

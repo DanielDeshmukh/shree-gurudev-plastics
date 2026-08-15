@@ -68,7 +68,7 @@ export default function RecurringOrdersPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function RecurringOrdersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Recurring Orders</h2>
-        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">+ New Recurring</button>
+        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">+ New Recurring</button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -97,7 +97,7 @@ export default function RecurringOrdersPage() {
 
       <div className="flex gap-2">
         {["all", "active", "paused", "cancelled"].map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-orange-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>
+          <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${statusFilter === s ? "bg-primary-500 text-white" : "bg-gray-800 text-gray-400 hover:text-white"}`}>
             {s}
           </button>
         ))}
@@ -139,7 +139,7 @@ export default function RecurringOrdersPage() {
                   <td className="px-4 py-3 flex gap-2">
                     {order.status !== "cancelled" && (
                       <>
-                        <button onClick={() => handleStatusToggle(order.id, order.status)} className="text-xs text-orange-400 hover:text-orange-300">
+                        <button onClick={() => handleStatusToggle(order.id, order.status)} className="text-xs text-primary-400 hover:text-primary-300">
                           {order.status === "active" ? "Pause" : "Resume"}
                         </button>
                         <button onClick={() => handleCancel(order.id)} className="text-xs text-red-400 hover:text-red-300">Cancel</button>
@@ -160,29 +160,29 @@ export default function RecurringOrdersPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Customer ID</label>
-                <input type="number" value={form.customerId} onChange={(e) => setForm({ ...form, customerId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                <input type="number" value={form.customerId} onChange={(e) => setForm({ ...form, customerId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Product ID</label>
-                <input type="number" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                <input type="number" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Product Name</label>
-                <input type="text" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                <input type="text" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Quantity</label>
-                  <input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Price/Unit (₹)</label>
-                  <input type="number" value={form.pricePerUnit} onChange={(e) => setForm({ ...form, pricePerUnit: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                  <input type="number" value={form.pricePerUnit} onChange={(e) => setForm({ ...form, pricePerUnit: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Frequency</label>
-                <select value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500">
+                <select value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500">
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="biweekly">Bi-weekly</option>
@@ -191,11 +191,11 @@ export default function RecurringOrdersPage() {
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Notes</label>
-                <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Optional notes" className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Optional notes" className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
               </div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setShowCreate(false)} className="flex-1 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">Cancel</button>
-                <button onClick={handleCreate} className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">Create</button>
+                <button onClick={handleCreate} className="flex-1 rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">Create</button>
               </div>
             </div>
           </div>
