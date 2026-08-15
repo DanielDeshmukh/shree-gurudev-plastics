@@ -136,8 +136,8 @@ Open [http://localhost:3000](http://localhost:3000)
 | Field | Value |
 |-------|-------|
 | URL | `http://localhost:3000/admin/login` |
-| Username | `shreegurudev` |
-| Password | `SGP@admin2026` |
+| Username | Set via `ADMIN_USERNAME` in `.env` |
+| Password | Set via `ADMIN_PASSWORD` in `.env` |
 
 ---
 
