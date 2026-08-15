@@ -7,6 +7,7 @@ import AddToCartButton from "@/components/AddToCartButton";
 import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
+import PincodeCheck from "@/components/PincodeCheck";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
@@ -246,6 +247,16 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t("Check Delivery to Your Area", "अपने क्षेत्र में डिलीवरी जांचें")}</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Enter your pincode to check delivery availability and estimated delivery time.
+          </p>
+        </div>
+        <PincodeCheck />
       </section>
 
       <section className="bg-gray-50 py-16">
