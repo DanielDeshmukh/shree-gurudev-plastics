@@ -89,9 +89,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950 text-gray-100">
       <aside className="flex w-64 flex-col bg-gray-900 border-r border-gray-800">
-        <div className="flex h-16 items-center border-b border-gray-800 px-6">
-          <span className="text-lg font-bold text-primary-500">Shree Gurudev</span>
-        </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navLinks.map((link) => {
             const active = pathname.startsWith(link.href);

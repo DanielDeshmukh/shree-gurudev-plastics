@@ -1,15 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import CartButton from "@/components/CartButton";
+import PublicShell from "@/components/PublicShell";
+import SWRegister from "@/components/SWRegister";
 import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
 import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import CompareBar from "@/components/CompareBar";
-import SWRegister from "@/components/SWRegister";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -72,12 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CompareProvider>
               <RecentlyViewedProvider>
                 <WishlistProvider>
-                  <Navbar />
-                  {children}
-                  <Footer />
-                  <WhatsAppButton />
-                  <CartButton />
-                  <CompareBar />
+                  <PublicShell>{children}</PublicShell>
                   <SWRegister />
                 </WishlistProvider>
               </RecentlyViewedProvider>
