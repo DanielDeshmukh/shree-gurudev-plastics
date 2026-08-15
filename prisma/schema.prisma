@@ -155,3 +155,21 @@ model PriceHistory {
   reason     String?
   createdAt  DateTime @default(now())
 }
+
+model RecurringOrder {
+  id                Int      @id @default(autoincrement())
+  customerId        Int
+  productId         Int
+  productName       String
+  quantity          Int
+  frequency         String   @default("weekly")
+  nextOrderDate     DateTime
+  lastOrderDate     DateTime?
+  status            String   @default("active")
+  pricePerUnit      Float
+  totalOrders       Int      @default(0)
+  whatsappConfirmed Boolean  @default(false)
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
