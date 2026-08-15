@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { PHONE } from "@/lib/seo";
@@ -64,7 +64,7 @@ export default function WishlistPage() {
                   <Link href={`/product/${item.id}`}>
                     <div className="relative aspect-square bg-gray-100">
                       {item.imageUrl ? (
-                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        <BlurImage src={item.imageUrl} alt={item.name} fill className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
                       )}

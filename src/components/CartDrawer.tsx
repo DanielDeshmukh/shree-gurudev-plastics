@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { useCart } from "@/context/CartContext";
 
 export default function CartDrawer() {
@@ -62,7 +62,7 @@ export default function CartDrawer() {
                   <div key={item.id} className="flex gap-3 bg-gray-50 rounded-xl p-3">
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
                       {item.imageUrl ? (
-                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        <BlurImage src={item.imageUrl} alt={item.name} fill className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No img</div>
                       )}
