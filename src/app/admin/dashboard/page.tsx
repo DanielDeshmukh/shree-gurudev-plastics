@@ -8,6 +8,7 @@ interface DashboardData {
   totalOrders: number;
   totalRevenue: number;
   totalBrands: number;
+  totalCustomers: number;
   lowStockCount: number;
   recentOrders: {
     id: number;
@@ -67,6 +68,7 @@ export default function DashboardPage() {
       color: "text-orange-400",
     },
     { label: "Total Brands", value: data.totalBrands, color: "text-purple-400" },
+    { label: "Total Customers", value: data.totalCustomers, color: "text-cyan-400" },
     { label: "Low Stock Alerts", value: data.lowStockCount, color: data.lowStockCount > 0 ? "text-red-400" : "text-green-400" },
   ];
 
@@ -79,7 +81,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Dashboard</h2>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {stats.map((stat) => (
           <div
             key={stat.label}
