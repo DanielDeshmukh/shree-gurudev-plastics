@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
         discount,
         items: {
           create: items.map((item: { productId: number; quantity: number }) => ({
-            productId: parseInt(item.productId),
-            quantity: parseInt(item.quantity) || 1,
+            productId: item.productId,
+            quantity: item.quantity || 1,
           })),
         },
       },
