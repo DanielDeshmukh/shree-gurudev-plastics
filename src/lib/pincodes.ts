@@ -11,7 +11,7 @@ const PINCODE_DB: Record<string, PincodeInfo> = {
   "401102": { pincode: "401102", area: "Bhayander West", available: true, estimatedDays: "Same day", deliveryCharge: "Free" },
   "401201": { pincode: "401201", area: "Naigaon East", available: true, estimatedDays: "Same day", deliveryCharge: "Free" },
   "401202": { pincode: "401202", area: "Naigaon West", available: true, estimatedDays: "Same day", deliveryCharge: "Free" },
-  "401203": { pincode: "401203", area: "Naigaon", available: true, estimatedDays: "Same day", deliveryCharge: "Free" },
+  "401203": { pincode: "401203", area: "Nallasopara West", available: true, estimatedDays: "1-2 days", deliveryCharge: "Free above ₹5,000" },
   "401104": { pincode: "401104", area: "Vasai East", available: true, estimatedDays: "1-2 days", deliveryCharge: "Free above ₹5,000" },
   "401105": { pincode: "401105", area: "Vasai West", available: true, estimatedDays: "1-2 days", deliveryCharge: "Free above ₹5,000" },
   "401204": { pincode: "401204", area: "Vasai", available: true, estimatedDays: "1-2 days", deliveryCharge: "Free above ₹5,000" },
@@ -56,7 +56,7 @@ export function getDeliveryMessage(pincode: string): string {
   if (info.area.startsWith("Bhayander") || info.area.startsWith("Naigaon")) {
     return `Great news! We deliver to ${info.area} — same-day delivery available. No delivery charge!`;
   }
-  if (info.area.startsWith("Vasai") || info.area.startsWith("Virar")) {
+  if (info.area.startsWith("Vasai") || info.area.startsWith("Virar") || info.area.startsWith("Nallasopara")) {
     return `We deliver to ${info.area} in ${info.estimatedDays}. Free delivery on orders above ₹5,000!`;
   }
   return `We deliver to ${info.area} in ${info.estimatedDays}. Contact us for delivery charges.`;
