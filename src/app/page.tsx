@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
+import { apiFetch } from "@/lib/api-fetch";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import HomeContent from "@/components/HomeContent";
 
@@ -27,14 +28,14 @@ const homeFaqs = [
 const faqSchema = getFAQSchema(homeFaqs);
 
 async function getBrands() {
-  const res = await fetch("/api/brands", { cache: "no-store" });
+  const res = await apiFetch("/api/brands");
   if (!res.ok) return [];
   const data = await res.json();
   return data.brands || [];
 }
 
 async function getProducts() {
-  const res = await fetch("/api/products", { cache: "no-store" });
+  const res = await apiFetch("/api/products");
   if (!res.ok) return [];
   const data = await res.json();
   return data.products || [];

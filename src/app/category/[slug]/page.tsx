@@ -3,6 +3,7 @@ import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, LOCATION_KEYWORDS } from "@/lib/seo";
+import { apiFetch } from "@/lib/api-fetch";
 
 const categoryMeta: Record<string, { title: string; description: string; keywords: string[]; about: string; faqs: { question: string; answer: string }[] }> = {
   furniture: {
@@ -95,7 +96,7 @@ async function getProductsByCategory(category: string) {
     accessories: "Accessories",
   };
   const apiCategory = categoryMap[category] || category;
-  const res = await fetch(`/api/products?category=${apiCategory}`, { cache: "no-store" });
+  const res = await apiFetch(`/api/products?category=${apiCategory}`);
   if (!res.ok) return [];
   const data = await res.json();
   return data.products || [];
