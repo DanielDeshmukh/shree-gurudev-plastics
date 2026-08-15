@@ -11,6 +11,7 @@ export interface ProductType {
   category: string;
   description: string | null;
   moq: number;
+  tags: string;
   createdAt: Date;
   updatedAt: Date;
 }

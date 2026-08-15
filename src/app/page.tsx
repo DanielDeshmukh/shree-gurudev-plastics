@@ -4,6 +4,7 @@ import Image from "next/image";
 import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
 import AddToCartButton from "@/components/AddToCartButton";
 import CompareButton from "@/components/CompareButton";
+import ProductTags from "@/components/ProductTags";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -199,6 +200,7 @@ export default async function Home() {
                   </div>
                 </Link>
                 <div className="p-4">
+                  <ProductTags tags={product.tags || ""} />
                   <Link href={`/product/${product.id}`}>
                     <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
                   </Link>

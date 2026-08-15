@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, color, size, brandId, imageUrl, price, stock, category, description, moq } = body;
+    const { name, color, size, brandId, imageUrl, price, stock, category, description, moq, tags } = body;
 
     const product = await db.product.create({
       data: {
@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
         category: category || "general",
         description: description || null,
         moq: parseInt(moq) || 1,
+        tags: tags || "",
       },
       include: { brand: true },
     });
