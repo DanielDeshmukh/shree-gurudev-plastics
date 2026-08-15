@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/admin/products", label: "Products", icon: "📦" },
   { href: "/admin/brands", label: "Brands", icon: "🏷️" },
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
+  { href: "/admin/invoices", label: "Invoices", icon: "📄" },
   { href: "/admin/reports", label: "Reports", icon: "📈" },
   { href: "/admin/analytics", label: "Analytics", icon: "📉" },
   { href: "/admin/reviews", label: "Reviews", icon: "⭐" },

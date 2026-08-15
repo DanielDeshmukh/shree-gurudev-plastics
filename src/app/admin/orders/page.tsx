@@ -71,6 +71,33 @@ export default function OrdersPage() {
     } catch {}
   };
 
+  const handleGenerateInvoice = async (order: Order) => {
+    try {
+      const items = order.items.map((item) => ({
+        productName: item.product.name,
+        hsnCode: "3924",
+        quantity: item.quantity,
+        unitPrice: item.price,
+        gstRate: 18,
+      }));
+      const res = await fetch("/api/admin/invoices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          customerName: order.customer,
+          customerPhone: order.phone,
+          customerAddress: order.address,
+          placeOfSupply: "Maharashtra",
+          items,
+        }),
+      });
+      if (res.ok) {
+        alert("Invoice generated!");
+      }
+    } catch {}
+  };
+
   const filtered = statusFilter
     ? orders.filter((o) => o.status === statusFilter)
     : orders;
@@ -144,12 +171,20 @@ export default function OrdersPage() {
                       {new Date(order.createdAt).toLocaleDateString("en-IN")}
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => handleDelete(order.id)}
-                        className="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleGenerateInvoice(order)}
+                          className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20 transition-colors"
+                        >
+                          Invoice
+                        </button>
+                        <button
+                          onClick={() => handleDelete(order.id)}
+                          className="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {expandedId === order.id && (
