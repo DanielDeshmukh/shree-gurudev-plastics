@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MdCheck, MdClose } from "react-icons/md";
 
 interface DeliverySlot { id: number; label: string; startTime: string; endTime: string; maxOrders: number; active: boolean; }
 interface DeliverySchedule { id: number; orderId: number; customerId: number; slotId: number; date: string; address: string; pincode: string; contactPhone: string; status: string; driverName: string | null; driverPhone: string | null; deliveredAt: string | null; notes: string | null; }
@@ -77,7 +78,7 @@ export default function DeliveryPage() {
                     <td className="px-4 py-3 font-medium">{s.label}</td>
                     <td className="px-4 py-3">{s.startTime} - {s.endTime}</td>
                     <td className="px-4 py-3">{s.maxOrders}</td>
-                    <td className="px-4 py-3">{s.active ? <span className="text-green-400">✓</span> : <span className="text-gray-500">✗</span>}</td>
+                    <td className="px-4 py-3">{s.active ? <span className="text-green-400"><MdCheck /></span> : <span className="text-gray-500"><MdClose /></span>}</td>
                     <td className="px-4 py-3"><button onClick={() => handleDeleteSlot(s.id)} className="text-xs text-red-400 hover:text-red-300">Delete</button></td>
                   </tr>
                 ))}

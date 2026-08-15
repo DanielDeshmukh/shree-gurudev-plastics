@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MdCheck, MdClose } from "react-icons/md";
 
 interface BundleItem { id: number; productId: number; quantity: number; }
 interface Bundle { id: number; name: string; description: string | null; imageUrl: string | null; totalOriginal: number; bundlePrice: number; discount: number; active: boolean; items: BundleItem[]; }
@@ -66,7 +67,7 @@ export default function BundlesPage() {
                   <td className="px-4 py-3 text-gray-400">₹{b.totalOriginal.toLocaleString("en-IN")}</td>
                   <td className="px-4 py-3 font-medium">₹{b.bundlePrice.toLocaleString("en-IN")}</td>
                   <td className="px-4 py-3 text-green-400">₹{b.discount.toLocaleString("en-IN")}</td>
-                  <td className="px-4 py-3">{b.active ? <span className="text-green-400">✓</span> : <span className="text-gray-500">✗</span>}</td>
+                  <td className="px-4 py-3">{b.active ? <span className="text-green-400"><MdCheck /></span> : <span className="text-gray-500"><MdClose /></span>}</td>
                   <td className="px-4 py-3 flex gap-3">
                     <button onClick={() => handleToggle(b.id, b.active)} className="text-xs text-orange-400 hover:text-orange-300">{b.active ? "Deactivate" : "Activate"}</button>
                     <button onClick={() => handleDelete(b.id)} className="text-xs text-red-400 hover:text-red-300">Delete</button>
@@ -97,7 +98,7 @@ export default function BundlesPage() {
                   <div key={idx} className="flex gap-2 mb-2">
                     <input type="number" placeholder="Product ID" value={item.productId} onChange={e => { const n = [...items]; n[idx].productId = e.target.value; setItems(n); }} className="flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
                     <input type="number" placeholder="Qty" value={item.quantity} onChange={e => { const n = [...items]; n[idx].quantity = e.target.value; setItems(n); }} className="w-20 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
-                    {items.length > 1 && <button onClick={() => setItems(items.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-300 text-sm">✕</button>}
+                    {items.length > 1 && <button onClick={() => setItems(items.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-300 text-sm"><MdClose /></button>}
                   </div>
                 ))}
                 <button onClick={() => setItems([...items, { productId: "", quantity: "1" }])} className="text-xs text-orange-400 hover:text-orange-300">+ Add Item</button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MdCelebration, MdInventory, MdStar, MdCampaign } from "react-icons/md";
 
 interface Order {
   id: number;
@@ -19,11 +20,11 @@ const TEMPLATE_LABELS: Record<string, string> = {
   restock_alert: "Restock Alert",
 };
 
-const TEMPLATE_ICONS: Record<string, string> = {
-  order_confirmation: "🎉",
-  delivery_followup: "📦",
-  review_request: "⭐",
-  restock_alert: "📢",
+const TEMPLATE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  order_confirmation: MdCelebration,
+  delivery_followup: MdInventory,
+  review_request: MdStar,
+  restock_alert: MdCampaign,
 };
 
 export default function FollowupPage() {
@@ -136,7 +137,7 @@ export default function FollowupPage() {
                       : "border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600"
                   }`}
                 >
-                  <span className="mr-1">{TEMPLATE_ICONS[key]}</span>
+                  <span className="mr-1 inline-block">{(() => { const Icon = TEMPLATE_ICONS[key]; return <Icon className="inline" />; })()}</span>
                   {label}
                 </button>
               ))}

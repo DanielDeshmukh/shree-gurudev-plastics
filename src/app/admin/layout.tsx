@@ -3,26 +3,46 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import {
+  MdDashboard,
+  MdInventory,
+  MdCategory,
+  MdReceipt,
+  MdDescription,
+  MdTrendingUp,
+  MdTrendingDown,
+  MdStar,
+  MdNotifications,
+  MdLock,
+  MdAutorenew,
+  MdFactory,
+  MdAssignment,
+  MdLocalShipping,
+  MdAccountBalance,
+  MdCardGiftcard,
+  MdPeople,
+  MdChat,
+} from "react-icons/md";
 
 const navLinks = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/admin/products", label: "Products", icon: "📦" },
-  { href: "/admin/brands", label: "Brands", icon: "🏷️" },
-  { href: "/admin/orders", label: "Orders", icon: "🧾" },
-  { href: "/admin/invoices", label: "Invoices", icon: "📄" },
-  { href: "/admin/reports", label: "Reports", icon: "📈" },
-  { href: "/admin/analytics", label: "Analytics", icon: "📉" },
-  { href: "/admin/reviews", label: "Reviews", icon: "⭐" },
-  { href: "/admin/inventory", label: "Inventory", icon: "🔔" },
-  { href: "/admin/price-lock", label: "Price Lock", icon: "🔒" },
-  { href: "/admin/recurring-orders", label: "Recurring Orders", icon: "🔄" },
-  { href: "/admin/suppliers", label: "Suppliers", icon: "🏭" },
-  { href: "/admin/purchase-orders", label: "Purchase Orders", icon: "📋" },
-  { href: "/admin/delivery", label: "Delivery", icon: "🚚" },
-  { href: "/admin/ledger", label: "Credit Ledger", icon: "💰" },
-  { href: "/admin/bundles", label: "Product Bundles", icon: "📦" },
-  { href: "/admin/customers", label: "Customers", icon: "👥" },
-  { href: "/admin/followup", label: "WhatsApp Follow-up", icon: "💬" },
+  { href: "/admin/dashboard", label: "Dashboard", icon: MdDashboard },
+  { href: "/admin/products", label: "Products", icon: MdInventory },
+  { href: "/admin/brands", label: "Brands", icon: MdCategory },
+  { href: "/admin/orders", label: "Orders", icon: MdReceipt },
+  { href: "/admin/invoices", label: "Invoices", icon: MdDescription },
+  { href: "/admin/reports", label: "Reports", icon: MdTrendingUp },
+  { href: "/admin/analytics", label: "Analytics", icon: MdTrendingDown },
+  { href: "/admin/reviews", label: "Reviews", icon: MdStar },
+  { href: "/admin/inventory", label: "Inventory", icon: MdNotifications },
+  { href: "/admin/price-lock", label: "Price Lock", icon: MdLock },
+  { href: "/admin/recurring-orders", label: "Recurring Orders", icon: MdAutorenew },
+  { href: "/admin/suppliers", label: "Suppliers", icon: MdFactory },
+  { href: "/admin/purchase-orders", label: "Purchase Orders", icon: MdAssignment },
+  { href: "/admin/delivery", label: "Delivery", icon: MdLocalShipping },
+  { href: "/admin/ledger", label: "Credit Ledger", icon: MdAccountBalance },
+  { href: "/admin/bundles", label: "Product Bundles", icon: MdCardGiftcard },
+  { href: "/admin/customers", label: "Customers", icon: MdPeople },
+  { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -75,6 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navLinks.map((link) => {
             const active = pathname.startsWith(link.href);
+            const Icon = link.icon;
             return (
               <Link
                 key={link.href}
@@ -85,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
                 }`}
               >
-                <span>{link.icon}</span>
+                <Icon className="text-lg" />
                 {link.label}
               </Link>
             );

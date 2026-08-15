@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MdCheck } from "react-icons/md";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { BUSINESS_NAME, PHONE, PHONE_DISPLAY, ADDRESS, CITY } from "@/lib/seo";
 
@@ -162,7 +163,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             {["Plastic Chairs", "Plastic Tables", "Plastic Buckets", "Plastic Containers", "Plastic Stools", "Plastic Storage", "Plastic Kitchenware", "Plastic Baskets", "Plastic Trays"].map((item) => (
               <div key={item} className="flex items-center gap-2">
-                <span className="text-orange-500">✓</span>
+                <span className="text-orange-500"><MdCheck /></span>
                 <span className="text-gray-700">{item}</span>
               </div>
             ))}

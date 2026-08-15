@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MdClose } from "react-icons/md";
 
 interface InvoiceItem {
   id: number;
@@ -367,7 +368,7 @@ export default function InvoicesPage() {
                       <input placeholder="HSN" value={item.hsnCode} onChange={(e) => updateItem(i, "hsnCode", e.target.value)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
                       <input type="number" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
                       <input type="number" placeholder="Rate" value={item.unitPrice || ""} onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)} className="rounded-lg border border-gray-700 bg-gray-800 px-2 py-1.5 text-white text-xs outline-none focus:border-orange-500" />
-                      <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-300 text-xs">✕</button>
+                      <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-300 text-xs"><MdClose /></button>
                     </div>
                   ))}
                 </div>
