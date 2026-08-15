@@ -4,6 +4,10 @@ import { verifyToken } from "@/lib/auth";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname.startsWith("/api/auth/admin-register") || pathname.startsWith("/api/auth/signup") || pathname.startsWith("/api/auth/register")) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   if (pathname === "/admin/login" || pathname.startsWith("/api/")) {
     return NextResponse.next();
   }

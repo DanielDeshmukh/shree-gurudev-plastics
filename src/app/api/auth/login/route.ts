@@ -7,9 +7,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { username, password } = body;
 
-    const admin = await db.admin.findUnique({
-      where: { username },
-    });
+    const adminCount = await db.admin.count();
+    if (adminCount !== 1) {
+      return NextResponse.json({ error: "System integrity error" }, { status: 500 });
+    }
+
+    const admin = await db.admin.findUnique({ where: { username } });
 
     if (!admin) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
@@ -33,9 +36,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    return NextResponse.json(
-      { error: "Login failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }
