@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const gstItems = items.map((item: { productName: string; hsnCode: string; quantity: number; unitPrice: number; gstRate: number }) => ({
+    const gstItems: { productName: string; hsnCode: string; quantity: number; unitPrice: number; gstRate: number }[] = items.map((item: { productName: string; hsnCode: string; quantity: number; unitPrice: number; gstRate: number }) => ({
       productName: item.productName,
       hsnCode: item.hsnCode || "3924",
       quantity: item.quantity,
