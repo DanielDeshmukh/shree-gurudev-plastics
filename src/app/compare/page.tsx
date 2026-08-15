@@ -2,7 +2,7 @@
 
 import { useCompare } from "@/context/CompareContext";
 import Link from "next/link";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 
 export default function ComparePage() {
@@ -85,7 +85,7 @@ export default function ComparePage() {
                           </button>
                           <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
                             {item.imageUrl ? (
-                              <Image src={item.imageUrl} alt={item.name} width={80} height={80} className="object-cover w-full h-full" />
+                              <BlurImage src={item.imageUrl} alt={item.name} width={80} height={80} className="object-cover w-full h-full" />
                             ) : (
                               <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             )}

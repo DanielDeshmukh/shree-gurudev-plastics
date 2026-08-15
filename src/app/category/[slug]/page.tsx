@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, LOCATION_KEYWORDS } from "@/lib/seo";
 
@@ -155,7 +155,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                   <Link href={`/product/${product.id}`}>
                     <div className="relative aspect-square bg-gray-100">
                       {product.imageUrl ? (
-                        <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                        <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
                       )}

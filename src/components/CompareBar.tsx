@@ -2,7 +2,7 @@
 
 import { useCompare } from "@/context/CompareContext";
 import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 
 export default function CompareBar() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
@@ -19,7 +19,7 @@ export default function CompareBar() {
             <div key={item.id} className="relative shrink-0 group">
               <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-orange-200">
                 {item.imageUrl ? (
-                  <Image src={item.imageUrl} alt={item.name} width={56} height={56} className="object-cover w-full h-full" />
+                  <BlurImage src={item.imageUrl} alt={item.name} width={56} height={56} className="object-cover w-full h-full" />
                 ) : (
                   <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>
                 )}

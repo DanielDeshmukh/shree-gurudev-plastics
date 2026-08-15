@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
@@ -105,7 +105,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="relative aspect-square bg-gray-100">
               {product.imageUrl ? (
-                <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
               )}
@@ -279,7 +279,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   <Link href={`/product/${rp.id}`}>
                     <div className="relative aspect-square bg-gray-100">
                       {rp.imageUrl ? (
-                        <Image src={rp.imageUrl} alt={rp.name} fill className="object-cover" />
+                        <BlurImage src={rp.imageUrl} alt={rp.name} fill className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
                       )}
