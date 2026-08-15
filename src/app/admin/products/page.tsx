@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AVAILABLE_TAGS } from "@/lib/tags";
 
 interface Brand {
   id: number;
@@ -20,6 +21,7 @@ interface Product {
   description: string | null;
   brand: Brand;
   moq: number;
+  tags: string;
 }
 
 const emptyForm = {
@@ -33,6 +35,7 @@ const emptyForm = {
   category: "general",
   description: "",
   moq: "1",
+  tags: "",
 };
 
 export default function ProductsPage() {
@@ -92,6 +95,7 @@ export default function ProductsPage() {
       category: product.category,
       description: product.description || "",
       moq: String(product.moq || 1),
+      tags: product.tags || "",
     });
     setEditingId(product.id);
     setError("");
@@ -350,6 +354,39 @@ export default function ProductsPage() {
                   rows={3}
                   className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500 resize-none"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
+                <div className="flex flex-wrap gap-3">
+                  {AVAILABLE_TAGS.map((tag) => {
+                    const selected = form.tags.split(",").map((t) => t.trim()).filter(Boolean).includes(tag.id);
+                    return (
+                      <label
+                        key={tag.id}
+                        className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm cursor-pointer transition-colors ${
+                          selected
+                            ? "border-orange-500 bg-orange-500/10 text-orange-400"
+                            : "border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => {
+                            const current = form.tags.split(",").map((t) => t.trim()).filter(Boolean);
+                            const next = selected
+                              ? current.filter((t) => t !== tag.id)
+                              : [...current, tag.id];
+                            setForm({ ...form, tags: next.join(",") });
+                          }}
+                          className="sr-only"
+                        />
+                        <span className={`inline-block w-2 h-2 rounded-full ${tag.color}`} />
+                        {tag.label}
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
               {error && (
                 <div className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-400 border border-red-500/20">
