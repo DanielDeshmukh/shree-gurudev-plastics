@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import CartButton from "@/components/CartButton";
 import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
+import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import CompareBar from "@/components/CompareBar";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
@@ -59,12 +60,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <CartProvider>
           <CompareProvider>
-            <Navbar />
-            {children}
-            <Footer />
-            <WhatsAppButton />
-            <CartButton />
-            <CompareBar />
+            <RecentlyViewedProvider>
+              <Navbar />
+              {children}
+              <Footer />
+              <WhatsAppButton />
+              <CartButton />
+              <CompareBar />
+            </RecentlyViewedProvider>
           </CompareProvider>
         </CartProvider>
       </body>
