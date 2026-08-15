@@ -76,6 +76,8 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 | **Analytics Dashboard** | Sales timeline, category breakdown, top products, top customers (Recharts) |
 | **Inventory Alerts** | Low stock notifications with configurable thresholds |
 | **WhatsApp Follow-up** | Order confirmation, delivery follow-up, review request, restock alert templates |
+| **WhatsApp Arrival Notification** | Notify customers when warehouse stock arrives at store — pre-filled pickup message |
+| **Festival Broadcast** | Send Diwali, Raksha Bandhan, Holi, New Year, Navratri, Christmas, Pongal, Eid greetings to all customers via WhatsApp |
 | **Excel Reports** | Daily and monthly sales reports in `.xlsx` format with branded formatting |
 | **Single Admin Lockdown** | Only one admin account permitted, enforced at ORM, login, and middleware levels |
 
