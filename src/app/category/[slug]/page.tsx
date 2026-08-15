@@ -95,7 +95,7 @@ async function getProductsByCategory(category: string) {
     accessories: "Accessories",
   };
   const apiCategory = categoryMap[category] || category;
-  const res = await fetch(`http://localhost:3000/api/products?category=${apiCategory}`, { cache: "no-store" });
+  const res = await fetch(`/api/products?category=${apiCategory}`, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return data.products || [];

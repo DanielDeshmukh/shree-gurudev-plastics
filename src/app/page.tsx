@@ -27,14 +27,14 @@ const homeFaqs = [
 const faqSchema = getFAQSchema(homeFaqs);
 
 async function getBrands() {
-  const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });
+  const res = await fetch("/api/brands", { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return data.brands || [];
 }
 
 async function getProducts() {
-  const res = await fetch("http://localhost:3000/api/products", { cache: "no-store" });
+  const res = await fetch("/api/products", { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return data.products || [];

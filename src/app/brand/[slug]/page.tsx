@@ -8,7 +8,7 @@ import ProductTags from "@/components/ProductTags";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });
+  const res = await fetch("/api/brands", { cache: "no-store" });
   const data = await res.json();
   const brands = data.brands || [];
   const brand = brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug);
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 async function getBrand(slug: string) {
-  const res = await fetch("http://localhost:3000/api/brands", { cache: "no-store" });
+  const res = await fetch("/api/brands", { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json();
   const brands = data.brands || [];
@@ -29,7 +29,7 @@ async function getBrand(slug: string) {
 }
 
 async function getProductsByBrand(slug: string) {
-  const res = await fetch(`http://localhost:3000/api/products?brand=${slug}`, { cache: "no-store" });
+  const res = await fetch(`/api/products?brand=${slug}`, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return data.products || [];

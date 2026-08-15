@@ -13,7 +13,7 @@ import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const res = await fetch(`http://localhost:3000/api/products/${id}`, { cache: "no-store" });
+  const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
   const data = await res.json();
   const product = data.product;
   if (!product) return { title: "Product Not Found" };
@@ -37,14 +37,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 async function getProduct(id: string) {
-  const res = await fetch(`http://localhost:3000/api/products/${id}`, { cache: "no-store" });
+  const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json();
   return data.product || null;
 }
 
 async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
-  const res = await fetch(`http://localhost:3000/api/products`, { cache: "no-store" });
+  const res = await fetch(`/api/products`, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   const products = data.products || [];
