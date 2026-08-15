@@ -7,6 +7,7 @@ import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
+import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -144,7 +145,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     <span className="text-gray-900 text-sm font-medium">{product.size}</span>
                   </div>
                 )}
-                {product.category && (
+        <ReviewList productId={product.id} />
+
+        {product.category && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Category</span>
                     <Link href={`/category/${categorySlug}`} className="text-orange-500 text-sm font-medium hover:underline">{product.category}</Link>
