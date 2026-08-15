@@ -47,6 +47,16 @@ export interface OrderItemType {
   price: number;
 }
 
+export interface ReviewType {
+  id: number;
+  productId: number;
+  name: string;
+  rating: number;
+  comment: string;
+  approved: boolean;
+  createdAt: string;
+}
+
 export interface DashboardStats {
   totalProducts: number;
   totalOrders: number;
