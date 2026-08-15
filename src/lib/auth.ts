@@ -2,15 +2,23 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("Missing JWT_SECRET in .env");
+  return secret;
+}
 
-if (!JWT_SECRET) throw new Error("Missing JWT_SECRET in .env");
-if (!ADMIN_USERNAME) throw new Error("Missing ADMIN_USERNAME in .env");
-if (!ADMIN_PASSWORD) throw new Error("Missing ADMIN_PASSWORD in .env");
+export function getAdminUsername(): string {
+  const username = process.env.ADMIN_USERNAME;
+  if (!username) throw new Error("Missing ADMIN_USERNAME in .env");
+  return username;
+}
 
-export { ADMIN_USERNAME, ADMIN_PASSWORD };
+export function getAdminPassword(): string {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) throw new Error("Missing ADMIN_PASSWORD in .env");
+  return password;
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
@@ -21,12 +29,12 @@ export async function verifyPassword(password: string, hashed: string): Promise<
 }
 
 export function generateToken(username: string): string {
-  return jwt.sign({ username }, JWT_SECRET!, { expiresIn: "7d" });
+  return jwt.sign({ username }, getJwtSecret(), { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string): { username: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET!) as { username: string };
+    return jwt.verify(token, getJwtSecret()) as { username: string };
   } catch {
     return null;
   }
