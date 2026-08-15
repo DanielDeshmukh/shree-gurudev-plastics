@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { BUSINESS_NAME, PHONE_DISPLAY, PHONE, ADDRESS, SITE_URL } from "@/lib/seo";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 const productCategories = [
   { name: "Plastic Chairs", href: "/category/furniture" },
@@ -33,6 +37,17 @@ const quickLinks = [
 ];
 
 export default function Footer() {
+  const { t } = useLanguage();
+
+  const translatedQuickLinks = [
+    { name: t(translations.common.home.en, translations.common.home.hi), href: "/" },
+    { name: t(translations.common.allProducts.en, translations.common.allProducts.hi), href: "/products" },
+    { name: t(translations.common.serviceAreas.en, translations.common.serviceAreas.hi), href: "/locations" },
+    { name: t(translations.common.aboutUs.en, translations.common.aboutUs.hi), href: "/about" },
+    { name: t(translations.common.contact.en, translations.common.contact.hi), href: "/contact" },
+    { name: t(translations.common.requestQuote.en, translations.common.requestQuote.hi), href: "/quote" },
+  ];
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -55,7 +70,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-white text-lg font-bold mb-3">Product Categories</h3>
+          <h3 className="text-white text-lg font-bold mb-3">{t(translations.footer.productCategories.en, translations.footer.productCategories.hi)}</h3>
           <ul className="space-y-2 text-sm">
             {productCategories.map((cat) => (
               <li key={cat.name}>
@@ -66,7 +81,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-white text-lg font-bold mb-3">Our Brands</h3>
+          <h3 className="text-white text-lg font-bold mb-3">{t(translations.footer.ourBrands.en, translations.footer.ourBrands.hi)}</h3>
           <ul className="space-y-2 text-sm">
             {brands.map((brand) => (
               <li key={brand.name}>
@@ -77,15 +92,15 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-white text-lg font-bold mb-3">Quick Links</h3>
+          <h3 className="text-white text-lg font-bold mb-3">{t(translations.footer.quickLinks.en, translations.footer.quickLinks.hi)}</h3>
           <ul className="space-y-2 text-sm">
-            {quickLinks.map((link) => (
+            {translatedQuickLinks.map((link) => (
               <li key={link.name}>
                 <Link href={link.href} className="hover:text-orange-400 transition-colors">{link.name}</Link>
               </li>
             ))}
           </ul>
-          <h3 className="text-white text-lg font-bold mt-6 mb-3">Service Areas</h3>
+          <h3 className="text-white text-lg font-bold mt-6 mb-3">{t(translations.footer.serviceAreas.en, translations.footer.serviceAreas.hi)}</h3>
           <div className="flex flex-wrap gap-2">
             {serviceAreas.map((area) => (
               <span key={area} className="text-xs bg-gray-800 px-2 py-1 rounded">{area}</span>
@@ -95,7 +110,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-gray-800 text-center py-4 text-sm text-gray-500">
-        © {new Date().getFullYear()} {BUSINESS_NAME}. All rights reserved. Plastic products distributor and bulk seller in Bhayander, Mumbai.
+        © {new Date().getFullYear()} {BUSINESS_NAME}. {t(translations.footer.rights.en, translations.footer.rights.hi)}. Plastic products distributor and bulk seller in Bhayander, Mumbai.
       </div>
     </footer>
   );

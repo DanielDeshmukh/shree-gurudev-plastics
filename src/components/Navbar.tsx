@@ -4,11 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { totalItems, openCart } = useCart();
   const { wishlist } = useWishlist();
+  const { t } = useLanguage();
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
@@ -19,13 +23,13 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-6">
           <Link href="/" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
-            Home
+            {t(translations.nav.home.en, translations.nav.home.hi)}
           </Link>
           <Link href="/products" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
-            Products
+            {t(translations.nav.products.en, translations.nav.products.hi)}
           </Link>
           <Link href="/locations" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
-            Locations
+            {t(translations.nav.locations.en, translations.nav.locations.hi)}
           </Link>
           <a
             href="https://wa.me/918552084251"
@@ -38,6 +42,7 @@ export default function Navbar() {
             </svg>
             WhatsApp
           </a>
+          <LanguageToggle />
           <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -61,6 +66,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex md:hidden items-center gap-2">
+          <LanguageToggle />
           <Link href="/wishlist" className="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -96,13 +102,13 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
           <Link href="/" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
-            Home
+            {t(translations.nav.home.en, translations.nav.home.hi)}
           </Link>
           <Link href="/products" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
-            Products
+            {t(translations.nav.products.en, translations.nav.products.hi)}
           </Link>
           <Link href="/locations" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
-            Locations
+            {t(translations.nav.locations.en, translations.nav.locations.hi)}
           </Link>
           <a
             href="https://wa.me/918552084251"
