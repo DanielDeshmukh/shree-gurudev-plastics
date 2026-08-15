@@ -36,6 +36,9 @@ self.addEventListener("fetch", (event) => {
 
   if (request.method !== "GET") return;
 
+  const url = new URL(request.url);
+  if (url.protocol === "chrome-extension:" || url.protocol === "https-extension:") return;
+
   if (request.url.includes("/api/")) {
     event.respondWith(
       fetch(request).catch(() => {
@@ -51,7 +54,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetched = fetch(request).then((response) => {
-        if (response && response.status === 200) {
+        if (response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }

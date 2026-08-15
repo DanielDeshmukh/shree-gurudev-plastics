@@ -14,44 +14,56 @@ import { apiFetch } from "@/lib/api-fetch";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const res = await apiFetch(`/api/products/${id}`);
-  const data = await res.json();
-  const product = data.product;
-  if (!product) return { title: "Product Not Found" };
-  const brandName = product.brand?.name || "";
-  const cat = product.category || "";
-  return {
-    title: `${product.name} — ${brandName} ${cat} | Buy Online at ${BUSINESS_NAME}`,
-    description: `Buy ${product.name} by ${brandName} at ${BUSINESS_NAME}, ${CITY}. ₹${product.price} | ${product.color || ""} ${product.size || ""} | Bulk orders available. Plastic ${cat.toLowerCase()} distributor in Bhayander, Mumbai. Free delivery on bulk orders. Best price guarantee.`,
-    keywords: [product.name, brandName, cat, `${cat} Bhayander`, `buy ${product.name} online`, `${cat} distributor`, `plastic ${cat.toLowerCase()} bulk`, `${product.name} price`, `${BUSINESS_NAME}`, `plastic products ${CITY}`, `bulk plastic seller`, `wholesale ${cat.toLowerCase()}`],
-    alternates: { canonical: `${SITE_URL}/product/${id}` },
-    openGraph: {
-      title: `${product.name} | ${BUSINESS_NAME} — ${CITY}`,
-      description: `Buy ${product.name} — ₹${product.price}. Bulk orders available. ${BUSINESS_NAME}, ${CITY}.`,
-      url: `${SITE_URL}/product/${id}`,
-      siteName: BUSINESS_NAME,
-      locale: "en_IN",
-      type: "website",
-      images: product.imageUrl ? [{ url: product.imageUrl, width: 800, height: 800, alt: product.name }] : [],
-    },
-  };
+  try {
+    const res = await apiFetch(`/api/products/${id}`);
+    const data = await res.json();
+    const product = data.product;
+    if (!product) return { title: "Product Not Found" };
+    const brandName = product.brand?.name || "";
+    const cat = product.category || "";
+    return {
+      title: `${product.name} — ${brandName} ${cat} | Buy Online at ${BUSINESS_NAME}`,
+      description: `Buy ${product.name} by ${brandName} at ${BUSINESS_NAME}, ${CITY}. ₹${product.price} | ${product.color || ""} ${product.size || ""} | Bulk orders available. Plastic ${cat.toLowerCase()} distributor in Bhayander, Mumbai. Free delivery on bulk orders. Best price guarantee.`,
+      keywords: [product.name, brandName, cat, `${cat} Bhayander`, `buy ${product.name} online`, `${cat} distributor`, `plastic ${cat.toLowerCase()} bulk`, `${product.name} price`, `${BUSINESS_NAME}`, `plastic products ${CITY}`, `bulk plastic seller`, `wholesale ${cat.toLowerCase()}`],
+      alternates: { canonical: `${SITE_URL}/product/${id}` },
+      openGraph: {
+        title: `${product.name} | ${BUSINESS_NAME} — ${CITY}`,
+        description: `Buy ${product.name} — ₹${product.price}. Bulk orders available. ${BUSINESS_NAME}, ${CITY}.`,
+        url: `${SITE_URL}/product/${id}`,
+        siteName: BUSINESS_NAME,
+        locale: "en_IN",
+        type: "website",
+        images: product.imageUrl ? [{ url: product.imageUrl, width: 800, height: 800, alt: product.name }] : [],
+      },
+    };
+  } catch {
+    return { title: "Product" };
+  }
 }
 
 async function getProduct(id: string) {
-  const res = await apiFetch(`/api/products/${id}`);
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.product || null;
+  try {
+    const res = await apiFetch(`/api/products/${id}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.product || null;
+  } catch {
+    return null;
+  }
 }
 
 async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
-  const res = await apiFetch(`/api/products`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  const products = data.products || [];
-  const sameBrand = products.filter((p: any) => p.brandId === brandId && p.id !== excludeId);
-  const sameCategory = products.filter((p: any) => p.category === category && p.id !== excludeId && p.brandId !== brandId);
-  return [...sameBrand, ...sameCategory].slice(0, 8);
+  try {
+    const res = await apiFetch(`/api/products`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const products = data.products || [];
+    const sameBrand = products.filter((p: any) => p.brandId === brandId && p.id !== excludeId);
+    const sameCategory = products.filter((p: any) => p.category === category && p.id !== excludeId && p.brandId !== brandId);
+    return [...sameBrand, ...sameCategory].slice(0, 8);
+  } catch {
+    return [];
+  }
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {

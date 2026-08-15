@@ -28,17 +28,25 @@ const homeFaqs = [
 const faqSchema = getFAQSchema(homeFaqs);
 
 async function getBrands() {
-  const res = await apiFetch("/api/brands");
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.brands || [];
+  try {
+    const res = await apiFetch("/api/brands");
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.brands || [];
+  } catch {
+    return [];
+  }
 }
 
 async function getProducts() {
-  const res = await apiFetch("/api/products");
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.products || [];
+  try {
+    const res = await apiFetch("/api/products");
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.products || [];
+  } catch {
+    return [];
+  }
 }
 
 export default async function Home() {

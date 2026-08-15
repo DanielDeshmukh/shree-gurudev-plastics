@@ -22,18 +22,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 async function getBrand(slug: string) {
-  const res = await apiFetch("/api/brands");
-  if (!res.ok) return null;
-  const data = await res.json();
-  const brands = data.brands || [];
-  return brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug) || null;
+  try {
+    const res = await apiFetch("/api/brands");
+    if (!res.ok) return null;
+    const data = await res.json();
+    const brands = data.brands || [];
+    return brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug) || null;
+  } catch {
+    return null;
+  }
 }
 
 async function getProductsByBrand(slug: string) {
-  const res = await apiFetch(`/api/products?brand=${slug}`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.products || [];
+  try {
+    const res = await apiFetch(`/api/products?brand=${slug}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.products || [];
+  } catch {
+    return [];
+  }
 }
 
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {

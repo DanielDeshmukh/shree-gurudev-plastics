@@ -88,18 +88,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 async function getProductsByCategory(category: string) {
-  const categoryMap: Record<string, string> = {
-    furniture: "Furniture",
-    containers: "Containers",
-    storage: "Storage",
-    kitchen: "Kitchen",
-    accessories: "Accessories",
-  };
-  const apiCategory = categoryMap[category] || category;
-  const res = await apiFetch(`/api/products?category=${apiCategory}`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.products || [];
+  try {
+    const categoryMap: Record<string, string> = {
+      furniture: "Furniture",
+      containers: "Containers",
+      storage: "Storage",
+      kitchen: "Kitchen",
+      accessories: "Accessories",
+    };
+    const apiCategory = categoryMap[category] || category;
+    const res = await apiFetch(`/api/products?category=${apiCategory}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.products || [];
+  } catch {
+    return [];
+  }
 }
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
