@@ -20,6 +20,7 @@ const navLinks = [
   { href: "/admin/purchase-orders", label: "Purchase Orders", icon: "📋" },
   { href: "/admin/delivery", label: "Delivery", icon: "🚚" },
   { href: "/admin/ledger", label: "Credit Ledger", icon: "💰" },
+  { href: "/admin/bundles", label: "Product Bundles", icon: "📦" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: "💬" },
 ];

@@ -240,3 +240,25 @@ model LedgerEntry {
   referenceNo  String?
   createdAt    DateTime @default(now())
 }
+
+model Bundle {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  imageUrl    String?
+  totalOriginal Float
+  bundlePrice  Float
+  discount    Float
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       BundleItem[]
+}
+
+model BundleItem {
+  id        Int      @id @default(autoincrement())
+  bundleId  Int
+  bundle    Bundle   @relation(fields: [bundleId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int      @default(1)
+}
