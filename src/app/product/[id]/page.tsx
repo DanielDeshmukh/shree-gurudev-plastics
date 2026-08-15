@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
 import ProductTags from "@/components/ProductTags";
+import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -284,6 +285,18 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </Link>
           </section>
         )}
+
+        <TrackRecentlyViewed
+          product={{
+            id: product.id,
+            name: product.name,
+            imageUrl: product.imageUrl || "",
+            price: product.price,
+            color: product.color || "",
+            size: product.size || "",
+            brand: brand?.name,
+          }}
+        />
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />

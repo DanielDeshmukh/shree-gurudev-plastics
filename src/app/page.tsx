@@ -5,6 +5,7 @@ import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
 import AddToCartButton from "@/components/AddToCartButton";
 import CompareButton from "@/components/CompareButton";
 import ProductTags from "@/components/ProductTags";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -247,6 +248,8 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      <RecentlyViewed />
 
       <section className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">Serving {CITY} & Nearby Areas</h2>
