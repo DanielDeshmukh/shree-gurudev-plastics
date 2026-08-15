@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
+import PincodeCheck from "@/components/PincodeCheck";
 import ProductTags from "@/components/ProductTags";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import ReviewList from "@/components/ReviewList";
@@ -161,6 +162,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
               <p className="text-3xl font-bold text-orange-500 mb-2">₹{product.price}</p>
               <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
+
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Check Delivery Availability</p>
+                <PincodeCheck />
+              </div>
 
               {product.moq > 1 && (
                 <div className="mb-4 inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-3 py-1 rounded-full">
