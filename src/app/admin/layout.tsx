@@ -21,6 +21,7 @@ import {
   MdCardGiftcard,
   MdPeople,
   MdChat,
+  MdCampaign,
 } from "react-icons/md";
 
 const navLinks = [
@@ -42,6 +43,7 @@ const navLinks = [
   { href: "/admin/bundles", label: "Product Bundles", icon: MdCardGiftcard },
   { href: "/admin/customers", label: "Customers", icon: MdPeople },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
+  { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
