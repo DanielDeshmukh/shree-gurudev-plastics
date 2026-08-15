@@ -18,6 +18,7 @@ const navLinks = [
   { href: "/admin/recurring-orders", label: "Recurring Orders", icon: "🔄" },
   { href: "/admin/suppliers", label: "Suppliers", icon: "🏭" },
   { href: "/admin/purchase-orders", label: "Purchase Orders", icon: "📋" },
+  { href: "/admin/delivery", label: "Delivery", icon: "🚚" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: "💬" },
 ];
