@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
+import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
@@ -115,7 +116,20 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </Link>
               )}
               <ProductTags tags={product.tags || ""} />
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+              <div className="flex items-start justify-between gap-2 mb-4">
+                <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+                <WishlistButton
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    imageUrl: product.imageUrl || "",
+                    price: product.price,
+                    color: product.color || "",
+                    size: product.size || "",
+                    brand: brand?.name,
+                  }}
+                />
+              </div>
 
               <div className="space-y-2 mb-6">
                 {product.color && (

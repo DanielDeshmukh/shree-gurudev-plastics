@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 import CompareButton from "@/components/CompareButton";
+import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -84,9 +85,22 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 </Link>
                 <div className="p-4">
                   <ProductTags tags={product.tags || ""} />
-                  <Link href={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
-                  </Link>
+                  <div className="flex items-start justify-between gap-2">
+                    <Link href={`/product/${product.id}`}>
+                      <h3 className="font-semibold text-gray-900 hover:text-orange-500 transition-colors line-clamp-1">{product.name}</h3>
+                    </Link>
+                    <WishlistButton
+                      product={{
+                        id: product.id,
+                        name: product.name,
+                        imageUrl: product.imageUrl || "",
+                        price: product.price,
+                        color: product.color || "",
+                        size: product.size || "",
+                        brand: brand?.name,
+                      }}
+                    />
+                  </div>
                   <div className="flex gap-2 mt-1 text-sm text-gray-500">
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
