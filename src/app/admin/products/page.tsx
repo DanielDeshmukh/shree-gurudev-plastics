@@ -22,6 +22,7 @@ interface Product {
   brand: Brand;
   moq: number;
   tags: string;
+  lowStockThreshold: number;
 }
 
 const emptyForm = {
@@ -36,6 +37,7 @@ const emptyForm = {
   description: "",
   moq: "1",
   tags: "",
+  lowStockThreshold: "10",
 };
 
 export default function ProductsPage() {
@@ -96,6 +98,7 @@ export default function ProductsPage() {
       description: product.description || "",
       moq: String(product.moq || 1),
       tags: product.tags || "",
+      lowStockThreshold: String(product.lowStockThreshold ?? 10),
     });
     setEditingId(product.id);
     setError("");
@@ -211,7 +214,7 @@ export default function ProductsPage() {
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        product.stock > 10
+                        product.stock > product.lowStockThreshold
                           ? "bg-green-500/10 text-green-400"
                           : product.stock > 0
                             ? "bg-yellow-500/10 text-yellow-400"
@@ -326,6 +329,17 @@ export default function ProductsPage() {
                     className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Low Stock Alert Threshold</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.lowStockThreshold}
+                  onChange={(e) => setForm({ ...form, lowStockThreshold: e.target.value })}
+                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
+                />
+                <p className="mt-1 text-xs text-gray-500">Alert when stock falls to or below this number</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>

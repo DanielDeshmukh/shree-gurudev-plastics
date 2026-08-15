@@ -8,6 +8,7 @@ export interface ProductType {
   imageUrl: string;
   price: number;
   stock: number;
+  lowStockThreshold: number;
   category: string;
   description: string | null;
   moq: number;

@@ -46,6 +46,7 @@ export async function PUT(
     if (body.description !== undefined) data.description = body.description;
     if (body.moq !== undefined) data.moq = parseInt(body.moq) || 1;
     if (body.tags !== undefined) data.tags = body.tags;
+    if (body.lowStockThreshold !== undefined) data.lowStockThreshold = parseInt(body.lowStockThreshold) || 10;
 
     const product = await db.product.update({
       where: { id: parseInt(id) },
