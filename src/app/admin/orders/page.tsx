@@ -21,12 +21,13 @@ interface Order {
   items: OrderItem[];
 }
 
-const statusOptions = ["pending", "confirmed", "shipped", "delivered"];
+const statusOptions = ["pending", "confirmed", "shipped", "arrived", "delivered"];
 
 const statusStyles: Record<string, string> = {
   pending: "bg-gray-500/10 text-gray-400",
   confirmed: "bg-yellow-500/10 text-yellow-400",
   shipped: "bg-blue-500/10 text-blue-400",
+  arrived: "bg-purple-500/10 text-purple-400",
   delivered: "bg-green-500/10 text-green-400",
 };
 
@@ -94,6 +95,20 @@ export default function OrdersPage() {
       });
       if (res.ok) {
         alert("Invoice generated!");
+      }
+    } catch {}
+  };
+
+  const handleNotifyArrival = async (order: Order) => {
+    try {
+      const res = await fetch("/api/admin/followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: order.id, template: "arrival_notification" }),
+      });
+      const data = await res.json();
+      if (data.whatsappUrl) {
+        window.open(data.whatsappUrl, "_blank");
       }
     } catch {}
   };
@@ -172,6 +187,14 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
+                        {order.status === "arrived" && (
+                          <button
+                            onClick={() => handleNotifyArrival(order)}
+                            className="rounded-lg bg-purple-500/10 px-3 py-1.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20 transition-colors"
+                          >
+                            Notify
+                          </button>
+                        )}
                         <button
                           onClick={() => handleGenerateInvoice(order)}
                           className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20 transition-colors"

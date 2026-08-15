@@ -16,6 +16,11 @@ const TEMPLATES = {
   
   restock_alert: (customerName: string, productName: string) =>
     `Hi ${customerName}! 📢\n\nGreat news — ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: https://shreegurudevplastics.com/products\n\n— SGP Team`,
+
+  arrival_notification: (customerName: string, orderId: number, items: { name: string; quantity: number; price: number }[], total: number) => {
+    const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} — ₹${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");
+    return `Hi ${customerName}! 📦✨\n\nGreat news! Your order #${orderId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\n📍 Visit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\n📞 918552084251\n\nPlease collect at your earliest convenience.\n\n— SGP Team`;
+  },
 };
 
 export async function GET() {
@@ -73,6 +78,13 @@ export async function POST(request: NextRequest) {
       message = TEMPLATES.review_request(order.customer, order.id);
     } else if (template === "restock_alert") {
       message = TEMPLATES.restock_alert(order.customer, order.items[0]?.product?.name || "your product");
+    } else if (template === "arrival_notification") {
+      const items = order.items.map((item) => ({
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+      message = TEMPLATES.arrival_notification(order.customer, order.id, items, order.total);
     } else if (customMessage) {
       message = customMessage;
     } else {

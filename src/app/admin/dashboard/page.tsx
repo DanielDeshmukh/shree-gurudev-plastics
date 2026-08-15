@@ -165,11 +165,13 @@ export default function DashboardPage() {
                       className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         order.status === "delivered"
                           ? "bg-green-500/10 text-green-400"
-                          : order.status === "shipped"
-                            ? "bg-blue-500/10 text-blue-400"
-                            : order.status === "confirmed"
-                              ? "bg-yellow-500/10 text-yellow-400"
-                              : "bg-gray-500/10 text-gray-400"
+                          : order.status === "arrived"
+                            ? "bg-purple-500/10 text-purple-400"
+                            : order.status === "shipped"
+                              ? "bg-blue-500/10 text-blue-400"
+                              : order.status === "confirmed"
+                                ? "bg-yellow-500/10 text-yellow-400"
+                                : "bg-gray-500/10 text-gray-400"
                       }`}
                     >
                       {order.status}
