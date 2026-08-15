@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { TIER_LABELS, type CustomerTier } from "@/lib/pricing";
 
 interface Customer {
   id: number;
@@ -8,6 +9,7 @@ interface Customer {
   phone: string;
   email: string | null;
   address: string | null;
+  tier: string;
   totalOrders: number;
   totalSpent: number;
   lastOrderAt: string | null;
@@ -36,6 +38,15 @@ export default function CustomersPage() {
   );
 
   const totalSpent = customers.reduce((sum, c) => sum + c.totalSpent, 0);
+
+  const handleTierChange = async (customerId: number, newTier: string) => {
+    await fetch(`/api/admin/customers/${customerId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tier: newTier }),
+    });
+    setCustomers((prev) => prev.map((c) => c.id === customerId ? { ...c, tier: newTier } : c));
+  };
 
   if (loading) {
     return (
@@ -88,6 +99,7 @@ export default function CustomersPage() {
               <tr className="border-b border-gray-800 text-gray-400">
                 <th className="px-4 py-3 font-medium">Customer</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
+                <th className="px-4 py-3 font-medium">Tier</th>
                 <th className="px-4 py-3 font-medium">Orders</th>
                 <th className="px-4 py-3 font-medium">Total Spent</th>
                 <th className="px-4 py-3 font-medium">Last Order</th>
@@ -105,6 +117,22 @@ export default function CustomersPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">{customer.phone}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={customer.tier}
+                      onChange={(e) => handleTierChange(customer.id, e.target.value)}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium outline-none border-none cursor-pointer ${
+                        customer.tier === "bulk" ? "bg-purple-500/10 text-purple-400" :
+                        customer.tier === "distributor" ? "bg-blue-500/10 text-blue-400" :
+                        customer.tier === "dealer" ? "bg-green-500/10 text-green-400" :
+                        "bg-gray-500/10 text-gray-400"
+                      }`}
+                    >
+                      {(Object.keys(TIER_LABELS) as CustomerTier[]).map((t) => (
+                        <option key={t} value={t}>{TIER_LABELS[t]}</option>
+                      ))}
+                    </select>
+                  </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
                       {customer.totalOrders}

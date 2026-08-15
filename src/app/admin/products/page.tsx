@@ -15,6 +15,10 @@ interface Product {
   color: string;
   size: string;
   price: number;
+  retailerPrice: number;
+  dealerPrice: number;
+  distributorPrice: number;
+  bulkPrice: number;
   stock: number;
   category: string;
   imageUrl: string | null;
@@ -32,6 +36,10 @@ const emptyForm = {
   brandId: "",
   imageUrl: "",
   price: "",
+  retailerPrice: "",
+  dealerPrice: "",
+  distributorPrice: "",
+  bulkPrice: "",
   stock: "",
   category: "general",
   description: "",
@@ -93,6 +101,10 @@ export default function ProductsPage() {
       brandId: String(product.brand.id),
       imageUrl: product.imageUrl || "",
       price: String(product.price),
+      retailerPrice: String(product.retailerPrice || ""),
+      dealerPrice: String(product.dealerPrice || ""),
+      distributorPrice: String(product.distributorPrice || ""),
+      bulkPrice: String(product.bulkPrice || ""),
       stock: String(product.stock),
       category: product.category,
       description: product.description || "",
@@ -312,7 +324,7 @@ export default function ProductsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Price</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">MRP (Base Price)</label>
                   <input
                     type="number"
                     value={form.price}
@@ -328,6 +340,26 @@ export default function ProductsPage() {
                     onChange={(e) => setForm({ ...form, stock: e.target.value })}
                     className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500"
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Retailer Price</label>
+                  <input type="number" value={form.retailerPrice} onChange={(e) => setForm({ ...form, retailerPrice: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Dealer Price</label>
+                  <input type="number" value={form.dealerPrice} onChange={(e) => setForm({ ...form, dealerPrice: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Distributor Price</label>
+                  <input type="number" value={form.distributorPrice} onChange={(e) => setForm({ ...form, distributorPrice: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Bulk Price</label>
+                  <input type="number" value={form.bulkPrice} onChange={(e) => setForm({ ...form, bulkPrice: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-orange-500" />
                 </div>
               </div>
               <div>

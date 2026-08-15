@@ -7,6 +7,10 @@ export interface ProductType {
   brand: BrandType;
   imageUrl: string;
   price: number;
+  retailerPrice: number;
+  dealerPrice: number;
+  distributorPrice: number;
+  bulkPrice: number;
   stock: number;
   lowStockThreshold: number;
   category: string;

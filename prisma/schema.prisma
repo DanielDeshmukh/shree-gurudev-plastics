@@ -24,6 +24,10 @@ model Product {
   brand       Brand    @relation(fields: [brandId], references: [id])
   imageUrl    String
   price       Float    @default(0)
+  retailerPrice    Float    @default(0)
+  dealerPrice      Float    @default(0)
+  distributorPrice Float    @default(0)
+  bulkPrice        Float    @default(0)
   stock             Int      @default(0)
   lowStockThreshold Int      @default(10)
   category    String   @default("general")
@@ -56,6 +60,7 @@ model Customer {
   phone       String   @unique
   email       String?
   address     String?
+  tier        String   @default("retailer")
   totalOrders Int      @default(0)
   totalSpent  Float    @default(0)
   lastOrderAt DateTime?
