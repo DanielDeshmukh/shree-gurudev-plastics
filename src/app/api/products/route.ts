@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, color, size, brandId, imageUrl, price, stock, category, description, moq, tags, lowStockThreshold } = body;
+    const { name, color, size, brandId, imageUrl, price, stock, category, description, moq, tags, lowStockThreshold, retailerPrice, dealerPrice, distributorPrice, bulkPrice } = body;
 
     const product = await db.product.create({
       data: {
@@ -70,6 +70,10 @@ export async function POST(request: NextRequest) {
         brandId: parseInt(brandId),
         imageUrl,
         price: parseFloat(price) || 0,
+        retailerPrice: parseFloat(retailerPrice) || 0,
+        dealerPrice: parseFloat(dealerPrice) || 0,
+        distributorPrice: parseFloat(distributorPrice) || 0,
+        bulkPrice: parseFloat(bulkPrice) || 0,
         stock: parseInt(stock) || 0,
         category: category || "general",
         description: description || null,
