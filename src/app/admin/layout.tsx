@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/admin/reviews", label: "Reviews", icon: "⭐" },
   { href: "/admin/inventory", label: "Inventory", icon: "🔔" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
+  { href: "/admin/followup", label: "WhatsApp Follow-up", icon: "💬" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
