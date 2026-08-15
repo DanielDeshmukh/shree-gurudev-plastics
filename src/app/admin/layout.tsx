@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   MdDashboard,
@@ -46,45 +45,17 @@ const navLinks = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    if (pathname === "/admin/login") {
-      setChecking(false);
-      return;
-    }
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.authenticated) {
-          router.replace("/admin/login");
-        } else {
-          setChecking(false);
-        }
-      })
-      .catch(() => {
-        router.replace("/admin/login");
-      });
-  }, [pathname, router]);
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.replace("/admin/login");
-  };
+  const router = useRouter();
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  if (checking) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
-      </div>
-    );
-  }
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.replace("/admin/login");
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950 text-gray-100">
