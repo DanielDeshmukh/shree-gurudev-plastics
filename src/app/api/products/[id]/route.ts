@@ -40,7 +40,22 @@ export async function PUT(
     if (body.size !== undefined) data.size = body.size;
     if (body.brandId !== undefined) data.brandId = parseInt(body.brandId);
     if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl;
-    if (body.price !== undefined) data.price = parseFloat(body.price);
+    if (body.price !== undefined) {
+      const newPrice = parseFloat(body.price);
+      const existing = await db.product.findUnique({ where: { id: parseInt(id) }, select: { price: true } });
+      if (existing && existing.price !== newPrice) {
+        await db.priceHistory.create({
+          data: {
+            productId: parseInt(id),
+            oldPrice: existing.price,
+            newPrice,
+            changedBy: body.changedBy || "admin",
+            reason: body.priceReason || null,
+          },
+        });
+      }
+      data.price = newPrice;
+    }
     if (body.stock !== undefined) data.stock = parseInt(body.stock);
     if (body.category !== undefined) data.category = body.category;
     if (body.description !== undefined) data.description = body.description;
