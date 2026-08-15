@@ -24,7 +24,8 @@ model Product {
   brand       Brand    @relation(fields: [brandId], references: [id])
   imageUrl    String
   price       Float    @default(0)
-  stock       Int      @default(0)
+  stock             Int      @default(0)
+  lowStockThreshold Int      @default(10)
   category    String   @default("general")
   description String?
   moq         Int      @default(1)

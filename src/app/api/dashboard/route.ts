@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [totalProducts, totalOrders, totalBrands, revenueResult, recentOrders, topProducts] =
+    const [totalProducts, totalOrders, totalBrands, revenueResult, recentOrders, topProducts, allProducts] =
       await Promise.all([
         db.product.count(),
         db.order.count(),
@@ -26,7 +26,10 @@ export async function GET() {
           orderBy: { _count: { id: "desc" } },
           take: 5,
         }),
+        db.product.findMany({ select: { stock: true, lowStockThreshold: true } }),
       ]);
+
+    const lowStockCount = allProducts.filter((p) => p.stock <= p.lowStockThreshold).length;
 
     const topProductIds = topProducts.map((tp) => tp.productId);
     const topProductDetails = await db.product.findMany({
@@ -43,6 +46,7 @@ export async function GET() {
       totalOrders,
       totalRevenue: revenueResult._sum.total || 0,
       totalBrands,
+      lowStockCount,
       recentOrders,
       topProducts: topProductsWithCount,
     });
