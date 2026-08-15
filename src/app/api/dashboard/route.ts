@@ -9,11 +9,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [totalProducts, totalOrders, totalBrands, revenueResult, recentOrders, topProducts, allProducts] =
+    const [totalProducts, totalOrders, totalBrands, totalCustomers, revenueResult, recentOrders, topProducts, allProducts] =
       await Promise.all([
         db.product.count(),
         db.order.count(),
         db.brand.count(),
+        db.customer.count(),
         db.order.aggregate({ _sum: { total: true } }),
         db.order.findMany({
           take: 5,
@@ -46,6 +47,7 @@ export async function GET() {
       totalOrders,
       totalRevenue: revenueResult._sum.total || 0,
       totalBrands,
+      totalCustomers,
       lowStockCount,
       recentOrders,
       topProducts: topProductsWithCount,

@@ -32,6 +32,36 @@ export async function POST(request: NextRequest) {
       0
     );
 
+    const existingCustomer = await db.customer.findUnique({
+      where: { phone },
+    });
+
+    let customerId: number | undefined;
+    if (existingCustomer) {
+      await db.customer.update({
+        where: { id: existingCustomer.id },
+        data: {
+          totalOrders: existingCustomer.totalOrders + 1,
+          totalSpent: existingCustomer.totalSpent + total,
+          lastOrderAt: new Date(),
+          address: address || existingCustomer.address,
+        },
+      });
+      customerId = existingCustomer.id;
+    } else {
+      const newCustomer = await db.customer.create({
+        data: {
+          name: customer,
+          phone,
+          address: address || null,
+          totalOrders: 1,
+          totalSpent: total,
+          lastOrderAt: new Date(),
+        },
+      });
+      customerId = newCustomer.id;
+    }
+
     const order = await db.order.create({
       data: {
         customer,
@@ -39,6 +69,7 @@ export async function POST(request: NextRequest) {
         address: address || null,
         notes: notes || null,
         total,
+        customerId: customerId || null,
         items: {
           create: items.map((item: { productId: number; quantity: number; price: number }) => ({
             productId: item.productId,
