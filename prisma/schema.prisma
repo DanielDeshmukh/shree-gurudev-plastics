@@ -228,3 +228,15 @@ model DeliverySchedule {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model LedgerEntry {
+  id           Int      @id @default(autoincrement())
+  customerId   Int
+  orderId      Int?
+  type         String
+  amount       Float
+  balance      Float
+  description  String
+  referenceNo  String?
+  createdAt    DateTime @default(now())
+}
