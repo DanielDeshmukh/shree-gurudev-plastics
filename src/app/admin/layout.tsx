@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/admin/reviews", label: "Reviews", icon: "⭐" },
   { href: "/admin/inventory", label: "Inventory", icon: "🔔" },
   { href: "/admin/price-lock", label: "Price Lock", icon: "🔒" },
+  { href: "/admin/recurring-orders", label: "Recurring Orders", icon: "🔄" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: "💬" },
 ];
