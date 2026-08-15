@@ -7,7 +7,6 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 ---
 
 [![CI](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml/badge.svg)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml)
-[![Deploy](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/deploy.yml/badge.svg)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/deploy.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
@@ -34,73 +33,141 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 
 ## Features
 
-### SEO Suite
+### Customer-Facing
 
-A complete search engine optimization system covering meta tags, Open Graph, Twitter cards, JSON-LD structured data, dynamic sitemaps, and robots.txt across every page of the website.
+| Feature | Description |
+|---------|-------------|
+| **SEO Suite** | Meta tags, Open Graph, Twitter cards, JSON-LD structured data, dynamic sitemaps, robots.txt across every page |
+| **Aggressive SEO** | 80+ targeted keywords covering product, location, and business terms. LocalBusiness schema with geo-coordinates, FAQ schema, Breadcrumb schema |
+| **Server-Side Pagination** | Products loaded 24 per page with Previous/Next, page numbers, ellipsis, and scroll-to-top |
+| **WhatsApp Cart** | Add multiple products, adjust quantities, send single formatted WhatsApp message with full order details |
+| **Product Comparison** | Compare up to 4 products side-by-side — image, name, brand, price, color, size, stock status |
+| **Minimum Order Quantity** | Admin-set MOQ per product, enforced in cart, badges on product cards |
+| **Request a Quote** | Dedicated form at `/quote` — name, phone, email, company, category, quantity, delivery details. Sends formatted WhatsApp message |
+| **Dealer Locator** | Interactive map with store locations, search by area, distance calculator |
+| **Product Tags** | Filterable tag system for quick product discovery |
+| **Recently Viewed** | Tracks and displays recently browsed products |
+| **Wishlist** | Save products for later, persistent across sessions |
+| **Multi-language** | English/Hindi toggle for broader audience reach |
+| **Product Reviews** | Star ratings and text reviews on product pages |
+| **Delivery Pincode Check** | Check delivery availability by pincode before ordering |
+| **Image Lazy Loading** | Blur placeholder + lazy loading for faster page loads |
+| **PWA Support** | Installable as app, offline fallback, service worker caching |
+| **Error Pages** | Polished 404, 500, and global error boundaries for public and admin |
 
-Without SEO, the website is invisible to Google. Every product, brand, and category page needs to be properly indexed so that when someone searches "plastic chair Bhayander" or "bulk plastic seller Mumbai", our client's website appears — not the competitor's.
+### Admin Panel
 
-This is the foundation of digital visibility. Proper SEO means free, organic traffic from Google. Every day someone searches for plastic products and finds our client instead of a competitor, that's a potential customer without spending a single rupee on ads. This compounds over time — the more pages indexed, the more keywords we rank for, the more enquiries come in.
+| Feature | Description |
+|---------|-------------|
+| **Dashboard** | Revenue stats, order counts, customer metrics, low stock alerts |
+| **Product Management** | CRUD products with images, categories, pricing tiers, MOQ, stock levels |
+| **Brand Management** | Manage brand catalogs (Aristo, KG Plast, Mango Chairs) |
+| **Order Management** | View, update, and track all customer orders |
+| **GST Invoice** | Auto-generated invoices with CGST/SGST/IGST, HSN codes, format `SGP/YYMM/NNNN` |
+| **Tiered Pricing** | 4 tiers (Retailer/Dealer/Distributor/Bulk) with auto-calculation based on customer history |
+| **Price Lock** | Lock product prices for 24h–7d, full price change audit trail |
+| **Recurring Orders** | Subscription orders (daily/weekly/biweekly/monthly) with pause/resume/cancel |
+| **Supplier Management** | Supplier database with contact details, GST numbers |
+| **Purchase Orders** | Create POs, track status (pending → ordered → received), auto-calculate totals |
+| **Delivery Scheduling** | Time slot management, delivery assignment, dispatch tracking |
+| **Credit/Ledger** | Customer credit accounts, running balance, payment tracking |
+| **Product Bundles** | Create combo deals with auto-calculated discounts |
+| **Customer Database** | Auto-created on order, tracks total orders, spending, customer tier |
+| **Analytics Dashboard** | Sales timeline, category breakdown, top products, top customers (Recharts) |
+| **Inventory Alerts** | Low stock notifications with configurable thresholds |
+| **WhatsApp Follow-up** | Order confirmation, delivery follow-up, review request, restock alert templates |
+| **Excel Reports** | Daily and monthly sales reports in `.xlsx` format with branded formatting |
+| **Single Admin Lockdown** | Only one admin account permitted, enforced at ORM, login, and middleware levels |
+
+### Security & Infrastructure
+
+| Feature | Description |
+|---------|-------------|
+| **Server-Side Auth** | JWT + bcrypt, httpOnly cookies, 7-day expiry |
+| **Middleware Protection** | All `/admin/*` routes validated server-side before page load |
+| **Env-Based Credentials** | Secrets in `.env`, not hardcoded. Required vars: `JWT_SECRET`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` |
+| **Error Handling** | Global error boundary, 404/500 pages, standardized API error responses |
+| **CI/CD** | GitHub Actions — lint, typecheck, build on every push/PR to main |
+| **CSS Variables** | Theme color via `@theme` in `globals.css` — change entire theme in one place |
+| **React Icons** | All UI icons from `react-icons/md` — no emoji characters in UI |
 
 ---
 
-### Aggressive SEO Strategy
+## Tech Stack
 
-An enhanced SEO layer with 80+ targeted keywords covering product terms (plastic chair, plastic bucket), location terms (Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, Palghar), and business terms (bulk seller, distributor, wholesale, manufacturer). Includes LocalBusiness schema with geo-coordinates, FAQ schema for rich snippets, Breadcrumb schema, category landing pages, About page, and Contact page — all keyword-optimized.
-
-Basic SEO isn't enough to beat competitors. We need to target every possible search combination a buyer might use — "plastic bucket wholesale Bhayander", "buy plastic chairs online Mumbai", "best plastic furniture dealer near me". Location-specific keywords ensure we dominate local search results. FAQ schema creates rich snippets (expanded search results) that attract more clicks.
-
-When a retailer in Bhayander searches "wholesale plastic chairs", our client appears #1. When someone in Virar searches "plastic container supplier near me", our client appears. This captures demand at the exact moment buyers are looking to purchase. The LocalBusiness schema tells Google exactly where the business is and what it sells, making it the go-to result for the entire region.
-
----
-
-### Server-Side Pagination
-
-Products are loaded 24 per page instead of all 866 at once. Includes Previous/Next buttons, page numbers with ellipsis for large ranges, and smooth scroll-to-top on page change.
-
-Loading 866 products at once is slow, wastes bandwidth, and creates a poor user experience — especially on mobile phones where most buyers browse. Pagination makes the site fast and usable.
-
-Fast websites convert better. A buyer who finds the site through Google will leave if it takes more than 3 seconds to load. Pagination keeps load times under 1 second, meaning more visitors stay, browse more products, and ultimately send more WhatsApp enquiries. Google also ranks fast websites higher, so this indirectly improves SEO.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15.5 (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS v4 |
+| Database | SQLite + Prisma 6.12 |
+| Image Storage | Cloudinary |
+| Authentication | JWT + bcryptjs |
+| Charts | Recharts |
+| Excel Export | Exceljs |
+| Icons | react-icons |
+| PWA | Service Worker + Manifest |
 
 ---
 
-### WhatsApp Cart
+## Getting Started
 
-A cart system where buyers can add multiple products, adjust quantities, and send a single formatted WhatsApp message listing all selected products with quantities, colors, sizes, and total value.
+```bash
+# Clone
+git clone https://github.com/DanielDeshmukh/shree-gurudev-plastics.git
+cd shree-gurudev-plastics
 
-Buyers don't usually want just one product. A retailer might need 5 different chairs, 3 types of buckets, and 10 containers. Without a cart, they'd have to send 18 separate WhatsApp messages — tedious and unprofessional. The cart lets them build an entire order and enquire once.
+# Install
+npm install --legacy-peer-deps
 
-This reduces friction in the buying process. The easier it is to enquire, the more enquiries come in. A single WhatsApp message with 18 products is also easier for the client to process — one reply with a combined quote instead of 18 separate conversations. This means faster response times, happier customers, and more closed deals.
+# Setup database
+npx prisma generate
+npx prisma db push
+npx tsx prisma/seed.ts
+
+# Run
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+### Admin Access
+
+| Field | Value |
+|-------|-------|
+| URL | `http://localhost:3000/admin/login` |
+| Username | `shreegurudev` |
+| Password | `SGP@admin2026` |
 
 ---
 
-### Product Comparison
+## Project Structure
 
-Buyers can select up to 4 products and compare them side-by-side in a table showing image, name, brand, price, color, size, category, stock status, and enquiry button.
-
-Plastic products come in many variations — same chair in different colors, same bucket in different sizes. Buyers need to compare options before deciding. Without comparison, they have to keep going back and forth between product pages, which is frustrating.
-
-When buyers can compare products easily, they make faster decisions. Faster decisions mean more enquiries per visit. Comparison also showcases the breadth of the product catalog — a buyer looking at one chair might discover another color or size they prefer, leading to a larger order than originally planned.
-
----
-
-### Minimum Order Quantity (MOQ)
-
-Each product can have a minimum order quantity set by the admin. The cart enforces this minimum — buyers can't reduce quantity below the MOQ. MOQ badges appear on product cards and detail pages.
-
-As a wholesale distributor, selling 1 or 2 items isn't profitable. The client needs to ensure every order meets a minimum threshold to justify processing, packaging, and delivery. MOQ communicates this clearly upfront, avoiding awkward conversations later.
-
-MOQ ensures every enquiry is worth the client's time. Instead of fielding dozens of small enquiries that won't result in meaningful revenue, the client gets fewer but larger, more profitable enquiries. It also positions the business as a serious wholesale operation, attracting genuine bulk buyers and filtering out casual retail shoppers.
-
----
-
-### Request a Quote
-
-A dedicated form at `/quote` where buyers can submit detailed quote requests including name, phone, email, company, product category, quantity, description, brand preference, delivery location, and expected date. The form sends a formatted WhatsApp message with all details.
-
-Not every buyer knows exactly what they want from the catalog. Some need custom quantities, specific combinations, or products not listed. A quote request form captures all the details upfront, so the client can provide an accurate quote without back-and-forth messages.
-
-Quote requests capture high-intent buyers who are ready to purchase but need pricing first. These are the most valuable leads. By making it easy to request a quote, the client captures demand that would otherwise go to a competitor who responds faster. The structured format also means the client can respond faster with accurate pricing, closing deals quicker.
+```
+src/
+├── app/
+│   ├── admin/          # 18 admin pages (dashboard, products, orders, invoices, etc.)
+│   ├── api/            # REST API routes (auth, products, orders, admin CRUD)
+│   ├── products/       # Product listing with filters
+│   ├── product/        # Product detail pages
+│   ├── category/       # Category landing pages
+│   ├── brand/          # Brand pages
+│   ├── about/          # About page
+│   ├── contact/        # Contact page
+│   ├── locations/      # Dealer locations
+│   ├── quote/          # Quote request form
+│   ├── compare/        # Product comparison
+│   ├── wishlist/       # Saved products
+│   └── offline/        # PWA offline fallback
+├── components/         # Reusable UI components
+├── context/            # React context providers (Cart, Compare, Wishlist, Language)
+├── lib/                # Utilities (auth, db, gst, pricing, pincodes, seo)
+└── types/              # TypeScript interfaces
+prisma/
+├── schema.prisma       # 15 database models
+├── seed.ts             # Admin user seeding
+└── dev.db              # SQLite database
+```
 
 ---
 
