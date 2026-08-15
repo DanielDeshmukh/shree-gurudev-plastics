@@ -22,6 +22,9 @@ export default function Navbar() {
           <Link href="/products" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
             Products
           </Link>
+          <Link href="/locations" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+            Locations
+          </Link>
           <a
             href="https://wa.me/918552084251"
             target="_blank"
@@ -75,6 +78,9 @@ export default function Navbar() {
           </Link>
           <Link href="/products" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
             Products
+          </Link>
+          <Link href="/locations" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 hover:text-orange-500">
+            Locations
           </Link>
           <a
             href="https://wa.me/918552084251"
