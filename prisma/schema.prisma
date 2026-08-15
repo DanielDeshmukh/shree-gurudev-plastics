@@ -201,3 +201,30 @@ model PurchaseOrder {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model DeliverySlot {
+  id        Int      @id @default(autoincrement())
+  label     String
+  startTime String
+  endTime   String
+  maxOrders Int      @default(5)
+  active    Boolean  @default(true)
+}
+
+model DeliverySchedule {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  customerId  Int
+  slotId      Int
+  date        DateTime
+  address     String
+  pincode     String
+  contactPhone String
+  status      String   @default("scheduled")
+  driverName  String?
+  driverPhone String?
+  deliveredAt DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
