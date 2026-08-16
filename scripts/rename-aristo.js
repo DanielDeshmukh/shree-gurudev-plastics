@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const NIM_API_KEY = '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';
+const NIM_API_KEY = 'process.env.NIM_API_KEY';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 const NIM_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const ARISTO_DIR = path.join(__dirname, '..', 'aristo-images');

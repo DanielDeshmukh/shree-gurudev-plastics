@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const NIM_KEY = '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';
+const NIM_KEY = 'process.env.NIM_API_KEY';
 
 // Test with a known colorful image
 const img = fs.readFileSync(path.join(__dirname, '..', 'mango-images', 'cabinets', 'checkmate-devine-big', 'img1.png'));

@@ -46,7 +46,7 @@ const MANGO_COLORS = [
 ];
 
 const COLOR_LIST = MANGO_COLORS.map(c => `${c.code}=${c.name}`).join(', ');
-const NIM_KEY = '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';
+const NIM_KEY = 'process.env.NIM_API_KEY';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 
 function callNim(imageBase64) {
@@ -87,7 +87,7 @@ const CATEGORIES = ['horeca-chairs', 'armless-chairs'];
 
 (async () => {
   console.log('=== SCRIPT 1: horeca-chairs + armless-chairs ===');
-  console.log('Key: nvapi-oir1...2D2mE8\n');
+  console.log('Key: ' + (NIM_KEY || '').slice(0,12) + '...\n');
 
   let renamed = 0, failed = 0, skipped = 0;
 

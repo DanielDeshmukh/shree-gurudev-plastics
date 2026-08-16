@@ -50,7 +50,7 @@ const CODE_TO_COLOR = {};
 MANGO_COLORS.forEach(c => { CODE_TO_COLOR[c.code] = c; });
 
 // Key 3 - fresh
-const NIM_KEY = process.argv[2] || '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';
+const NIM_KEY = process.argv[2] || 'process.env.NIM_API_KEY';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 
 const VALID_CODES_STR = MANGO_COLORS.map(c => c.code).join(', ');

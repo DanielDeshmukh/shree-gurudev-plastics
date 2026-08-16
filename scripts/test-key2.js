@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const NIM_KEY = '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';
+const NIM_KEY = 'process.env.NIM_API_KEY';
 
 // Test with known colorful images
 const tests = [

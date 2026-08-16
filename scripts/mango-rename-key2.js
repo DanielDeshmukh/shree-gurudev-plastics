@@ -46,7 +46,7 @@ const MANGO_COLORS = [
 ];
 
 const COLOR_LIST = MANGO_COLORS.map(c => `${c.code}=${c.name}`).join(', ');
-const NIM_KEY = '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';
+const NIM_KEY = 'process.env.NIM_API_KEY';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 
 function callNim(imageBase64) {
@@ -87,7 +87,7 @@ const CATEGORIES = ['cabinets', 'stools', 'baby-chairs', 'household'];
 
 (async () => {
   console.log('=== SCRIPT 2: cabinets + stools + baby-chairs + household ===');
-  console.log('Key: nvapi-JBnV...0SR6Z\n');
+  console.log('Key: ' + (NIM_KEY || '').slice(0,12) + '...\n');
 
   let renamed = 0, failed = 0, skipped = 0;
 

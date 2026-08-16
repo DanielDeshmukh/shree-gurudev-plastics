@@ -15,7 +15,7 @@ const req = https.request({
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer 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',
+    'Authorization': 'Bearer process.env.NIM_API_KEY',
     'Content-Length': Buffer.byteLength(body)
   }
 }, (res) => {
