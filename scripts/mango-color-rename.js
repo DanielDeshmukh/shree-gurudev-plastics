@@ -46,7 +46,7 @@ const MANGO_COLORS = [
 ];
 
 const COLOR_LIST = MANGO_COLORS.map(c => `${c.code}=${c.name}`).join(', ');
-const NIM_KEY = process.env.NIM_API_KEY;
+const NIM_KEY = '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';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 
 function callNimVision(imageBase64) {

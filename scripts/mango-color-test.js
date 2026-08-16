@@ -47,7 +47,7 @@ const MANGO_COLORS = [
   { name: 'Gold', code: 'GLD', hex: '#DAA520' },
 ];
 
-const NIM_KEY = process.env.NIM_API_KEY;
+const NIM_KEY = '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';
 const NIM_MODEL = 'meta/llama-3.2-11b-vision-instruct';
 
 function hexToRgb(hex) {

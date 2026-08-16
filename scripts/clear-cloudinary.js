@@ -1,9 +1,9 @@
 const https = require('https');
 
-const API_KEY = process.env.CLOUDINARY_API_KEY;
-const API_SECRET = process.env.CLOUDINARY_API_SECRET;
+const API_KEY = '395894384733772';
+const API_SECRET = 'OarqaVLxrJiXvlutlgNx0IJ_Xb8';
 const AUTH = Buffer.from(`${API_KEY}:${API_SECRET}`).toString('base64');
-const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+const CLOUD_NAME = 'ieszjiwe';
 
 function apiCall(method, path) {
   return new Promise((resolve, reject) => {
