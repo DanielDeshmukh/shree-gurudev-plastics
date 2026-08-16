@@ -61,19 +61,12 @@ function findClosest(r, g, b) {
 async function retry() {
   const base = path.join(__dirname, '..', 'mango-images');
   const remaining = [
-    'medium-chairs/fazo/img1.png',
-    'medium-chairs/mango-1006/img1.png',
-    'medium-chairs/shine/img2.png',
-    'medium-chairs/sun/img2.png',
-    'premium-chairs/amazing/img1.png',
-    'premium-chairs/miracle/img2.png',
-    'premium-chairs/neo/img1.png',
-    'premium-chairs/nirali/img2.png',
-    'premium-chairs/sigma/img2.png',
-    'premium-chairs/vanilla/img1.png',
-    'stools/wazir/img2.png',
-    'tables/sapphire/img1.png',
-    'tables/sapphire-pine/img2.png'
+    'armless-chairs/bistro/img11.png',
+    'armless-chairs/shalimar/img19.png',
+    'baby-chairs/peppy/img15.png',
+    'baby-chairs/peppy/img9.png',
+    'cabinets/spencer-small/img38.png',
+    'horeca-chairs/conwood/img48.png'
   ];
 
   for (const rel of remaining) {
@@ -85,15 +78,38 @@ async function retry() {
     const ext = rel.match(/\.(\w+)$/)[1];
     
     try {
-      // Try simpler approach: just resize to 1x1
       const { data, info } = await sharp(filePath)
-        .resize(1, 1, { fit: 'cover' })
+        .resize(30, 30, { fit: 'cover', position: 'centre' })
         .removeAlpha()
         .raw()
         .toBuffer({ resolveWithObject: true });
 
-      const r = data[0], g = data[1], b = data[2];
-      const { color, distance } = findClosest(r, g, b);
+      const w = info.width;
+      const margin = 5;
+      const rVals = [], gVals = [], bVals = [];
+      
+      for (let y = margin; y < w - margin; y++) {
+        for (let x = margin; x < w - margin; x++) {
+          const idx = (y * w + x) * 3;
+          const r = data[idx], g = data[idx+1], b = data[idx+2];
+          const br = (r + g + b) / 3;
+          if (br > 25 && br < 235) { rVals.push(r); gVals.push(g); bVals.push(b); }
+        }
+      }
+
+      if (rVals.length < 3) {
+        // Use all pixels as fallback
+        for (let y = 0; y < w; y++) {
+          for (let x = 0; x < w; x++) {
+            const idx = (y * w + x) * 3;
+            rVals.push(data[idx]); gVals.push(data[idx+1]); bVals.push(data[idx+2]);
+          }
+        }
+      }
+
+      rVals.sort((a,b) => a-b); gVals.sort((a,b) => a-b); bVals.sort((a,b) => a-b);
+      const mid = Math.floor(rVals.length / 2);
+      const { color, distance } = findClosest(rVals[mid], gVals[mid], bVals[mid]);
       
       const newName = `${slug}_${color.filename}.${ext}`;
       let finalPath = path.join(path.dirname(filePath), newName);
@@ -104,7 +120,7 @@ async function retry() {
       }
       
       fs.renameSync(filePath, finalPath);
-      console.log(`${rel} -> ${path.basename(finalPath)} (${color.name} d=${distance.toFixed(0)} RGB(${r},${g},${b}))`);
+      console.log(`${rel} -> ${path.basename(finalPath)} (${color.name} d=${distance.toFixed(0)})`);
     } catch(e) {
       console.log(`FAILED ${rel}: ${e.message}`);
     }
