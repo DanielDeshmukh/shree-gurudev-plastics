@@ -1,22 +1,15 @@
 # Python
-catalog_extractor/venv/
-catalog_extractor/__pycache__/
 *.pyc
 
-# Large files (images -> Cloudinary, PDFs -> local backup)
-catalog_extractor/output/
-catalog_extractor/catalogs/
-catalog_extractor/temp/
+# Scraped images (too large for git, will upload to Cloudinary)
+mango-images/
+aristo-images/
+reego-images/
+catalog-output/
 
 # Secrets
-catalog_extractor/config.json
 .env*
 !.env.example
-
-# Dev artifacts
-catalog_extractor/progress.json
-catalog_extractor/unidentifiable_review.json
-catalog_extractor/test.png
 
 # Node/Next.js
 node_modules/
