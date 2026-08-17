@@ -11,6 +11,7 @@ import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import { db } from "@/lib/db";
+import ColorVariantPicker from "@/components/ColorVariantPicker";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -43,7 +44,7 @@ async function getProduct(id: string) {
   try {
     return await db.product.findUnique({
       where: { id: parseInt(id) },
-      include: { brand: true },
+      include: { brand: true, images: { orderBy: { sortOrder: "asc" } } },
     });
   } catch {
     return null;
@@ -118,12 +119,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative aspect-square bg-gray-100">
-              {product.imageUrl ? (
-                <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
-              )}
+            <div className="p-4 md:p-8">
+              <ColorVariantPicker
+                images={(product as any).images || []}
+                mainImage={product.imageUrl || ""}
+                productName={product.name}
+              />
             </div>
 
             <div className="p-4 md:p-8 flex flex-col justify-center">
@@ -161,12 +162,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     <span className="text-gray-900 text-sm font-medium">{product.size}</span>
                   </div>
                 )}
-        <ReviewList productId={product.id} />
 
-        {product.category && (
+                {product.category && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Category</span>
                     <Link href={`/category/${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
+                  </div>
+                )}
+
+                {((product as any).height || (product as any).width || (product as any).depth || (product as any).weight) && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 text-sm w-20">Dimensions</span>
+                    <span className="text-gray-900 text-sm font-medium">
+                      {[(product as any).height && `H: ${(product as any).height} cm`, (product as any).width && `W: ${(product as any).width} cm`, (product as any).depth && `D: ${(product as any).depth} cm`].filter(Boolean).join(' × ')}
+                      {(product as any).weight ? ` | Weight: ${(product as any).weight} kg` : ''}
+                    </span>
                   </div>
                 )}
               </div>
@@ -260,6 +270,30 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline">{product.category}</Link>
               </div>
             )}
+            {(product as any).height && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Height:</span>
+                <span className="text-gray-900">{(product as any).height} cm</span>
+              </div>
+            )}
+            {(product as any).width && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Width:</span>
+                <span className="text-gray-900">{(product as any).width} cm</span>
+              </div>
+            )}
+            {(product as any).depth && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Depth:</span>
+                <span className="text-gray-900">{(product as any).depth} cm</span>
+              </div>
+            )}
+            {(product as any).weight && (
+              <div className="flex gap-2">
+                <span className="text-gray-500 w-24">Weight:</span>
+                <span className="text-gray-900">{(product as any).weight} kg</span>
+              </div>
+            )}
           </div>
         </section>
 
@@ -283,6 +317,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="mt-8">
+          <ReviewList productId={product.id} />
         </section>
 
         {related.length > 0 && (

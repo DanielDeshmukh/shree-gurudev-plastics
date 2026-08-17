@@ -33,6 +33,10 @@ model Product {
   lowStockThreshold Int      @default(10)
   category    String   @default("general")
   description String?
+  height      Float?
+  width       Float?
+  depth       Float?
+  weight      Float?
   moq         Int      @default(1)
   tags        String   @default("")
   hsnCode     String   @default("3924")

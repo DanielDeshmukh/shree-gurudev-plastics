@@ -66,6 +66,10 @@ export async function PUT(
     if (body.dealerPrice !== undefined) data.dealerPrice = parseFloat(body.dealerPrice) || 0;
     if (body.distributorPrice !== undefined) data.distributorPrice = parseFloat(body.distributorPrice) || 0;
     if (body.bulkPrice !== undefined) data.bulkPrice = parseFloat(body.bulkPrice) || 0;
+    if (body.height !== undefined) data.height = parseFloat(body.height) || null;
+    if (body.width !== undefined) data.width = parseFloat(body.width) || null;
+    if (body.depth !== undefined) data.depth = parseFloat(body.depth) || null;
+    if (body.weight !== undefined) data.weight = parseFloat(body.weight) || null;
 
     const product = await db.product.update({
       where: { id: parseInt(id) },
