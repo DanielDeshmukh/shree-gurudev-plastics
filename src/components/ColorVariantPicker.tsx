@@ -13,11 +13,25 @@ type ProductImage = {
 function parseColor(rawColor: string, productName: string): string {
   let c = rawColor || "Other";
   const prefix = productName.toLowerCase().trim();
+  const prefixHyphen = prefix.replace(/\s+/g, "-");
   if (c.toLowerCase().startsWith(prefix + " ")) {
     c = c.substring(prefix.length + 1);
+  } else if (c.toLowerCase().startsWith(prefixHyphen + " ")) {
+    c = c.substring(prefixHyphen.length + 1);
+  } else if (c.toLowerCase().startsWith(prefixHyphen + "-")) {
+    c = c.substring(prefixHyphen.length + 1);
   }
   c = c.replace(/\s+\d+$/, "").trim();
   return c || "Other";
+}
+
+function matchesProduct(rawColor: string, productName: string): boolean {
+  const prefix = productName.toLowerCase().trim();
+  const prefixHyphen = prefix.replace(/\s+/g, "-");
+  const c = (rawColor || "").toLowerCase().trim();
+  return c.startsWith(prefix + " ") || c.startsWith(prefix + "-") ||
+         c.startsWith(prefixHyphen + " ") || c.startsWith(prefixHyphen + "-") ||
+         c === prefix || c === prefixHyphen;
 }
 
 function capitalize(s: string) {
@@ -36,15 +50,10 @@ export default function ColorVariantPicker({
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [angleIdx, setAngleIdx] = useState(0);
 
-  const validImages = useMemo(() => {
-    const prefix = productName.toLowerCase().trim();
-    return images.filter(img => {
-      const c = (img.color || "").toLowerCase().trim();
-      return c.startsWith(prefix + " ") || c === prefix;
-    });
-  }, [images, productName]);
-
   const colorGroups = useMemo(() => {
+    let validImages = images.filter(img => matchesProduct(img.color || "", productName));
+    if (validImages.length === 0) validImages = images;
+
     const groups: Record<string, ProductImage[]> = {};
     for (const img of validImages) {
       const baseColor = parseColor(img.color || "", productName);
@@ -55,7 +64,7 @@ export default function ColorVariantPicker({
       groups[key].sort((a, b) => a.sortOrder - b.sortOrder);
     }
     return groups;
-  }, [validImages, productName]);
+  }, [images, productName]);
 
   const colorNames = Object.keys(colorGroups);
   const hasVariants = colorNames.length > 1;
