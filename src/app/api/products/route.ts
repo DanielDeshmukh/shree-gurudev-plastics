@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
     const brand = searchParams.get("brand");
     const search = searchParams.get("search");
     const category = searchParams.get("category");
+    const sort = searchParams.get("sort") || "newest";
+    const minPrice = parseFloat(searchParams.get("minPrice") || "");
+    const maxPrice = parseFloat(searchParams.get("maxPrice") || "");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "24");
     const skip = (page - 1) * limit;
@@ -29,15 +32,40 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
-    const [products, total] = await Promise.all([
+    if (!isNaN(minPrice) || !isNaN(maxPrice)) {
+      where.price = {};
+      if (!isNaN(minPrice)) (where.price as Record<string, number>).gte = minPrice;
+      if (!isNaN(maxPrice)) (where.price as Record<string, number>).lte = maxPrice;
+    }
+
+    const orderBy = (() => {
+      switch (sort) {
+        case "price-asc": return { price: "asc" as const };
+        case "price-desc": return { price: "desc" as const };
+        case "name-asc": return { name: "asc" as const };
+        case "name-desc": return { name: "desc" as const };
+        case "oldest": return { createdAt: "asc" as const };
+        case "newest":
+        default: return { createdAt: "desc" as const };
+      }
+    })();
+
+    const [products, total, priceStats, categories] = await Promise.all([
       db.product.findMany({
         where,
         include: { brand: true },
-        orderBy: { createdAt: "desc" },
+        orderBy,
         skip,
         take: limit,
       }),
       db.product.count({ where }),
+      db.product.aggregate({ where: { ...where, price: { ...where.price as any, gt: 0 } }, _min: { price: true }, _max: { price: true } }),
+      db.product.findMany({
+        where: { ...where, category: { not: "" } },
+        select: { category: true },
+        distinct: ["category"],
+        orderBy: { category: "asc" },
+      }),
     ]);
 
     return NextResponse.json({
@@ -48,6 +76,11 @@ export async function GET(request: NextRequest) {
         total,
         totalPages: Math.ceil(total / limit),
       },
+      priceRange: {
+        min: priceStats._min.price ?? 0,
+        max: priceStats._max.price ?? 0,
+      },
+      categories: categories.map((c) => c.category).filter(Boolean),
     });
   } catch (error) {
     return NextResponse.json(

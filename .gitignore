@@ -28,3 +28,18 @@ public/products/
 PROJECT_DOCUMENTATION.md
 
 backups/
+
+# Local scripts (scraping, seeding, verification utilities)
+scripts/
+
+# Runtime state
+.upload-checkpoint.json
+upload-log.txt
+upload-errors.txt
+
+# Analysis artifacts
+clustering-report.json
+horeca-clustering-report.json
+clustering-verify.html
+image-verification-decisions.json
+image-verification-decisions copy.json
