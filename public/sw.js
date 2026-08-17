@@ -1,4 +1,4 @@
-const CACHE_NAME = "sgp-v1";
+const CACHE_NAME = "sgp-v2";
 const STATIC_ASSETS = [
   "/",
   "/products",
@@ -33,7 +33,6 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
@@ -51,17 +50,24 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const isStaticPage = STATIC_ASSETS.includes(url.pathname);
+  const isAsset = url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/);
+
+  if (!isStaticPage && !isAsset) {
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
-      const fetched = fetch(request).then((response) => {
+      if (cached) return cached;
+
+      return fetch(request).then((response) => {
         if (response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }
         return response;
-      }).catch(() => cached);
-
-      return cached || fetched;
+      });
     })
   );
 });
