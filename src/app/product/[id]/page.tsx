@@ -10,14 +10,12 @@ import ProductTags from "@/components/ProductTags";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
-import { apiFetch } from "@/lib/api-fetch";
+import { db } from "@/lib/db";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   try {
-    const res = await apiFetch(`/api/products/${id}`);
-    const data = await res.json();
-    const product = data.product;
+    const product = await db.product.findUnique({ where: { id: parseInt(id) }, include: { brand: true } });
     if (!product) return { title: "Product Not Found" };
     const brandName = product.brand?.name || "";
     const cat = product.category || "";
@@ -43,10 +41,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 async function getProduct(id: string) {
   try {
-    const res = await apiFetch(`/api/products/${id}`);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.product || null;
+    return await db.product.findUnique({
+      where: { id: parseInt(id) },
+      include: { brand: true },
+    });
   } catch {
     return null;
   }
@@ -54,12 +52,16 @@ async function getProduct(id: string) {
 
 async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
   try {
-    const res = await apiFetch(`/api/products`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    const products = data.products || [];
-    const sameBrand = products.filter((p: any) => p.brandId === brandId && p.id !== excludeId);
-    const sameCategory = products.filter((p: any) => p.category === category && p.id !== excludeId && p.brandId !== brandId);
+    const sameBrand = await db.product.findMany({
+      where: { brandId, id: { not: excludeId } },
+      include: { brand: true },
+      take: 4,
+    });
+    const sameCategory = await db.product.findMany({
+      where: { category, id: { not: excludeId }, brandId: { not: brandId } },
+      include: { brand: true },
+      take: 4,
+    });
     return [...sameBrand, ...sameCategory].slice(0, 8);
   } catch {
     return [];
