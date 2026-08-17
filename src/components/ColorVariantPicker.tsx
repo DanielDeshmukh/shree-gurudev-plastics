@@ -94,7 +94,7 @@ export default function ColorVariantPicker({
         </div>
       )}
 
-      <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-h-[300px] lg:min-h-[500px]">
+      <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 aspect-square max-h-[500px]">
         <img
           src={displaySrc}
           alt={activeColor ? `${productName} - ${activeColor}` : productName}
