@@ -124,7 +124,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               )}
             </div>
 
-            <div className="p-8 flex flex-col justify-center">
+            <div className="p-4 md:p-8 flex flex-col justify-center">
               {brand && (
                 <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
                   {brand.name}

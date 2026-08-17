@@ -37,7 +37,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
         </div>
-        <div className="max-w-7xl mx-auto px-4 py-24 md:py-32 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-32 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             {t(translations.hero.title.en, translations.hero.title.hi)} | Bulk Seller & Distributor in {CITY}
           </h1>

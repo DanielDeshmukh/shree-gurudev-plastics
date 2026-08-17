@@ -1,16 +1,19 @@
 "use client";
 
-export default function WhatsAppButton({ productName }: { productName?: string }) {
+export default function WhatsAppButton({ productName, bottomOffset }: { productName?: string; bottomOffset?: number }) {
   const message = productName
     ? `Hi, I'm interested in ${productName}`
     : "Hi, I'd like to know more about your products.";
+
+  const bottom = bottomOffset != null ? `${bottomOffset}px` : "24px";
 
   return (
     <a
       href={`https://wa.me/918552084251?text=${encodeURIComponent(message)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all hover:scale-110 animate-pulse"
+      className="fixed right-6 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all hover:scale-110 animate-pulse"
+      style={{ bottom }}
       aria-label="Chat on WhatsApp"
     >
       <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
