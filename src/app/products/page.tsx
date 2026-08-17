@@ -16,6 +16,9 @@ function FilterSidebar({
   displayCategories,
   selectedCategory,
   setSelectedCategory,
+  dbColors,
+  selectedColor,
+  setSelectedColor,
   sliderMin,
   sliderMax,
   priceRange,
@@ -91,6 +94,41 @@ function FilterSidebar({
           ))}
         </ul>
       </div>
+
+      {dbColors.length > 0 && (
+        <div>
+          <h3 className="font-bold text-gray-900 mb-3">Color</h3>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedColor("")}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
+                !selectedColor
+                  ? "bg-primary-100 text-primary-600 border-primary-300"
+                  : "text-gray-600 border-gray-200 hover:border-gray-400"
+              }`}
+            >
+              All
+            </button>
+            {dbColors.map((c: any) => (
+              <button
+                key={c.name}
+                onClick={() => setSelectedColor(c.name)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
+                  selectedColor === c.name
+                    ? "bg-primary-100 text-primary-600 border-primary-300"
+                    : "text-gray-600 border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                <span
+                  className="w-3 h-3 rounded-full border border-gray-200 shrink-0"
+                  style={{ backgroundColor: c.hex }}
+                />
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <h3 className="font-bold text-gray-900 mb-3">Price Range</h3>
@@ -181,6 +219,8 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [dbColors, setDbColors] = useState<any[]>([]);
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [dbCategories, setDbCategories] = useState<string[]>([]);
@@ -202,6 +242,11 @@ export default function ProductsPage() {
       .then((r) => r.json())
       .then((data) => setBrands(data.brands || []))
       .catch(() => setBrands([]));
+
+    fetch("/api/colors")
+      .then((r) => r.json())
+      .then((data) => setDbColors(data.colors || []))
+      .catch(() => setDbColors([]));
 
     fetch(`/api/products?limit=9999`)
       .then((r) => r.json())
@@ -254,6 +299,23 @@ export default function ProductsPage() {
       results = results.filter((p) => p.category === selectedCategory);
     }
 
+    if (selectedColor) {
+      results = results.filter((p) => {
+        const images = p.images || [];
+        return images.some((img: any) => {
+          if (!img.color) return false;
+          let c = img.color;
+          const prefix = p.name.toLowerCase().trim();
+          const prefixHyphen = prefix.replace(/\s+/g, "-");
+          if (c.toLowerCase().startsWith(prefix + " ")) c = c.substring(prefix.length + 1);
+          else if (c.toLowerCase().startsWith(prefixHyphen + " ")) c = c.substring(prefixHyphen.length + 1);
+          else if (c.toLowerCase().startsWith(prefixHyphen + "-")) c = c.substring(prefixHyphen.length + 1);
+          c = c.replace(/\s+\d+$/, "").trim().toLowerCase();
+          return c === selectedColor.toLowerCase();
+        });
+      });
+    }
+
     const min = priceApplied ? userMin : sliderMin;
     const max = priceApplied ? userMax : sliderMax;
     if (min > 0 || max > 0) {
@@ -275,14 +337,14 @@ export default function ProductsPage() {
     }
 
     return results;
-  }, [allProducts, search, selectedBrand, selectedCategory, sort, userMin, userMax, priceApplied, sliderMin, sliderMax, fuse]);
+  }, [allProducts, search, selectedBrand, selectedCategory, selectedColor, sort, userMin, userMax, priceApplied, sliderMin, sliderMax, fuse]);
 
   const totalPages = Math.ceil(filteredProducts.length / LIMIT);
   const paginatedProducts = filteredProducts.slice((page - 1) * LIMIT, page * LIMIT);
 
   useEffect(() => {
     setPage(1);
-  }, [search, selectedBrand, selectedCategory, sort]);
+  }, [search, selectedBrand, selectedCategory, selectedColor, sort]);
 
   const applyPrice = (min: number, max: number) => {
     setUserMin(min);
@@ -311,6 +373,7 @@ export default function ProductsPage() {
     setSearch("");
     setSelectedBrand("");
     setSelectedCategory("");
+    setSelectedColor("");
     setSort("newest");
     setUserMin(sliderMin);
     setUserMax(sliderMax);
@@ -336,6 +399,9 @@ export default function ProductsPage() {
   if (selectedCategory) {
     activeFilters.push({ label: selectedCategory, onRemove: () => setSelectedCategory("") });
   }
+  if (selectedColor) {
+    activeFilters.push({ label: selectedColor, onRemove: () => setSelectedColor("") });
+  }
   if (priceApplied && (userMin > sliderMin || userMax < sliderMax)) {
     activeFilters.push({
       label: `₹${Math.round(userMin)} - ₹${Math.round(userMax)}`,
@@ -345,7 +411,8 @@ export default function ProductsPage() {
 
   const filterSidebarProps = {
     brands, selectedBrand, setSelectedBrand, displayCategories, selectedCategory,
-    setSelectedCategory, sliderMin, sliderMax, priceRange, setPriceRange,
+    setSelectedCategory, dbColors, selectedColor, setSelectedColor,
+    sliderMin, sliderMax, priceRange, setPriceRange,
     minRef, maxRef, handlePriceApply, resetPrice, resetAll,
   };
 
