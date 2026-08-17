@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import Fuse from "fuse.js";
 import BlurImage from "@/components/BlurImage";
 import { useCart } from "@/context/CartContext";
 import CompareButton from "@/components/CompareButton";
@@ -10,7 +11,7 @@ import ProductTags from "@/components/ProductTags";
 
 export default function ProductsPage() {
   const { addItem, openCart } = useCart();
-  const [products, setProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -18,7 +19,6 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [dbCategories, setDbCategories] = useState<string[]>([]);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
@@ -26,6 +26,7 @@ export default function ProductsPage() {
   const [sliderMax, setSliderMax] = useState(0);
   const [userMin, setUserMin] = useState(0);
   const [userMax, setUserMax] = useState(0);
+  const [priceApplied, setPriceApplied] = useState(false);
   const minRef = useRef<HTMLInputElement>(null);
   const maxRef = useRef<HTMLInputElement>(null);
 
@@ -36,46 +37,101 @@ export default function ProductsPage() {
       .then((r) => r.json())
       .then((data) => setBrands(data.brands || []))
       .catch(() => setBrands([]));
-  }, []);
 
-  const fetchProducts = useCallback(() => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (search) params.set("search", search);
-    if (selectedBrand) params.set("brand", selectedBrand);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (sort) params.set("sort", sort);
-    if (userMin > 0) params.set("minPrice", String(userMin));
-    if (userMax > 0 && userMax < sliderMax) params.set("maxPrice", String(userMax));
-    params.set("page", String(page));
-    params.set("limit", String(LIMIT));
-
-    fetch(`/api/products?${params.toString()}`)
+    fetch(`/api/products?limit=9999`)
       .then((r) => r.json())
       .then((data) => {
-        setProducts(data.products || []);
-        setPagination(data.pagination || { total: 0, totalPages: 1 });
+        const prods = data.products || [];
+        setAllProducts(prods);
         if (data.priceRange) {
           setSliderMin(data.priceRange.min);
           setSliderMax(data.priceRange.max);
           setPriceRange([data.priceRange.min, data.priceRange.max]);
-          if (userMin === 0 && userMax === 0) {
-            setUserMin(data.priceRange.min);
-            setUserMax(data.priceRange.max);
-          }
+          setUserMin(data.priceRange.min);
+          setUserMax(data.priceRange.max);
         }
         if (data.categories) setDbCategories(data.categories);
         setLoading(false);
       })
       .catch(() => {
-        setProducts([]);
+        setAllProducts([]);
         setLoading(false);
       });
-  }, [search, selectedBrand, selectedCategory, sort, page, userMin, userMax, sliderMax]);
+  }, []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  const fuse = useMemo(() => {
+    return new Fuse(allProducts, {
+      keys: [
+        { name: "name", weight: 0.4 },
+        { name: "color", weight: 0.2 },
+        { name: "category", weight: 0.2 },
+        { name: "brand.name", weight: 0.2 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+      minMatchCharLength: 2,
+    });
+  }, [allProducts]);
+
+  const filteredProducts = useMemo(() => {
+    let results = allProducts;
+
+    if (search.trim()) {
+      results = fuse.search(search.trim()).map((r) => r.item);
+    }
+
+    if (selectedBrand) {
+      results = results.filter(
+        (p) => (p.brand?.slug || p.brand?.name) === selectedBrand
+      );
+    }
+
+    if (selectedCategory) {
+      results = results.filter((p) => p.category === selectedCategory);
+    }
+
+    const min = priceApplied ? userMin : sliderMin;
+    const max = priceApplied ? userMax : sliderMax;
+    if (min > 0 || max > 0) {
+      results = results.filter((p) => {
+        if (min > 0 && p.price < min) return false;
+        if (max > 0 && p.price > max) return false;
+        return true;
+      });
+    }
+
+    switch (sort) {
+      case "price-asc":
+        results = [...results].sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        results = [...results].sort((a, b) => b.price - a.price);
+        break;
+      case "name-asc":
+        results = [...results].sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        results = [...results].sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "oldest":
+        results = [...results].sort(
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+        break;
+      case "newest":
+      default:
+        results = [...results].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        break;
+    }
+
+    return results;
+  }, [allProducts, search, selectedBrand, selectedCategory, sort, userMin, userMax, priceApplied, sliderMin, sliderMax, fuse]);
+
+  const totalPages = Math.ceil(filteredProducts.length / LIMIT);
+  const paginatedProducts = filteredProducts.slice((page - 1) * LIMIT, page * LIMIT);
 
   useEffect(() => {
     setPage(1);
@@ -86,12 +142,15 @@ export default function ProductsPage() {
     const maxVal = maxRef.current ? parseFloat(maxRef.current.value) || 0 : 0;
     setUserMin(minVal);
     setUserMax(maxVal);
+    setPriceApplied(true);
     setPage(1);
   };
 
   const resetPrice = () => {
     setUserMin(sliderMin);
     setUserMax(sliderMax);
+    setPriceRange([sliderMin, sliderMax]);
+    setPriceApplied(false);
     if (minRef.current) minRef.current.value = String(sliderMin);
     if (maxRef.current) maxRef.current.value = String(sliderMax);
     setPage(1);
@@ -102,8 +161,10 @@ export default function ProductsPage() {
     setSelectedBrand("");
     setSelectedCategory("");
     setSort("newest");
-    setUserMin(0);
-    setUserMax(0);
+    setUserMin(sliderMin);
+    setUserMax(sliderMax);
+    setPriceRange([sliderMin, sliderMax]);
+    setPriceApplied(false);
     setPage(1);
   };
 
@@ -112,20 +173,25 @@ export default function ProductsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const displayCategories = dbCategories.length > 0 ? dbCategories : ["Furniture", "Containers", "Storage", "Kitchen", "Accessories", "General"];
+  const displayCategories =
+    dbCategories.length > 0
+      ? dbCategories
+      : ["Furniture", "Containers", "Storage", "Kitchen", "Accessories", "General"];
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-900">All Products</h1>
-          <p className="text-sm text-gray-500">{pagination.total} products found</p>
+          <p className="text-sm text-gray-500">
+            {filteredProducts.length} products found
+          </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search products... (fuzzy - try typos!)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 md:max-w-md px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -152,7 +218,11 @@ export default function ProductsPage() {
                 <li>
                   <button
                     onClick={() => setSelectedBrand("")}
-                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedBrand ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${
+                      !selectedBrand
+                        ? "bg-primary-100 text-primary-600 font-medium"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
                   >
                     All Brands
                   </button>
@@ -161,7 +231,11 @@ export default function ProductsPage() {
                   <li key={brand.id}>
                     <button
                       onClick={() => setSelectedBrand(brand.slug || brand.name)}
-                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedBrand === (brand.slug || brand.name) ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${
+                        selectedBrand === (brand.slug || brand.name)
+                          ? "bg-primary-100 text-primary-600 font-medium"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
                     >
                       {brand.name}
                     </button>
@@ -174,7 +248,11 @@ export default function ProductsPage() {
                 <li>
                   <button
                     onClick={() => setSelectedCategory("")}
-                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${!selectedCategory ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                    className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${
+                      !selectedCategory
+                        ? "bg-primary-100 text-primary-600 font-medium"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
                   >
                     All Categories
                   </button>
@@ -183,7 +261,11 @@ export default function ProductsPage() {
                   <li key={cat}>
                     <button
                       onClick={() => setSelectedCategory(cat)}
-                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${selectedCategory === cat ? "bg-primary-100 text-primary-600 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+                      className={`text-sm w-full text-left px-3 py-1.5 rounded-lg transition-colors ${
+                        selectedCategory === cat
+                          ? "bg-primary-100 text-primary-600 font-medium"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
                     >
                       {cat}
                     </button>
@@ -196,17 +278,30 @@ export default function ProductsPage() {
                 {sliderMin < sliderMax && (
                   <div className="relative pt-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs text-gray-500">₹{Math.round(sliderMin)}</span>
+                      <span className="text-xs text-gray-500">
+                        ₹{Math.round(sliderMin)}
+                      </span>
                       <div className="flex-1 h-1 bg-gray-200 rounded relative">
                         <div
                           className="absolute h-1 bg-primary-400 rounded"
                           style={{
-                            left: `${((priceRange[0] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
-                            right: `${100 - ((priceRange[1] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
+                            left: `${
+                              ((priceRange[0] - sliderMin) /
+                                (sliderMax - sliderMin)) *
+                              100
+                            }%`,
+                            right: `${
+                              100 -
+                              ((priceRange[1] - sliderMin) /
+                                (sliderMax - sliderMin)) *
+                                100
+                            }%`,
                           }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500">₹{Math.round(sliderMax)}</span>
+                      <span className="text-xs text-gray-500">
+                        ₹{Math.round(sliderMax)}
+                      </span>
                     </div>
                     <input
                       type="range"
@@ -215,10 +310,21 @@ export default function ProductsPage() {
                       value={priceRange[0]}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
-                        if (val <= priceRange[1]) setPriceRange([val, priceRange[1]]);
+                        if (val <= priceRange[1])
+                          setPriceRange([val, priceRange[1]]);
                       }}
-                      onMouseUp={() => { setUserMin(priceRange[0]); setUserMax(priceRange[1]); setPage(1); }}
-                      onTouchEnd={() => { setUserMin(priceRange[0]); setUserMax(priceRange[1]); setPage(1); }}
+                      onMouseUp={() => {
+                        setUserMin(priceRange[0]);
+                        setUserMax(priceRange[1]);
+                        setPriceApplied(true);
+                        setPage(1);
+                      }}
+                      onTouchEnd={() => {
+                        setUserMin(priceRange[0]);
+                        setUserMax(priceRange[1]);
+                        setPriceApplied(true);
+                        setPage(1);
+                      }}
                       className="w-full h-1 appearance-none bg-transparent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-0"
                     />
                     <input
@@ -228,10 +334,21 @@ export default function ProductsPage() {
                       value={priceRange[1]}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
-                        if (val >= priceRange[0]) setPriceRange([priceRange[0], val]);
+                        if (val >= priceRange[0])
+                          setPriceRange([priceRange[0], val]);
                       }}
-                      onMouseUp={() => { setUserMin(priceRange[0]); setUserMax(priceRange[1]); setPage(1); }}
-                      onTouchEnd={() => { setUserMin(priceRange[0]); setUserMax(priceRange[1]); setPage(1); }}
+                      onMouseUp={() => {
+                        setUserMin(priceRange[0]);
+                        setUserMax(priceRange[1]);
+                        setPriceApplied(true);
+                        setPage(1);
+                      }}
+                      onTouchEnd={() => {
+                        setUserMin(priceRange[0]);
+                        setUserMax(priceRange[1]);
+                        setPriceApplied(true);
+                        setPage(1);
+                      }}
                       className="w-full h-1 appearance-none bg-transparent cursor-pointer -mt-1 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-0"
                     />
                   </div>
@@ -279,7 +396,10 @@ export default function ProductsPage() {
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse">
+                  <div
+                    key={i}
+                    className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse"
+                  >
                     <div className="aspect-square bg-gray-200" />
                     <div className="p-4 space-y-3">
                       <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -289,22 +409,34 @@ export default function ProductsPage() {
                   </div>
                 ))}
               </div>
-            ) : products.length === 0 ? (
+            ) : paginatedProducts.length === 0 ? (
               <div className="text-center py-20 text-gray-500">
                 <p className="text-lg">No products found.</p>
-                <p className="text-sm mt-1">Try adjusting your search or filters.</p>
+                <p className="text-sm mt-1">
+                  Try adjusting your search or filters.
+                </p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product: any) => (
-                    <div key={product.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                  {paginatedProducts.map((product: any) => (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                    >
                       <Link href={`/product/${product.id}`}>
                         <div className="relative aspect-square bg-gray-100">
                           {product.imageUrl ? (
-                            <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                            <BlurImage
+                              src={product.imageUrl}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                            />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              No Image
+                            </div>
                           )}
                         </div>
                       </Link>
@@ -312,7 +444,9 @@ export default function ProductsPage() {
                         <ProductTags tags={product.tags || ""} />
                         <div className="flex items-start justify-between gap-2">
                           <Link href={`/product/${product.id}`}>
-                            <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
+                            <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">
+                              {product.name}
+                            </h3>
                           </Link>
                           <WishlistButton
                             product={{
@@ -330,10 +464,18 @@ export default function ProductsPage() {
                           {product.color && <span>{product.color}</span>}
                           {product.size && <span>• {product.size}</span>}
                         </div>
-                        <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
-                        {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
+                        <p className="text-lg font-bold text-primary-500 mt-2">
+                          ₹{product.price}
+                        </p>
+                        {product.brand?.name && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {product.brand.name}
+                          </p>
+                        )}
                         {product.moq > 1 && (
-                          <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
+                          <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">
+                            MOQ: {product.moq}
+                          </span>
                         )}
                         <button
                           onClick={() => {
@@ -371,7 +513,7 @@ export default function ProductsPage() {
                   ))}
                 </div>
 
-                {pagination.totalPages > 1 && (
+                {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-10">
                     <button
                       onClick={() => handlePageChange(page - 1)}
@@ -381,10 +523,19 @@ export default function ProductsPage() {
                       Previous
                     </button>
 
-                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                      .filter((p) => p === 1 || p === pagination.totalPages || Math.abs(p - page) <= 2)
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(
+                        (p) =>
+                          p === 1 ||
+                          p === totalPages ||
+                          Math.abs(p - page) <= 2
+                      )
                       .reduce<(number | string)[]>((acc, p, i, arr) => {
-                        if (i > 0 && typeof arr[i - 1] === "number" && p - (arr[i - 1] as number) > 1) {
+                        if (
+                          i > 0 &&
+                          typeof arr[i - 1] === "number" &&
+                          p - (arr[i - 1] as number) > 1
+                        ) {
                           acc.push("...");
                         }
                         acc.push(p);
@@ -392,7 +543,12 @@ export default function ProductsPage() {
                       }, [])
                       .map((p, i) =>
                         typeof p === "string" ? (
-                          <span key={`ellipsis-${i}`} className="px-2 text-gray-400">...</span>
+                          <span
+                            key={`ellipsis-${i}`}
+                            className="px-2 text-gray-400"
+                          >
+                            ...
+                          </span>
                         ) : (
                           <button
                             key={p}
@@ -410,7 +566,7 @@ export default function ProductsPage() {
 
                     <button
                       onClick={() => handlePageChange(page + 1)}
-                      disabled={page === pagination.totalPages}
+                      disabled={page === totalPages}
                       className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
