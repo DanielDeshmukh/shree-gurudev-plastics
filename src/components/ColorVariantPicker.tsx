@@ -75,7 +75,7 @@ export default function ColorVariantPicker({
   const displaySrc = currentImage?.imageUrl || mainImage;
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-4 items-start">
+    <div className="flex flex-col-reverse lg:flex-row gap-4">
       {angles.length > 1 && (
         <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:max-h-[420px] shrink-0">
           {angles.map((img, idx) => (
@@ -94,11 +94,11 @@ export default function ColorVariantPicker({
         </div>
       )}
 
-      <div className="relative bg-gray-100 rounded-xl overflow-hidden w-full lg:flex-1 aspect-square">
+      <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
         <img
           src={displaySrc}
           alt={activeColor ? `${productName} - ${activeColor}` : productName}
-          className="w-full h-full object-contain p-4 transition-all duration-300"
+          className="w-full h-auto max-h-[420px] object-contain p-4 transition-all duration-300"
           key={displaySrc}
         />
         {activeColor && (
@@ -109,7 +109,7 @@ export default function ColorVariantPicker({
       </div>
 
       {hasVariants && (
-        <div className="flex lg:flex-col flex-wrap gap-3 lg:gap-3 justify-center lg:justify-start lg:max-h-[420px] lg:overflow-y-auto shrink-0">
+        <div className="flex lg:flex-col gap-2 lg:gap-2.5 overflow-x-auto lg:overflow-y-auto lg:max-h-[420px] shrink-0 pb-1 lg:pb-0">
           {colorNames.map((color) => {
             const thumb = colorGroups[color][0];
             const isSelected = activeColor === color;
@@ -117,7 +117,7 @@ export default function ColorVariantPicker({
               <button
                 key={color}
                 onClick={() => { setSelectedColor(color); setAngleIdx(0); }}
-                className={`relative w-12 h-12 lg:w-14 lg:h-14 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                className={`relative w-11 h-11 lg:w-12 lg:h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
                   isSelected
                     ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
                     : "border-gray-200 hover:border-gray-400"
@@ -130,6 +130,6 @@ export default function ColorVariantPicker({
           })}
         </div>
       )}
-      </div>
+    </div>
   );
 }
