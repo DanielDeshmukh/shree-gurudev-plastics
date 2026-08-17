@@ -12,7 +12,7 @@ type ProductImage = {
 
 function parseColor(rawColor: string, productName: string): string {
   let c = rawColor || "Other";
-  const prefix = productName.toLowerCase();
+  const prefix = productName.toLowerCase().trim();
   if (c.toLowerCase().startsWith(prefix + " ")) {
     c = c.substring(prefix.length + 1);
   }
@@ -36,9 +36,17 @@ export default function ColorVariantPicker({
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [angleIdx, setAngleIdx] = useState(0);
 
+  const validImages = useMemo(() => {
+    const prefix = productName.toLowerCase().trim();
+    return images.filter(img => {
+      const c = (img.color || "").toLowerCase().trim();
+      return c.startsWith(prefix + " ") || c === prefix;
+    });
+  }, [images, productName]);
+
   const colorGroups = useMemo(() => {
     const groups: Record<string, ProductImage[]> = {};
-    for (const img of images) {
+    for (const img of validImages) {
       const baseColor = parseColor(img.color || "", productName);
       if (!groups[baseColor]) groups[baseColor] = [];
       groups[baseColor].push(img);
@@ -47,7 +55,7 @@ export default function ColorVariantPicker({
       groups[key].sort((a, b) => a.sortOrder - b.sortOrder);
     }
     return groups;
-  }, [images, productName]);
+  }, [validImages, productName]);
 
   const colorNames = Object.keys(colorGroups);
   const hasVariants = colorNames.length > 1;
@@ -56,10 +64,6 @@ export default function ColorVariantPicker({
   const angles = activeColor ? colorGroups[activeColor] || [] : [];
   const currentImage = angles[angleIdx] || null;
   const displaySrc = currentImage?.imageUrl || mainImage;
-
-  const thumbnailImages = hasVariants
-    ? colorNames.map(c => colorGroups[c][0]).filter(Boolean)
-    : [];
 
   return (
     <div className="flex flex-col-reverse lg:flex-row gap-4">
@@ -75,18 +79,17 @@ export default function ColorVariantPicker({
                   : "border-gray-200 hover:border-gray-400"
               }`}
             >
-              <BlurImage src={img.imageUrl} alt={`${productName} angle ${idx + 1}`} fill className="object-cover" />
+              <BlurImage src={img.imageUrl} alt={`${productName} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
             </button>
           ))}
         </div>
       )}
 
-      <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden flex-1">
-        <BlurImage
+      <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-h-[300px] lg:min-h-[500px]">
+        <img
           src={displaySrc}
           alt={activeColor ? `${productName} - ${activeColor}` : productName}
-          fill
-          className="object-cover transition-all duration-300"
+          className="w-full h-full object-contain p-4 transition-all duration-300"
           key={displaySrc}
         />
         {activeColor && (
@@ -96,26 +99,28 @@ export default function ColorVariantPicker({
         )}
       </div>
 
-      <div className="flex lg:flex-col gap-3 lg:gap-4 justify-center lg:justify-start lg:pt-0 pt-2">
-        {hasVariants && colorNames.map((color) => {
-          const thumb = colorGroups[color][0];
-          const isSelected = activeColor === color;
-          return (
-            <button
-              key={color}
-              onClick={() => { setSelectedColor(color); setAngleIdx(0); }}
-              className={`relative w-14 h-14 lg:w-16 lg:h-16 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
-                isSelected
-                  ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
-                  : "border-gray-200 hover:border-gray-400"
-              }`}
-              title={capitalize(color)}
-            >
-              <BlurImage src={thumb.imageUrl} alt={capitalize(color)} fill className="object-cover" />
-            </button>
-          );
-        })}
-      </div>
+      {hasVariants && (
+        <div className="flex lg:flex-col gap-3 lg:gap-4 justify-center lg:justify-start lg:pt-0 pt-2">
+          {colorNames.map((color) => {
+            const thumb = colorGroups[color][0];
+            const isSelected = activeColor === color;
+            return (
+              <button
+                key={color}
+                onClick={() => { setSelectedColor(color); setAngleIdx(0); }}
+                className={`relative w-14 h-14 lg:w-16 lg:h-16 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                  isSelected
+                    ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+                title={capitalize(color)}
+              >
+                <BlurImage src={thumb.imageUrl} alt={capitalize(color)} fill className="object-contain bg-gray-50" />
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
