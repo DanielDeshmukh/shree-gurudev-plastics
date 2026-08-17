@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import BlurImage from "@/components/BlurImage";
 
 type ProductImage = {
@@ -9,6 +9,20 @@ type ProductImage = {
   color: string | null;
   sortOrder: number;
 };
+
+function parseColor(rawColor: string, productName: string): string {
+  let c = rawColor || "Other";
+  const prefix = productName.toLowerCase();
+  if (c.toLowerCase().startsWith(prefix + " ")) {
+    c = c.substring(prefix.length + 1);
+  }
+  c = c.replace(/\s+\d+$/, "").trim();
+  return c || "Other";
+}
+
+function capitalize(s: string) {
+  return s.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 
 export default function ColorVariantPicker({
   images,
@@ -19,106 +33,89 @@ export default function ColorVariantPicker({
   mainImage: string;
   productName: string;
 }) {
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [angleIdx, setAngleIdx] = useState(0);
 
-  if (images.length === 0) return null;
+  const colorGroups = useMemo(() => {
+    const groups: Record<string, ProductImage[]> = {};
+    for (const img of images) {
+      const baseColor = parseColor(img.color || "", productName);
+      if (!groups[baseColor]) groups[baseColor] = [];
+      groups[baseColor].push(img);
+    }
+    for (const key of Object.keys(groups)) {
+      groups[key].sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+    return groups;
+  }, [images, productName]);
 
-  const grouped: Record<string, ProductImage[]> = {};
-  for (const img of images) {
-    const color = img.color || "Other";
-    if (!grouped[color]) grouped[color] = [];
-    grouped[color].push(img);
-  }
+  const colorNames = Object.keys(colorGroups);
+  const hasVariants = colorNames.length > 1;
 
-  const colors = Object.keys(grouped);
-  const selectedImage =
-    selectedIdx !== null ? images[selectedIdx] : null;
-  const displaySrc = selectedImage?.imageUrl || mainImage;
-  const displayAlt = selectedImage
-    ? `${productName} - ${selectedImage.color}`
-    : productName;
+  const activeColor = selectedColor || colorNames[0] || null;
+  const angles = activeColor ? colorGroups[activeColor] || [] : [];
+  const currentImage = angles[angleIdx] || null;
+  const displaySrc = currentImage?.imageUrl || mainImage;
 
-  const colorToIndex: Record<string, number> = {};
-  for (const img of images) {
-    const c = img.color || "Other";
-    if (!(c in colorToIndex)) colorToIndex[c] = images.indexOf(img);
-  }
+  const thumbnailImages = hasVariants
+    ? colorNames.map(c => colorGroups[c][0]).filter(Boolean)
+    : [];
 
   return (
-    <div className="space-y-3">
-      <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden">
+    <div className="flex flex-col-reverse lg:flex-row gap-4">
+      {angles.length > 1 && (
+        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:max-h-[500px] shrink-0">
+          {angles.map((img, idx) => (
+            <button
+              key={img.id}
+              onClick={() => setAngleIdx(idx)}
+              className={`relative w-16 h-16 lg:w-20 lg:h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                angleIdx === idx
+                  ? "border-primary-500 ring-2 ring-primary-200"
+                  : "border-gray-200 hover:border-gray-400"
+              }`}
+            >
+              <BlurImage src={img.imageUrl} alt={`${productName} angle ${idx + 1}`} fill className="object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden flex-1">
         <BlurImage
           src={displaySrc}
-          alt={displayAlt}
+          alt={activeColor ? `${productName} - ${activeColor}` : productName}
           fill
           className="object-cover transition-all duration-300"
           key={displaySrc}
         />
-        {selectedImage && (
+        {activeColor && (
           <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-            {selectedImage.color}
+            {capitalize(activeColor)}
           </span>
         )}
       </div>
 
-      {colors.length > 1 && (
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">
-            Available Colors ({colors.length})
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedIdx(colorToIndex[color])}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                  selectedImage?.color === color
-                    ? "bg-primary-500 text-white border-primary-500 shadow-sm"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-primary-400 hover:text-primary-600"
-                }`}
-              >
-                {color}
-              </button>
-            ))}
-            {selectedImage && (
-              <button
-                onClick={() => setSelectedIdx(null)}
-                className="px-3 py-1.5 text-xs font-medium rounded-full border bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-              >
-                Default
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {images.length > 1 && (
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">
-            All Images ({images.length})
-          </p>
-          <div className="grid grid-cols-6 gap-2">
-            {images.map((img, idx) => (
-              <button
-                key={img.id}
-                onClick={() => setSelectedIdx(idx)}
-                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                  selectedIdx === idx
-                    ? "border-primary-500 ring-2 ring-primary-200"
-                    : "border-gray-200 hover:border-gray-400"
-                }`}
-              >
-                <BlurImage
-                  src={img.imageUrl}
-                  alt={img.color || productName}
-                  fill
-                  className="object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="flex lg:flex-col gap-3 lg:gap-4 justify-center lg:justify-start lg:pt-0 pt-2">
+        {hasVariants && colorNames.map((color) => {
+          const thumb = colorGroups[color][0];
+          const isSelected = activeColor === color;
+          return (
+            <button
+              key={color}
+              onClick={() => { setSelectedColor(color); setAngleIdx(0); }}
+              className={`relative w-14 h-14 lg:w-16 lg:h-16 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                isSelected
+                  ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                  : "border-gray-200 hover:border-gray-400"
+              }`}
+              title={capitalize(color)}
+            >
+              <BlurImage src={thumb.imageUrl} alt={capitalize(color)} fill className="object-cover" />
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
