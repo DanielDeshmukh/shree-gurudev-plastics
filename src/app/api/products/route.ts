@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     const [products, total, priceStats, categories] = await Promise.all([
       db.product.findMany({
         where,
-        include: { brand: true, images: { select: { color: true } } },
+        include: { brand: true },
         orderBy,
         skip,
         take: limit,
