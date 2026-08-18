@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
           });
           if (dbUser) {
             token.userId = dbUser.id;
-            token.phone = dbUser.phone;
+            token.phone = dbUser.phone || undefined;
           }
         } catch (e) {
           console.error("JWT fallback DB lookup failed:", e);
