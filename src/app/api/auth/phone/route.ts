@@ -5,7 +5,24 @@ import { db } from "@/lib/db";
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  if (!token?.userId) {
+  // Try userId first (works for new sessions)
+  let userId = token?.userId as number | undefined;
+
+  // Fallback: look up by googleId (works for old sessions without userId)
+  if (!userId && token?.googleId) {
+    try {
+      const dbUser = await db.customerUser.findUnique({
+        where: { googleId: token.googleId as string },
+      });
+      if (dbUser) {
+        userId = dbUser.id;
+      }
+    } catch (e) {
+      console.error("Phone API: DB lookup failed:", e);
+    }
+  }
+
+  if (!userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -16,12 +33,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const existing = await db.customerUser.findFirst({ where: { phone } });
-    if (existing && existing.id !== (token.userId as number)) {
+    if (existing && existing.id !== userId) {
       return NextResponse.json({ error: "Phone number already registered with another account" }, { status: 400 });
     }
 
     await db.customerUser.update({
-      where: { id: token.userId as number },
+      where: { id: userId },
       data: { phone },
     });
 
