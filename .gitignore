@@ -1,6 +1,9 @@
 # Python
 *.pyc
 
+# Accidental root-level files
+Group*.png
+
 # Scraped images (too large for git, will upload to Cloudinary)
 mango-images/
 aristo-images/
