@@ -12,7 +12,7 @@ export default function CartDrawer() {
     const productList = items
       .map(
         (item, index) =>
-          `${index + 1}. ${item.name} ${item.color ? `(${item.color}` : ""}${item.color && item.size ? ", " : ""}${item.size ? `${item.size}` : ""})${item.brand ? ` — ${item.brand}` : ""} - Qty: ${item.quantity}`
+          `${index + 1}. ${item.name} ${item.color ? `(${item.color}` : ""}${item.color && item.size ? ", " : ""}${item.size ? `${item.size}` : ""})${item.brand ? ` — ${item.brand}` : ""} — ₹${item.price} × ${item.quantity} = ₹${(item.price * item.quantity).toLocaleString("en-IN")}`
       )
       .join("\n");
 
