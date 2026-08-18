@@ -81,16 +81,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token.userId) {
         (session as any).userId = token.userId;
-        // Always fetch fresh phone from DB in case token is stale
-        try {
-          const dbUser = await db.customerUser.findUnique({
-            where: { id: token.userId as number },
-            select: { phone: true },
-          });
-          (session as any).phone = dbUser?.phone || null;
-        } catch {
-          (session as any).phone = token.phone || null;
-        }
+        (session as any).phone = token.phone || null;
       }
       return session;
     },

@@ -82,9 +82,10 @@ export async function GET(request: NextRequest) {
       },
       categories: categories.map((c) => c.category).filter(Boolean),
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Products API error:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to fetch products" },
+      { error: "Failed to fetch products", detail: error?.message },
       { status: 500 }
     );
   }
