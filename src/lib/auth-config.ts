@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
         (user as any).dbId = existing.id;
         (user as any).dbPhone = existing.phone;
       } catch (e) {
-        console.error("SignIn DB error (non-blocking):", e);
+        console.error("SignIn DB error:", e);
       }
 
       return true;
@@ -57,12 +57,12 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         token.googleId = account.providerAccountId;
       }
-      // Set userId from signIn callback if available
+
       if ((user as any)?.dbId) {
         token.userId = (user as any).dbId;
         token.phone = (user as any).dbPhone || null;
       }
-      // Fallback: if we have googleId but no userId, look it up
+
       if (token.googleId && !token.userId) {
         try {
           const dbUser = await db.customerUser.findUnique({
@@ -70,12 +70,26 @@ export const authOptions: NextAuthOptions = {
           });
           if (dbUser) {
             token.userId = dbUser.id;
-            token.phone = dbUser.phone || undefined;
+            token.phone = dbUser.phone || null;
           }
         } catch (e) {
           console.error("JWT fallback DB lookup failed:", e);
         }
       }
+
+      if (token.userId && !token.phone) {
+        try {
+          const dbUser = await db.customerUser.findUnique({
+            where: { id: token.userId as number },
+          });
+          if (dbUser?.phone) {
+            token.phone = dbUser.phone;
+          }
+        } catch (e) {
+          console.error("JWT phone refresh failed:", e);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

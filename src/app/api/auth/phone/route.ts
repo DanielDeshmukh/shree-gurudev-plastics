@@ -5,20 +5,27 @@ import { db } from "@/lib/db";
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  // Try userId first (works for new sessions)
   let userId = token?.userId as number | undefined;
 
-  // Fallback: look up by googleId (works for old sessions without userId)
   if (!userId && token?.googleId) {
     try {
       const dbUser = await db.customerUser.findUnique({
         where: { googleId: token.googleId as string },
       });
-      if (dbUser) {
-        userId = dbUser.id;
-      }
+      if (dbUser) userId = dbUser.id;
     } catch (e) {
-      console.error("Phone API: DB lookup failed:", e);
+      console.error("Phone API: googleId lookup failed:", e);
+    }
+  }
+
+  if (!userId && token?.email) {
+    try {
+      const dbUser = await db.customerUser.findUnique({
+        where: { email: token.email as string },
+      });
+      if (dbUser) userId = dbUser.id;
+    } catch (e) {
+      console.error("Phone API: email lookup failed:", e);
     }
   }
 
