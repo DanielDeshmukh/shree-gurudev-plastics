@@ -46,6 +46,10 @@ model Product {
   orderItems  OrderItem[]
   reviews     Review[]
   images      ProductImage[]
+
+  @@index([brandId])
+  @@index([category])
+  @@index([createdAt])
 }
 
 model ProductImage {
@@ -56,6 +60,8 @@ model ProductImage {
   color     String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+
+  @@index([productId])
 }
 
 model Review {
@@ -68,6 +74,9 @@ model Review {
   createdAt DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([approved])
 }
 
 model Customer {
@@ -97,6 +106,10 @@ model Order {
   items      OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -107,6 +120,9 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Admin {
@@ -149,6 +165,8 @@ model InvoiceItem {
   sgst        Float
   igst        Float
   total       Float
+
+  @@index([invoiceId])
 }
 
 model PriceLock {
