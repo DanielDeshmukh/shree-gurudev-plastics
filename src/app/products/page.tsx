@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
+import { useLanguage } from "@/context/LanguageContext";
 
 function FilterSidebar({
   brands,
@@ -25,11 +26,12 @@ function FilterSidebar({
   handlePriceApply,
   resetPrice,
   resetAll,
+  t,
 }: any) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">Brands</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Brands", "ब्रांड")}</h3>
         <ul className="space-y-1">
           <li>
             <button
@@ -40,7 +42,7 @@ function FilterSidebar({
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              All Brands
+              {t("All Brands", "सभी ब्रांड")}
             </button>
           </li>
           {brands.map((brand: any) => (
@@ -61,7 +63,7 @@ function FilterSidebar({
       </div>
 
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">Category</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Category", "श्रेणी")}</h3>
         <ul className="space-y-1">
           <li>
             <button
@@ -72,7 +74,7 @@ function FilterSidebar({
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              All Categories
+              {t("All Categories", "सभी श्रेणियां")}
             </button>
           </li>
           {displayCategories.map((cat: string) => (
@@ -93,7 +95,7 @@ function FilterSidebar({
       </div>
 
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">Price Range</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Price Range", "मूल्य सीमा")}</h3>
         <div className="space-y-3">
           {sliderMin < sliderMax && (
             <div className="relative pt-1">
@@ -158,16 +160,16 @@ function FilterSidebar({
             onClick={handlePriceApply}
             className="w-full text-sm bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium"
           >
-            Apply Price
+            {t("Apply Price", "मूल्य लागू करें")}
           </button>
           <button onClick={resetPrice} className="w-full text-xs text-gray-500 hover:text-gray-700">
-            Reset Price
+            {t("Reset Price", "मूल्य रीसेट करें")}
           </button>
         </div>
       </div>
 
       <button onClick={resetAll} className="w-full text-xs text-gray-500 hover:text-red-500 transition-colors">
-        Reset All Filters
+        {t("Reset All Filters", "सभी फ़िल्टर रीसेट करें")}
       </button>
     </div>
   );
@@ -175,6 +177,7 @@ function FilterSidebar({
 
 export default function ProductsPage() {
   const { addItem, openCart } = useCart();
+  const { t } = useLanguage();
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -346,21 +349,21 @@ export default function ProductsPage() {
   const filterSidebarProps = {
     brands, selectedBrand, setSelectedBrand, displayCategories, selectedCategory,
     setSelectedCategory, sliderMin, sliderMax, priceRange, setPriceRange,
-    minRef, maxRef, handlePriceApply, resetPrice, resetAll,
+    minRef, maxRef, handlePriceApply, resetPrice, resetAll, t,
   };
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         <div className="flex items-center justify-between mb-4 md:mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">All Products</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t("All Products", "सभी उत्पादन")}</h1>
           <p className="text-xs md:text-sm text-gray-500">{filteredProducts.length} products</p>
         </div>
 
         <div className="flex gap-2 mb-4 md:mb-6">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder={t("Search products...", "उत्पादन खोजें...")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
@@ -370,8 +373,8 @@ export default function ProductsPage() {
             onChange={(e) => setSort(e.target.value)}
             className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
+            <option value="newest">{t("Newest", "नवीनतम")}</option>
+            <option value="oldest">{t("Oldest", "पुराने")}</option>
             <option value="price-asc">Price ↑</option>
             <option value="price-desc">Price ↓</option>
             <option value="name-asc">Name A-Z</option>
@@ -384,7 +387,7 @@ export default function ProductsPage() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filters
+            {t("Filter", "फ़िल्टर")}
             {activeFilters.length > 0 && (
               <span className="bg-primary-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{activeFilters.length}</span>
             )}
@@ -403,7 +406,7 @@ export default function ProductsPage() {
                 </button>
               </span>
             ))}
-            <button onClick={resetAll} className="text-xs text-gray-500 hover:text-red-500 ml-1">Clear all</button>
+            <button onClick={resetAll} className="text-xs text-gray-500 hover:text-red-500 ml-1">{t("Clear all", "सभी हटाएं")}</button>
           </div>
         )}
 
@@ -430,8 +433,8 @@ export default function ProductsPage() {
               </div>
             ) : paginatedProducts.length === 0 ? (
               <div className="text-center py-16 md:py-20 text-gray-500">
-                <p className="text-lg">No products found.</p>
-                <p className="text-sm mt-1">Try adjusting your search or filters.</p>
+                <p className="text-lg">{t("No products found.", "कोई उत्पादन नहीं मिला।")}</p>
+                <p className="text-sm mt-1">{t("Try adjusting your search or filters.", "अपनी खोज या फ़िल्टर बदलकर देखें।")}</p>
               </div>
             ) : (
               <>
@@ -443,7 +446,7 @@ export default function ProductsPage() {
                           {product.imageUrl ? (
                             <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">{t("No Image", "कोई फ़ोटो नहीं")}</div>
                           )}
                         </div>
                       </Link>
@@ -471,7 +474,7 @@ export default function ProductsPage() {
                           }}
                           className="mt-2 md:mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
                         >
-                          Add to Cart
+                          {t("Add to Cart", "कार्ट में जोड़ें")}
                         </button>
                         <div className="hidden sm:block">
                           <CompareButton product={{ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name, stock: product.stock ?? 0, category: product.category || "" }} />
@@ -488,7 +491,7 @@ export default function ProductsPage() {
                       disabled={page === 1}
                       className="px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      Prev
+                      {t("Prev", "पिछला")}
                     </button>
 
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -519,7 +522,7 @@ export default function ProductsPage() {
                       disabled={page === totalPages}
                       className="px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      Next
+                      {t("Next", "अगला")}
                     </button>
                   </div>
                 )}
@@ -534,7 +537,7 @@ export default function ProductsPage() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-xl overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="font-bold text-gray-900">Filters</h2>
+              <h2 className="font-bold text-gray-900">{t("Filter", "फ़िल्टर")}</h2>
               <button onClick={() => setMobileFiltersOpen(false)} className="p-2 -mr-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -549,7 +552,7 @@ export default function ProductsPage() {
                 onClick={() => setMobileFiltersOpen(false)}
                 className="w-full bg-primary-500 text-white py-2.5 rounded-lg font-medium hover:bg-primary-600 transition-colors"
               >
-                Show {filteredProducts.length} results
+                {t("Show", "दिखाएं")} {filteredProducts.length} {t("results", "परिणाम")}
               </button>
             </div>
           </div>

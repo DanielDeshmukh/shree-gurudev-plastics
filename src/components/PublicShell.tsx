@@ -3,8 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import CartButton from "@/components/CartButton";
+import CartDrawer from "@/components/CartDrawer";
 import CompareBar from "@/components/CompareBar";
 import { useCompare } from "@/context/CompareContext";
 
@@ -22,8 +21,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
       <Navbar />
       {children}
       <Footer />
-      <WhatsAppButton bottomOffset={compareCount > 0 ? 24 : undefined} />
-      <CartButton />
+      <CartDrawer />
       <CompareBar />
     </>
   );

@@ -12,6 +12,8 @@ export const PRIMARY_KEYWORDS = [
   "plastic containers", "plastic stools", "plastic boxes", "plastic baskets",
   "plastic trays", "plastic mugs", "plastic bottles", "plastic bags",
   "plastic furniture", "plastic storage", "plastic kitchenware",
+  "plastic armless chairs", "plastic bistro chairs", "plastic cabinets",
+  "plastic baby chairs", "plastic dining tables", "plastic bookshelves",
 ];
 
 export const LOCATION_KEYWORDS = [
@@ -21,6 +23,10 @@ export const LOCATION_KEYWORDS = [
   "plastic distributor Bhayander", "plastic wholesale Bhayander",
   "plastic dealer Naigaon", "plastic bulk seller Mumbai",
   "plastic supplier Maharashtra", "wholesale plastic products near me",
+  "plastic furniture Bhayander", "plastic wholesale Vasai", "plastic wholesale Virar",
+  "plastic supplier Nallasopara", "plastic dealer Andheri", "plastic supplier Borivali",
+  "plastic wholesale Malad", "plastic dealer Thane", "plastic supplier Mulund",
+  "plastic wholesale Navi Mumbai", "plastic supplier Kalyan",
 ];
 
 export const BUSINESS_KEYWORDS = [
@@ -31,6 +37,10 @@ export const BUSINESS_KEYWORDS = [
   "best plastic chairs", "durable plastic furniture", "quality plastic products",
   "Aristo plastic", "KG Plast", "Mango Chairs", "Rajdhani plastic", "Cosmos plastic",
   "Borosil plastic", "Milton plastic", "Signoraware plastic",
+  "plastic chair price list", "wholesale plastic bucket rate", "bulk order plastic items",
+  "plastic products for shop", "shop fitting supplies Mumbai", "plastic goods for resale",
+  "plastic chair wholesale rate", "bulk plastic containers Mumbai", "plastic bucket wholesale price",
+  "best plastic furniture brand India", "plastic storage boxes wholesale", "plastic kitchen items bulk",
 ];
 
 export const ALL_KEYWORDS = [...PRIMARY_KEYWORDS, ...LOCATION_KEYWORDS, ...BUSINESS_KEYWORDS];

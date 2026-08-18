@@ -6,6 +6,8 @@ import { CompareProvider } from "@/context/CompareContext";
 import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
+import PhonePromptModal from "@/components/PhonePromptModal";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -64,18 +66,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
       </head>
       <body>
-        <LanguageProvider>
-          <CartProvider>
-            <CompareProvider>
-              <RecentlyViewedProvider>
-                <WishlistProvider>
-                  <PublicShell>{children}</PublicShell>
-                  <SWRegister />
-                </WishlistProvider>
-              </RecentlyViewedProvider>
-            </CompareProvider>
-          </CartProvider>
-        </LanguageProvider>
+        <CustomerAuthProvider>
+          <LanguageProvider>
+            <CartProvider>
+              <CompareProvider>
+                <RecentlyViewedProvider>
+                  <WishlistProvider>
+                    <PublicShell>{children}</PublicShell>
+                    <PhonePromptModal />
+                    <SWRegister />
+                  </WishlistProvider>
+                </RecentlyViewedProvider>
+              </CompareProvider>
+            </CartProvider>
+          </LanguageProvider>
+        </CustomerAuthProvider>
       </body>
     </html>
   );
