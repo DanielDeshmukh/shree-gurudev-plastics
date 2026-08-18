@@ -30,12 +30,12 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider !== "google" || !user) return true;
 
       try {
-        const existing = await db.customerUser.findUnique({
+        let existing = await db.customerUser.findUnique({
           where: { googleId: user.id! },
         });
 
         if (!existing) {
-          await db.customerUser.create({
+          existing = await db.customerUser.create({
             data: {
               googleId: user.id!,
               name: user.name || "Customer",
@@ -44,31 +44,29 @@ export const authOptions: NextAuthOptions = {
             },
           });
         }
+
+        (user as any).dbId = existing.id;
+        (user as any).dbPhone = existing.phone;
       } catch (e) {
         console.error("SignIn DB error (non-blocking):", e);
       }
 
       return true;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.googleId = account.providerAccountId;
+      }
+      if ((user as any)?.dbId) {
+        token.userId = (user as any).dbId;
+        token.phone = (user as any).dbPhone || null;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.googleId) {
-        try {
-          const dbUser = await db.customerUser.findUnique({
-            where: { googleId: token.googleId as string },
-          });
-          if (dbUser) {
-            (session as any).userId = dbUser.id;
-            (session as any).phone = dbUser.phone;
-          }
-        } catch (e) {
-          // DB not available, session works without DB sync
-        }
+      if (token.userId) {
+        (session as any).userId = token.userId;
+        (session as any).phone = token.phone || null;
       }
       return session;
     },
