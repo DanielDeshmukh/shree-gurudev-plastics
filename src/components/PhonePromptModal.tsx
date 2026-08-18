@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useCustomerAuth } from "@/context/CustomerAuthContext";
 
+const SKIP_KEY = "sgp_phone_prompt_skipped";
+
 export default function PhonePromptModal() {
   const { showPhonePrompt, setShowPhonePrompt, updatePhone, user } = useCustomerAuth();
   const [phone, setPhone] = useState("");
@@ -28,6 +30,9 @@ export default function PhonePromptModal() {
 
   const handleSkip = () => {
     setShowPhonePrompt(false);
+    if (user?.email) {
+      localStorage.setItem(SKIP_KEY, JSON.stringify(user.email));
+    }
   };
 
   return (
