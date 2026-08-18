@@ -5,7 +5,7 @@ import RecentlyViewed from "@/components/RecentlyViewed";
 import HomeContent from "@/components/HomeContent";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Shree Gurudev Plastics | Plastic Products Distributor Bhayander",
   description: "Shree Gurudev Plastics — Bhayander's #1 plastic products distributor and bulk seller. Buy plastic chairs, tables, buckets, containers, stools at wholesale prices. Serving Bhayander, Naigaon, Vasai, Virar, Mumbai. Top brands: Aristo, KG Plast, Mango Chairs, Milton. Contact for bulk orders.",
   alternates: { canonical: SITE_URL },
   openGraph: {
