@@ -29,7 +29,7 @@ export async function verifyPassword(password: string, hashed: string): Promise<
 }
 
 export function generateToken(username: string): string {
-  return jwt.sign({ username }, getJwtSecret(), { expiresIn: "7d" });
+  return jwt.sign({ username }, getJwtSecret(), { expiresIn: "1d" });
 }
 
 export function verifyToken(token: string): { username: string } | null {
