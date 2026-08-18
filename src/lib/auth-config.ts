@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== "google" || !user) return false;
+      if (account?.provider !== "google" || !user) return true;
 
       try {
         const existing = await db.customerUser.findUnique({
@@ -44,11 +44,11 @@ export const authOptions: NextAuthOptions = {
             },
           });
         }
-        return true;
       } catch (e) {
-        console.error("SignIn error:", e);
-        return false;
+        console.error("SignIn DB error (non-blocking):", e);
       }
+
+      return true;
     },
     async jwt({ token, account }) {
       if (account) {
@@ -58,12 +58,16 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user && token.googleId) {
-        const dbUser = await db.customerUser.findUnique({
-          where: { googleId: token.googleId as string },
-        });
-        if (dbUser) {
-          (session as any).userId = dbUser.id;
-          (session as any).phone = dbUser.phone;
+        try {
+          const dbUser = await db.customerUser.findUnique({
+            where: { googleId: token.googleId as string },
+          });
+          if (dbUser) {
+            (session as any).userId = dbUser.id;
+            (session as any).phone = dbUser.phone;
+          }
+        } catch (e) {
+          // DB not available, session works without DB sync
         }
       }
       return session;

@@ -1,4 +1,4 @@
-const CACHE_NAME = "sgp-v2";
+const CACHE_NAME = "sgp-v3";
 const STATIC_ASSETS = [
   "/",
   "/products",
@@ -53,21 +53,36 @@ self.addEventListener("fetch", (event) => {
   const isStaticPage = STATIC_ASSETS.includes(url.pathname);
   const isAsset = url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/);
 
-  if (!isStaticPage && !isAsset) {
+  if (isAsset) {
+    // Cache-first for static assets (they have content hashes)
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response && response.status === 200 && url.origin === self.location.origin) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(request).then((response) => {
-        if (response && response.status === 200 && url.origin === self.location.origin) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        }
-        return response;
-      });
-    })
-  );
+  if (isStaticPage) {
+    // Network-first for HTML pages (always get latest)
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && url.origin === self.location.origin) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
 });
