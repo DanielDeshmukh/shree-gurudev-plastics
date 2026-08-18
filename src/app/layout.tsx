@@ -30,13 +30,13 @@ export const metadata: Metadata = {
     siteName: BUSINESS_NAME,
     title: "Shree Gurudev Plastics | Bulk Plastic Products Distributor in Bhayander, Mumbai",
     description: "Bhayander's leading plastic products distributor and bulk seller. Plastic chairs, tables, buckets, containers at wholesale prices. Serving Mumbai, Naigaon, Vasai, Virar.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Shree Gurudev Plastics — Plastic Products Distributor Bhayander" }],
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Shree Gurudev Plastics — Plastic Products Distributor Bhayander" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Shree Gurudev Plastics | Bulk Plastic Products Distributor in Bhayander, Mumbai",
     description: "Bhayander's leading plastic products distributor and bulk seller. Plastic chairs, tables, buckets, containers at wholesale prices.",
-    images: ["/og-image.png"],
+    images: ["/og-image.svg"],
   },
   robots: {
     index: true,
