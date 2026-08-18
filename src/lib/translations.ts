@@ -10,7 +10,7 @@ export const translations = {
   },
   hero: {
     title: { en: "Premium Quality Plastic Products", hi: "प्रीमियम क्वालिटी प्लास्टिक उत्पादन" },
-    subtitle: { en: "Wholesale manufacturer & supplier in Bhayander, Mumbai", hi: "भाईंदर, मुंबई में थोक निर्माता और आपूर्तिकर्ता" },
+    subtitle: { en: "Wholesale distributor & supplier in Bhayander, Mumbai", hi: "भाईंदर, मुंबई में थोक वितरक और आपूर्तिकर्ता" },
     shopNow: { en: "Shop Now", hi: "अभी खरीदें" },
     contactUs: { en: "Contact Us", hi: "संपर्क करें" },
   },
