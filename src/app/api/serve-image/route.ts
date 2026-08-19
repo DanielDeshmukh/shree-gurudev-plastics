@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+const ALLOWED_DIRS = [
+  path.join(process.cwd(), "mango-images"),
+  path.join(process.cwd(), "public"),
+];
+
+function isPathSafe(resolvedPath: string): boolean {
+  return ALLOWED_DIRS.some((dir) => resolvedPath.startsWith(dir));
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const fileParam = searchParams.get("file");
@@ -10,17 +19,24 @@ export async function GET(request: NextRequest) {
   let localPath: string | null = null;
 
   if (fileParam) {
-    localPath = fileParam;
+    const resolved = path.resolve(fileParam);
+    if (!isPathSafe(resolved)) {
+      return new NextResponse("Access denied", { status: 403 });
+    }
+    localPath = resolved;
   } else if (imageUrl) {
     if (imageUrl.includes("cloudinary.com")) {
       const match = imageUrl.match(/\/shree-gurudev\/mango\/(.+)$/);
       if (match) {
-        localPath = path.join(process.cwd(), "mango-images", match[1]);
+        const resolved = path.resolve(process.cwd(), "mango-images", match[1]);
+        if (isPathSafe(resolved)) localPath = resolved;
       }
     } else if (imageUrl.startsWith("/mango-images/")) {
-      localPath = path.join(process.cwd(), imageUrl.replace(/^\//, ""));
+      const resolved = path.resolve(process.cwd(), imageUrl.replace(/^\//, ""));
+      if (isPathSafe(resolved)) localPath = resolved;
     } else if (imageUrl.startsWith("/")) {
-      localPath = path.join(process.cwd(), imageUrl.replace(/^\//, ""));
+      const resolved = path.resolve(process.cwd(), imageUrl.replace(/^\//, ""));
+      if (isPathSafe(resolved)) localPath = resolved;
     }
   }
 
@@ -29,7 +45,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!fs.existsSync(localPath)) {
-    return new NextResponse("Not found: " + localPath, { status: 404 });
+    return new NextResponse("File not found", { status: 404 });
   }
 
   const ext = path.extname(localPath).toLowerCase();
