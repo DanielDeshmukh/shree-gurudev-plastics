@@ -8,6 +8,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Defense-in-depth: verify admin token for /api/admin/** routes
+  if (pathname.startsWith("/api/admin/")) {
+    const token = request.cookies.get("admin_token")?.value;
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
   if (pathname === "/admin/login" || pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
