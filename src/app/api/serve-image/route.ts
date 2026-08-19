@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!fs.existsSync(localPath)) {
-    return new NextResponse("Not found: " + localPath, { status: 404 });
+    return new NextResponse("File not found", { status: 404 });
   }
 
   const ext = path.extname(localPath).toLowerCase();
