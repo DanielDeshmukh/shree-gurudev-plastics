@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getAuthUser } from "@/lib/auth";
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "fs";
 import { join, relative } from "path";
 
@@ -62,6 +63,9 @@ function normalize(s: string): string {
 }
 
 export async function GET(request: NextRequest) {
+  const username = await getAuthUser();
+  if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const { searchParams } = new URL(request.url);
     const productFilter = searchParams.get("product");
@@ -118,7 +122,7 @@ export async function GET(request: NextRequest) {
         for (const entry of files) {
           const fileBase = entry.replace(/\.[^.]+$/, "").toLowerCase().replace(/[\s-]+/g, "_").replace(/[^a-z0-9_-]/g, "");
           if (fileBase === normalizedColor) {
-            localFile = `/api/serve-image?file=${encodeURIComponent(join(productDir, entry))}`;
+            localFile = `/api/serve-image?file=${encodeURIComponent(relative(process.cwd(), join(productDir, entry)))}`;
             const relPath = relative(MANGO_DIR, join(productDir, entry)).replace(/\\/g, "/");
             for (const key of Object.keys(aiDecisions)) {
               if (key === relPath || key.replace(/\\/g, "/") === relPath) {
@@ -175,6 +179,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const username = await getAuthUser();
+  if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const body = await request.json();
     const { imageId, newColor } = body;
@@ -201,6 +208,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const username = await getAuthUser();
+  if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const { searchParams } = new URL(request.url);
     const imageId = searchParams.get("imageId");
