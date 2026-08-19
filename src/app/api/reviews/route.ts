@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/<[^>]*>/g, "")
+    .replace(/[<>]/g, "")
+    .trim()
+    .slice(0, 500);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -59,9 +67,9 @@ export async function POST(request: NextRequest) {
 
     const review = await db.review.create({
       data: {
-        name,
+        name: sanitizeInput(name),
         rating: ratingNum,
-        comment,
+        comment: sanitizeInput(comment),
         productId: parseInt(productId),
       },
     });
