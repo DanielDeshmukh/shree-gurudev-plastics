@@ -24,9 +24,10 @@ export async function GET(
     });
 
     return NextResponse.json({ product: { ...product, images } });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Product detail error:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to fetch product" },
+      { error: "Failed to fetch product", detail: error?.message },
       { status: 500 }
     );
   }
