@@ -49,12 +49,17 @@ export async function POST(
         });
       }
 
+      const trackingUrl = `https://shreegurudevplastics.com/track/${order.trackingToken}`;
+
       await db.order.update({
         where: { id: orderId },
         data: { status: "confirmed" },
       });
 
-      // Create notification
+      await db.orderStatusHistory.create({
+        data: { orderId, status: "Confirmed" },
+      });
+
       await db.notification.create({
         data: {
           type: "success",
@@ -68,7 +73,7 @@ export async function POST(
         success: true,
         message: "Order confirmed and stock deducted",
         whatsappUrl: `https://wa.me/91${order.phone}?text=${encodeURIComponent(
-          `Hi ${order.customer}, your order #${orderId} has been confirmed! Total: ₹${order.total.toLocaleString("en-IN")}. We'll notify you when it's ready for dispatch. — Shree Gurudev Plastics`
+          `Hi ${order.customer}, your order #${orderId} has been confirmed! Total: ₹${order.total.toLocaleString("en-IN")}. Track your order here: ${trackingUrl} — Shree Gurudev Plastics`
         )}`,
       });
     }
@@ -76,9 +81,15 @@ export async function POST(
     if (action === "cancel") {
       const cancelReason = reason || "Item unavailable";
 
+      const trackingUrl = `https://shreegurudevplastics.com/track/${order.trackingToken}`;
+
       await db.order.update({
         where: { id: orderId },
         data: { status: "cancelled", notes: `Cancelled: ${cancelReason}` },
+      });
+
+      await db.orderStatusHistory.create({
+        data: { orderId, status: "Cancelled", note: cancelReason },
       });
 
       await db.notification.create({
@@ -94,7 +105,7 @@ export async function POST(
         success: true,
         message: "Order cancelled",
         whatsappUrl: `https://wa.me/91${order.phone}?text=${encodeURIComponent(
-          `Hi ${order.customer}, we regret to inform you that your order #${orderId} has been cancelled by the store due to: ${cancelReason}. We apologize for the inconvenience. — Shree Gurudev Plastics`
+          `Hi ${order.customer}, we regret to inform you that your order #${orderId} has been cancelled by the store due to: ${cancelReason}. Track your order status here: ${trackingUrl} — Shree Gurudev Plastics`
         )}`,
       });
     }

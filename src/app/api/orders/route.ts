@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import crypto from "crypto";
 
 export async function GET() {
   const admin = await getAuthUser();
@@ -67,6 +68,8 @@ export async function POST(request: NextRequest) {
       customerId = newCustomer.id;
     }
 
+    const trackingToken = crypto.randomBytes(16).toString("hex");
+
     const order = await db.order.create({
       data: {
         customer,
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
         address: address || null,
         notes: notes || null,
         total,
+        trackingToken,
         customerId: customerId || null,
         items: {
           create: items.map((item: { productId: number; quantity: number; price: number }) => ({
@@ -81,6 +85,9 @@ export async function POST(request: NextRequest) {
             quantity: item.quantity,
             price: item.price,
           })),
+        },
+        statusHistory: {
+          create: { status: "Order Placed" },
         },
       },
       include: {

@@ -24,6 +24,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [trackingToken, setTrackingToken] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -75,6 +76,7 @@ export default function CheckoutPage() {
 
       const data = await res.json();
       setOrderId(data.order.id);
+      setTrackingToken(data.order.trackingToken);
       setSuccess(true);
       clearCart();
     } catch (err: any) {
@@ -97,8 +99,24 @@ export default function CheckoutPage() {
           <p className="text-gray-600 mb-2">
             Your order <span className="font-semibold text-primary-500">#{orderId}</span> has been received.
           </p>
+          <p className="text-gray-500 text-sm mb-4">
+            We&apos;ll confirm your order via WhatsApp shortly.
+          </p>
+          {trackingToken && (
+            <a
+              href={`/track/${trackingToken}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-primary-500 hover:text-primary-600 font-medium mb-4"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Track Your Order
+            </a>
+          )}
           <p className="text-gray-500 text-sm mb-6">
-            We&apos;ll confirm your order via WhatsApp shortly. You can also call us at{" "}
+            Or call us at{" "}
             <a href="tel:+918552084251" className="text-primary-500 font-medium">
               +91 85520 84251
             </a>
@@ -111,7 +129,7 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <a
-              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I just placed order #${orderId}. Please confirm.`)}`}
+              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I just placed order #${orderId}. Please confirm.${trackingToken ? `\n\nTrack your order: https://shreegurudevplastics.com/track/${trackingToken}` : ""}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"

@@ -104,24 +104,38 @@ model Customer {
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  customer   String
-  phone      String
-  address    String?
-  total      Float
-  status     String      @default("pending")
-  notes      String?
-  customerId Int?
-  customerRef Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
-  items      OrderItem[]
-  invoices   Invoice[]
-  deliveries DeliverySchedule[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id             Int               @id @default(autoincrement())
+  customer       String
+  phone          String
+  address        String?
+  total          Float
+  status         String            @default("pending")
+  trackingToken  String?           @unique
+  notes          String?
+  customerId     Int?
+  customerRef    Customer?         @relation("CustomerOrders", fields: [customerId], references: [id])
+  items          OrderItem[]
+  invoices       Invoice[]
+  deliveries     DeliverySchedule[]
+  statusHistory  OrderStatusHistory[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   @@index([customerId])
   @@index([status])
+  @@index([trackingToken])
   @@index([createdAt])
+}
+
+model OrderStatusHistory {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    String
+  note      String?
+  timestamp DateTime @default(now())
+
+  @@index([orderId])
 }
 
 model OrderItem {
