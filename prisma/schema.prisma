@@ -372,3 +372,17 @@ model Session {
   expiresAt    DateTime
   createdAt    DateTime @default(now())
 }
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String   @default("info")
+  title     String
+  message   String
+  orderId   Int?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([read])
+  @@index([createdAt])
+}

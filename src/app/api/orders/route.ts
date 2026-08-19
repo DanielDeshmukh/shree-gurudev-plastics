@@ -90,6 +90,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Create notification for admin
+    const itemSummary = order.items
+      .map((i: any) => `${i.product.name} x${i.quantity}`)
+      .join(", ");
+    await db.notification.create({
+      data: {
+        type: "order",
+        title: `New Order #${order.id}`,
+        message: `${customer} (${phone}) placed an order: ${itemSummary}. Total: ₹${total.toLocaleString("en-IN")}`,
+        orderId: order.id,
+      },
+    });
+
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {
     return NextResponse.json(

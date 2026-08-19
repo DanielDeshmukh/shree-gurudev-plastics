@@ -13,6 +13,7 @@ import {
   MdTrendingDown,
   MdStar,
   MdNotifications,
+  MdNotificationsActive,
   MdLock,
   MdAutorenew,
   MdFactory,
@@ -29,12 +30,13 @@ const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: MdDashboard },
   { href: "/admin/products", label: "Products", icon: MdInventory },
   { href: "/admin/brands", label: "Brands", icon: MdCategory },
-  { href: "/admin/orders", label: "Orders", icon: MdReceipt, showBadge: true },
+  { href: "/admin/orders", label: "Orders", icon: MdReceipt },
+  { href: "/admin/notifications", label: "Notifications", icon: MdNotificationsActive, showBadge: true },
   { href: "/admin/invoices", label: "Invoices", icon: MdDescription },
   { href: "/admin/reports", label: "Reports", icon: MdTrendingUp },
   { href: "/admin/analytics", label: "Analytics", icon: MdTrendingDown },
   { href: "/admin/reviews", label: "Reviews", icon: MdStar },
-  { href: "/admin/inventory", label: "Inventory", icon: MdNotifications },
+  { href: "/admin/inventory", label: "Inventory", icon: MdInventory },
   { href: "/admin/price-lock", label: "Price Lock", icon: MdLock },
   { href: "/admin/recurring-orders", label: "Recurring Orders", icon: MdAutorenew },
   { href: "/admin/suppliers", label: "Suppliers", icon: MdFactory },
@@ -57,19 +59,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const fetchPending = async () => {
       try {
-        const res = await fetch("/api/orders", { credentials: "include" });
+        const res = await fetch("/api/notifications?filter=unread", { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
-          const open = (data.orders || []).filter(
-            (o: any) => o.status === "pending" || o.status === "confirmed"
-          ).length;
-          setPendingOrders(open);
+          setPendingOrders(data.unreadCount || 0);
         }
       } catch {}
     };
 
     fetchPending();
-    const interval = setInterval(fetchPending, 30000);
+    const interval = setInterval(fetchPending, 15000);
     return () => clearInterval(interval);
   }, [pathname]);
 
