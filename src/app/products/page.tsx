@@ -294,9 +294,9 @@ export default function ProductsPage() {
     setPage(1);
   };
 
-  const handlePriceApply = () => {
-    const minVal = minRef.current ? parseFloat(minRef.current.value) || 0 : 0;
-    const maxVal = maxRef.current ? parseFloat(maxRef.current.value) || 0 : 0;
+  const handlePriceApply = (min?: number, max?: number) => {
+    const minVal = min !== undefined ? min : (minRef.current ? parseFloat(minRef.current.value) || 0 : 0);
+    const maxVal = max !== undefined ? max : (maxRef.current ? parseFloat(maxRef.current.value) || 0 : 0);
     applyPrice(minVal, maxVal);
   };
 

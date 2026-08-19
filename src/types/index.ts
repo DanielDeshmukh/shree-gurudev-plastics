@@ -19,6 +19,22 @@ export interface ProductType {
   tags: string;
   createdAt: Date;
   updatedAt: Date;
+  height?: number | null;
+  width?: number | null;
+  depth?: number | null;
+  weight?: number | null;
+  hsnCode?: string | null;
+  gstRate?: number | null;
+  images?: ProductImageType[];
+}
+
+export interface ProductImageType {
+  id: number;
+  productId: number;
+  imageUrl: string;
+  color: string | null;
+  sortOrder: number;
+  createdAt: Date;
 }
 
 export interface BrandType {

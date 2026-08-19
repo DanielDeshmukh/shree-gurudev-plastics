@@ -121,7 +121,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-4 md:p-8">
               <ColorVariantPicker
-                images={(product as any).images || []}
+                images={product.images || []}
                 mainImage={product.imageUrl || ""}
                 productName={product.name}
               />
@@ -170,12 +170,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
                 )}
 
-                {((product as any).height || (product as any).width || (product as any).depth || (product as any).weight) && (
+                {(product.height || product.width || product.depth || product.weight) && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Dimensions</span>
                     <span className="text-gray-900 text-sm font-medium">
-                      {[(product as any).height && `H: ${(product as any).height} cm`, (product as any).width && `W: ${(product as any).width} cm`, (product as any).depth && `D: ${(product as any).depth} cm`].filter(Boolean).join(' × ')}
-                      {(product as any).weight ? ` | Weight: ${(product as any).weight} kg` : ''}
+                      {[product.height && `H: ${product.height} cm`, product.width && `W: ${product.width} cm`, product.depth && `D: ${product.depth} cm`].filter(Boolean).join(' × ')}
+                      {product.weight ? ` | Weight: ${product.weight} kg` : ''}
                     </span>
                   </div>
                 )}
@@ -270,28 +270,28 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline">{product.category}</Link>
               </div>
             )}
-            {(product as any).height && (
+            {product.height && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Height:</span>
-                <span className="text-gray-900">{(product as any).height} cm</span>
+                <span className="text-gray-900">{product.height} cm</span>
               </div>
             )}
-            {(product as any).width && (
+            {product.width && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Width:</span>
-                <span className="text-gray-900">{(product as any).width} cm</span>
+                <span className="text-gray-900">{product.width} cm</span>
               </div>
             )}
-            {(product as any).depth && (
+            {product.depth && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Depth:</span>
-                <span className="text-gray-900">{(product as any).depth} cm</span>
+                <span className="text-gray-900">{product.depth} cm</span>
               </div>
             )}
-            {(product as any).weight && (
+            {product.weight && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Weight:</span>
-                <span className="text-gray-900">{(product as any).weight} kg</span>
+                <span className="text-gray-900">{product.weight} kg</span>
               </div>
             )}
           </div>
