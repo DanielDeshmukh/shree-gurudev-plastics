@@ -3,11 +3,16 @@ import { db } from "@/lib/db";
 import { generateToken, verifyPassword } from "@/lib/auth";
 import { securityLogger } from "@/lib/security-logger";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { validate, loginSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, password } = body;
+    const validation = validate(loginSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+    const { username, password } = validation.data;
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
 
     const rateKey = `login:${ip}`;

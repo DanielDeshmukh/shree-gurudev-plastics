@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validate, createReviewSchema } from "@/lib/validation";
 
 function sanitizeInput(input: string): string {
-  return input
-    .replace(/<[^>]*>/g, "")
-    .replace(/[<>]/g, "")
-    .trim()
-    .slice(0, 500);
+  return input.replace(/<[^>]*>/g, "").replace(/[<>]/g, "").trim().slice(0, 500);
 }
 
 export async function GET(request: NextRequest) {
@@ -41,36 +38,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, rating, comment, productId } = body;
-
-    if (!name || !rating || !comment || !productId) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
+    const validation = validate(createReviewSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
-
-    const ratingNum = parseInt(rating);
-    if (ratingNum < 1 || ratingNum > 5) {
-      return NextResponse.json(
-        { error: "Rating must be between 1 and 5" },
-        { status: 400 }
-      );
-    }
-
-    if (comment.length < 10) {
-      return NextResponse.json(
-        { error: "Comment must be at least 10 characters" },
-        { status: 400 }
-      );
-    }
+    const { name, rating, comment, productId } = validation.data;
 
     const review = await db.review.create({
       data: {
         name: sanitizeInput(name),
-        rating: ratingNum,
+        rating,
         comment: sanitizeInput(comment),
-        productId: parseInt(productId),
+        productId,
       },
     });
 
