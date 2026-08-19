@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("Products API error:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to fetch products", detail: error?.message },
+      { error: "Failed to fetch products" },
       { status: 500 }
     );
   }
