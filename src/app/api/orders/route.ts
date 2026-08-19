@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { validate, createOrderSchema } from "@/lib/validation";
 import crypto from "crypto";
 
 export async function GET() {
@@ -30,9 +31,32 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { customer, phone, address, notes, items } = body;
+    const validation = validate(createOrderSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+    const { customer, phone, address, notes, items } = validation.data;
 
-    const total = items.reduce(
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "No items provided" }, { status: 400 });
+    }
+
+    const productIds = items.map((item) => item.productId);
+    const dbProducts = await db.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, price: true },
+    });
+    const priceMap = new Map(dbProducts.map((p) => [p.id, p.price]));
+
+    const validatedItems = items.map((item) => {
+      const dbPrice = priceMap.get(item.productId);
+      if (dbPrice === undefined) {
+        throw new Error(`Product ${item.productId} not found`);
+      }
+      return { ...item, price: dbPrice };
+    });
+
+    const total = validatedItems.reduce(
       (sum: number, item: { quantity: number; price: number }) =>
         sum + item.quantity * item.price,
       0
@@ -80,7 +104,7 @@ export async function POST(request: NextRequest) {
         trackingToken,
         customerId: customerId || null,
         items: {
-          create: items.map((item: { productId: number; quantity: number; price: number }) => ({
+          create: validatedItems.map((item: { productId: number; quantity: number; price: number }) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.price,
