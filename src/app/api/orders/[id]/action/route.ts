@@ -25,28 +25,35 @@ export async function POST(
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
     if (action === "process") {
-      // Check stock availability
-      const stockIssues: string[] = [];
-      for (const item of order.items) {
-        const product = await db.product.findUnique({ where: { id: item.productId } });
-        if (product && product.stock < item.quantity) {
-          stockIssues.push(`${product.name}: need ${item.quantity}, have ${product.stock}`);
+      // Atomic stock check + deduction using transaction
+      const result = await db.$transaction(async (tx) => {
+        const stockIssues: string[] = [];
+        for (const item of order.items) {
+          const product = await tx.product.findUnique({ where: { id: item.productId } });
+          if (product && product.stock < item.quantity) {
+            stockIssues.push(`${product.name}: need ${item.quantity}, have ${product.stock}`);
+          }
         }
-      }
 
-      if (stockIssues.length > 0) {
+        if (stockIssues.length > 0) {
+          return { error: true, stockIssues };
+        }
+
+        for (const item of order.items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
+
+        return { error: false };
+      });
+
+      if (result.error) {
         return NextResponse.json({
           error: "Insufficient stock",
-          stockIssues,
+          stockIssues: result.stockIssues,
         }, { status: 400 });
-      }
-
-      // Deduct stock and update order status
-      for (const item of order.items) {
-        await db.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } },
-        });
       }
 
       const trackingUrl = `https://shreegurudevplastics.com/track/${order.trackingToken}`;
