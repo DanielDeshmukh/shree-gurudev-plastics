@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import {
   MdCheckCircle,
   MdShoppingCart,
+  MdLocalShipping,
   MdInventory,
   MdDeliveryDining,
   MdHome,
@@ -15,7 +16,7 @@ const STAGES = [
   { key: "Order Placed", icon: MdShoppingCart, label: "Order Placed" },
   { key: "Confirmed", icon: MdCheckCircle, label: "Confirmed" },
   { key: "Processing", icon: MdInventory, label: "Processing" },
-  { key: "Shipped", label: "Shipped" },
+  { key: "Shipped", icon: MdLocalShipping, label: "Shipped" },
   { key: "Out for Delivery", icon: MdDeliveryDining, label: "Out for Delivery" },
   { key: "Delivered", icon: MdHome, label: "Delivered" },
 ];
@@ -146,21 +147,20 @@ export default function TrackOrderPage() {
               {/* Track line */}
               <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full" />
               <div
-                className="absolute top-5 left-0 h-1 bg-orange-500 rounded-full transition-all duration-1000 ease-out"
+                className="absolute top-5 left-0 h-1 bg-blue-500 rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${truckProgress}%` }}
               />
 
-              {/* Truck inline with nodes */}
+              {/* Truck */}
               <div
-                className="absolute transition-all duration-1000 ease-out -translate-x-1/2 z-20"
-                style={{ left: `${truckProgress}%`, top: "0px" }}
+                className="absolute top-0 transition-all duration-1000 ease-out -translate-x-1/2"
+                style={{ left: `${truckProgress}%` }}
               >
-                <img
-                  src="/truck-icon.svg"
-                  alt="Shipment progress"
-                  className="w-12 h-12 object-contain drop-shadow-lg"
-                  style={{ filter: "drop-shadow(0 2px 6px rgba(249, 115, 22, 0.4))" }}
-                />
+                <div className="relative -top-1">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce">
+                    <MdLocalShipping className="w-5 h-5 text-white" />
+                  </div>
+                </div>
               </div>
 
               {/* Nodes */}
@@ -168,7 +168,6 @@ export default function TrackOrderPage() {
                 {STAGES.map((stage, i) => {
                   const isCompleted = completedStatuses.includes(stage.key);
                   const isCurrent = order.status === stage.key;
-                  const isShippedStage = stage.key === "Shipped";
                   const Icon = stage.icon;
 
                   return (
@@ -178,15 +177,11 @@ export default function TrackOrderPage() {
                           isCompleted
                             ? "bg-green-500 text-white shadow-md shadow-green-500/30"
                             : isCurrent
-                              ? "bg-orange-500 text-white shadow-md shadow-orange-500/30 ring-4 ring-orange-100"
+                              ? "bg-blue-500 text-white shadow-md shadow-blue-500/30 ring-4 ring-blue-100"
                               : "bg-gray-200 text-gray-400"
                         }`}
                       >
-                        {isShippedStage ? (
-                          <img src="/truck-icon.svg" alt="" className="w-6 h-6 object-contain" />
-                        ) : (
-                          Icon && <Icon className="w-5 h-5" />
-                        )}
+                        <Icon className="w-5 h-5" />
                       </div>
                       <p className={`text-xs mt-2 text-center font-medium ${
                         isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"
@@ -210,7 +205,6 @@ export default function TrackOrderPage() {
                 const isCompleted = completedStatuses.includes(stage.key);
                 const isCurrent = order.status === stage.key;
                 const isLast = i === STAGES.length - 1;
-                const isShippedStage = stage.key === "Shipped";
                 const Icon = stage.icon;
 
                 return (
@@ -222,15 +216,11 @@ export default function TrackOrderPage() {
                           isCompleted
                             ? "bg-green-500 text-white"
                             : isCurrent
-                              ? "bg-orange-500 text-white ring-4 ring-orange-100"
+                              ? "bg-blue-500 text-white ring-4 ring-blue-100"
                               : "bg-gray-200 text-gray-400"
                         }`}
                       >
-                        {isShippedStage ? (
-                          <img src="/truck-icon.svg" alt="" className="w-5 h-5 object-contain" />
-                        ) : (
-                          Icon && <Icon className="w-4 h-4" />
-                        )}
+                        <Icon className="w-4 h-4" />
                       </div>
                       {!isLast && (
                         <div className={`w-0.5 h-10 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`} />
