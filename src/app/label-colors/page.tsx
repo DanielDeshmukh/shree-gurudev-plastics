@@ -5,11 +5,11 @@ import { useState, useEffect, useCallback, useRef } from "react";
 interface ColorItem {
   id: number;
   imageUrl: string;
+  localUrl: string | null;
   productName: string;
   dbColor: string;
-  aiColor: string | null;
-  aiRaw: string | null;
-  currentDecision: "approve" | "reject" | null;
+  newColor: string | null;
+  decided: boolean;
 }
 
 const MANGO_COLORS: Record<string, string> = {
@@ -65,77 +65,103 @@ function getColorHex(colorName: string): string {
   return "#999999";
 }
 
+function serveUrl(imageUrl: string): string {
+  return `/api/serve-image?url=${encodeURIComponent(imageUrl)}`;
+}
+
 export default function LabelColorsPage() {
   const [items, setItems] = useState<ColorItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ColorItem[]>([]);
   const [cursor, setCursor] = useState(0);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<"all" | "pending" | "decided">("all");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [stats, setStats] = useState({ total: 0, approved: 0, rejected: 0, pending: 0 });
+  const [stats, setStats] = useState({ total: 0, decided: 0, pending: 0 });
+  const [edits, setEdits] = useState<Record<number, string>>({});
+  const [productFilter, setProductFilter] = useState<string>("");
+  const [products, setProducts] = useState<string[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetch("/api/label-colors")
+  const fetchItems = useCallback(() => {
+    const params = new URLSearchParams();
+    if (productFilter) params.set("product", productFilter);
+    params.set("status", filter === "all" ? "all" : filter);
+    fetch(`/api/label-colors?${params}`)
       .then((r) => r.json())
       .then((data) => {
         setItems(data.items);
         setFilteredItems(data.items);
+        setStats(data.stats);
+        if (data.products) setProducts(data.products);
         setLoading(false);
       });
-  }, []);
+  }, [productFilter, filter]);
 
   useEffect(() => {
-    let filtered = items;
-    if (filter === "pending") filtered = items.filter((i) => !i.currentDecision);
-    else if (filter === "approved") filtered = items.filter((i) => i.currentDecision === "approve");
-    else if (filter === "rejected") filtered = items.filter((i) => i.currentDecision === "reject");
-    setFilteredItems(filtered);
+    fetchItems();
+  }, [fetchItems]);
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
     setCursor(0);
-  }, [filter, items]);
+  }, [filter, productFilter]);
 
-  useEffect(() => {
-    const approved = items.filter((i) => i.currentDecision === "approve").length;
-    const rejected = items.filter((i) => i.currentDecision === "reject").length;
-    setStats({ total: items.length, approved, rejected, pending: items.length - approved - rejected });
-  }, [items]);
-
-  const saveDecision = useCallback(
-    async (id: number, decision: "approve" | "reject") => {
+  const saveColor = useCallback(
+    async (id: number, color: string) => {
+      if (!color.trim()) return;
       setSaving(true);
-      const item = items.find((i) => i.id === id);
       await fetch("/api/label-colors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageId: id, decision, color: item?.aiColor }),
+        body: JSON.stringify({ imageId: id, newColor: color.trim() }),
       });
       setItems((prev) =>
-        prev.map((i) => (i.id === id ? { ...i, currentDecision: decision } : i))
+        prev.map((i) => (i.id === id ? { ...i, newColor: color.trim(), decided: true } : i))
       );
       setSaving(false);
     },
-    [items]
+    []
   );
+
+  const clearDecision = useCallback(async (id: number) => {
+    setSaving(true);
+    await fetch(`/api/label-colors?imageId=${id}`, { method: "DELETE" });
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, newColor: null, decided: false } : i))
+    );
+    setSaving(false);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "a" || e.key === "A") {
+      const item = filteredItems[cursor];
+      if (!item) return;
+
+      if (e.key === "Enter") {
         e.preventDefault();
-        if (filteredItems[cursor]) saveDecision(filteredItems[cursor].id, "approve");
-        if (cursor < filteredItems.length - 1) setCursor((c) => c + 1);
-      } else if (e.key === "d" || e.key === "D") {
+        const color = edits[item.id] || "";
+        if (color.trim()) {
+          saveColor(item.id, color);
+          setEdits((prev) => ({ ...prev, [item.id]: "" }));
+          if (cursor < filteredItems.length - 1) setCursor((c) => c + 1);
+        }
+      } else if (e.key === "Backspace" && !edits[item.id]) {
         e.preventDefault();
-        if (filteredItems[cursor]) saveDecision(filteredItems[cursor].id, "reject");
-        if (cursor < filteredItems.length - 1) setCursor((c) => c + 1);
+        clearDecision(item.id);
       } else if (e.key === "ArrowRight" || e.key === "j") {
         e.preventDefault();
         setCursor((c) => Math.min(c + 1, filteredItems.length - 1));
       } else if (e.key === "ArrowLeft" || e.key === "k") {
         e.preventDefault();
         setCursor((c) => Math.max(c - 1, 0));
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        setCursor((c) => Math.min(c + 1, filteredItems.length - 1));
       }
     },
-    [cursor, filteredItems, saveDecision]
+    [cursor, filteredItems, edits, saveColor, clearDecision]
   );
 
   useEffect(() => {
@@ -148,6 +174,7 @@ export default function LabelColorsPage() {
       const card = gridRef.current.children[cursor] as HTMLElement;
       if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
+    if (inputRef.current) inputRef.current.focus();
   }, [cursor]);
 
   if (loading) {
@@ -165,16 +192,14 @@ export default function LabelColorsPage() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <h1 className="text-xl font-bold text-gray-900">Color Labeler</h1>
             <div className="flex gap-2">
-              {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+              {(["all", "pending", "decided"] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
                   className={`px-3 py-1.5 rounded text-sm font-medium ${
                     filter === f
-                      ? f === "approved"
+                      ? f === "decided"
                         ? "bg-green-600 text-white"
-                        : f === "rejected"
-                        ? "bg-red-600 text-white"
                         : "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
@@ -186,89 +211,149 @@ export default function LabelColorsPage() {
             <div className="text-sm text-gray-600">
               <span className="font-mono">{cursor + 1}</span> / {filteredItems.length}
               {" | "}
-              <span className="text-green-600">{stats.approved} approved</span>
-              {" | "}
-              <span className="text-red-600">{stats.rejected} rejected</span>
+              <span className="text-green-600">{stats.decided} decided</span>
               {" | "}
               <span className="text-gray-500">{stats.pending} pending</span>
               {saving && <span className="ml-2 text-blue-500">Saving...</span>}
             </div>
           </div>
-          <div className="mt-2 text-xs text-gray-500">
-            <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">A</kbd> Approve &nbsp;
-            <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">D</kbd> Reject &nbsp;
-            <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">←→</kbd> Navigate
+
+          <div className="mt-2 flex items-center gap-4 flex-wrap">
+            <select
+              value={productFilter}
+              onChange={(e) => setProductFilter(e.target.value)}
+              className="px-3 py-1.5 border rounded text-sm"
+            >
+              <option value="">All Products</option>
+              {products.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <div className="text-xs text-gray-500">
+              <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">Enter</kbd> Save & Next &nbsp;
+              <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">Backspace</kbd> Clear &nbsp;
+              <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">Tab</kbd> Next &nbsp;
+              <kbd className="px-1.5 py-0.5 bg-gray-200 rounded">←→</kbd> Navigate
+            </div>
           </div>
         </div>
 
-        <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {filteredItems.map((item, idx) => (
-            <div
-              key={item.id}
-              className={`bg-white rounded-lg overflow-hidden shadow-sm border-2 transition-all ${
-                idx === cursor
-                  ? "border-blue-500 ring-2 ring-blue-300"
-                  : item.currentDecision === "approve"
-                  ? "border-green-400"
-                  : item.currentDecision === "reject"
-                  ? "border-red-400"
-                  : "border-transparent"
-              }`}
-            >
-              <div className="aspect-square bg-gray-50 relative">
-                <img
-                  src={item.imageUrl}
-                  alt={item.productName}
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-                {item.currentDecision && (
-                  <div
-                    className={`absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-white ${
-                      item.currentDecision === "approve" ? "bg-green-600" : "bg-red-600"
-                    }`}
-                  >
-                    {item.currentDecision === "approve" ? "APPROVED" : "REJECTED"}
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {filteredItems.map((item, idx) => {
+            const editValue = edits[item.id] ?? (item.newColor || "");
+            const matchedColor = getColorHex(editValue);
+            return (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg overflow-hidden shadow-sm border-2 transition-all ${
+                  idx === cursor
+                    ? "border-blue-500 ring-2 ring-blue-300"
+                    : item.decided
+                    ? "border-green-400"
+                    : "border-transparent"
+                }`}
+              >
+                <div className="aspect-square bg-gray-50 relative">
+                  <img
+                    src={item.localUrl || serveUrl(item.imageUrl)}
+                    alt={item.productName}
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                  {item.decided && (
+                    <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-white bg-green-600">
+                      DONE
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 space-y-2">
+                  <div className="text-xs text-gray-500 truncate" title={item.productName}>
+                    {item.productName}
                   </div>
-                )}
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-gray-400 w-10">From:</span>
+                    <span
+                      className="w-4 h-4 rounded-full border border-gray-300 shrink-0"
+                      style={{ backgroundColor: getColorHex(item.dbColor) }}
+                    />
+                    <span className="font-medium text-gray-700 truncate">{item.dbColor}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-gray-400 w-10">To:</span>
+                    <span
+                      className="w-4 h-4 rounded-full border border-gray-300 shrink-0"
+                      style={{ backgroundColor: matchedColor }}
+                    />
+                    <input
+                      ref={idx === cursor ? inputRef : undefined}
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEdits((prev) => ({ ...prev, [item.id]: val }));
+                        if (item.decided && val !== item.newColor) {
+                          clearDecision(item.id);
+                        }
+                      }}
+                      placeholder="type color name..."
+                      className="flex-1 min-w-0 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-300"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-1">
+                    {Object.keys(MANGO_COLORS)
+                      .filter((c) => {
+                        const search = (edits[item.id] || "").toLowerCase().replace(/[\s_]/g, "");
+                        if (!search) return false;
+                        return c.replace(/_/g, "").includes(search);
+                      })
+                      .slice(0, 6)
+                      .map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => {
+                            setEdits((prev) => ({ ...prev, [item.id]: c.replace(/_/g, " ") }));
+                          }}
+                          className="px-1.5 py-0.5 text-[10px] rounded border border-gray-200 hover:bg-gray-100 flex items-center gap-1"
+                        >
+                          <span
+                            className="w-2 h-2 rounded-full shrink-0"
+                            style={{ backgroundColor: MANGO_COLORS[c] }}
+                          />
+                          {c.replace(/_/g, " ")}
+                        </button>
+                      ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        const color = edits[item.id] || "";
+                        if (color.trim()) {
+                          saveColor(item.id, color);
+                          setEdits((prev) => ({ ...prev, [item.id]: "" }));
+                          if (cursor < filteredItems.length - 1) setCursor((c) => c + 1);
+                        }
+                      }}
+                      className="flex-1 py-1.5 bg-green-500 text-white text-xs font-semibold rounded hover:bg-green-600 transition-colors"
+                    >
+                      Save
+                    </button>
+                    {item.decided && (
+                      <button
+                        onClick={() => clearDecision(item.id)}
+                        className="py-1.5 px-3 bg-gray-200 text-gray-600 text-xs font-semibold rounded hover:bg-gray-300 transition-colors"
+                      >
+                        Undo
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="p-2 space-y-1.5">
-                <div className="text-[11px] text-gray-500 truncate" title={item.productName}>
-                  {item.productName}
-                </div>
-                <div className="flex items-center gap-1.5 text-[11px]">
-                  <span className="text-gray-500">From:</span>
-                  <span
-                    className="w-3 h-3 rounded-full border border-gray-300 inline-block"
-                    style={{ backgroundColor: getColorHex(item.dbColor) }}
-                  />
-                  <span className="font-medium text-gray-700 truncate">{item.dbColor}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-[11px]">
-                  <span className="text-gray-500">To:</span>
-                  <span
-                    className="w-3 h-3 rounded-full border border-gray-300 inline-block"
-                    style={{ backgroundColor: getColorHex(item.aiColor || "") }}
-                  />
-                  <span className="font-medium text-gray-700 truncate">{item.aiColor || "N/A"}</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <button
-                    onClick={() => saveDecision(item.id, "reject")}
-                    className="flex-1 py-1 bg-red-500 text-white text-[11px] font-semibold rounded hover:bg-red-600 transition-colors"
-                  >
-                    D: Reject
-                  </button>
-                  <button
-                    onClick={() => saveDecision(item.id, "approve")}
-                    className="flex-1 py-1 bg-green-500 text-white text-[11px] font-semibold rounded hover:bg-green-600 transition-colors"
-                  >
-                    A: Approve
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
