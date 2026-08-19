@@ -46,11 +46,10 @@ function FilterSidebar({
           <li>
             <button
               onClick={() => { setSelectedBrand(""); setSelectedCategory(""); setSelectedSubCategory(""); }}
-              className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                !selectedBrand
+              className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${!selectedBrand
                   ? "bg-primary-100 text-primary-600 font-medium"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               {t("All Brands", "सभी ब्रांड")}
             </button>
@@ -59,11 +58,10 @@ function FilterSidebar({
             <li key={brand.id}>
               <button
                 onClick={() => { setSelectedBrand(brand.slug || brand.name); setSelectedCategory(""); setSelectedSubCategory(""); }}
-                className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                  selectedBrand === (brand.slug || brand.name)
+                className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${selectedBrand === (brand.slug || brand.name)
                     ? "bg-primary-100 text-primary-600 font-medium"
                     : "text-gray-600 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {brand.name}
               </button>
@@ -78,11 +76,10 @@ function FilterSidebar({
           <li>
             <button
               onClick={() => { setSelectedCategory(""); setSelectedSubCategory(""); }}
-              className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                !selectedCategory
+              className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${!selectedCategory
                   ? "bg-primary-100 text-primary-600 font-medium"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               {t("All Categories", "सभी श्रेणियां")}
             </button>
@@ -102,11 +99,10 @@ function FilterSidebar({
                         setExpandedCats(prev => ({ ...prev, [cat.name]: true }));
                       }
                     }}
-                    className={`text-sm flex-1 text-left px-3 py-2 rounded-lg transition-colors ${
-                      isActive
+                    className={`text-sm flex-1 text-left px-3 py-2 rounded-lg transition-colors ${isActive
                         ? "bg-primary-100 text-primary-600 font-medium"
                         : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {cat.name}
                   </button>
@@ -129,11 +125,10 @@ function FilterSidebar({
                     <li>
                       <button
                         onClick={() => { setSelectedCategory(cat.name); setSelectedSubCategory(""); }}
-                        className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${
-                          selectedCategory === cat.name && !selectedSubCategory
+                        className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${selectedCategory === cat.name && !selectedSubCategory
                             ? "bg-primary-50 text-primary-600 font-medium"
                             : "text-gray-500 hover:bg-gray-50"
-                        }`}
+                          }`}
                       >
                         {t("All", "सभी")} {cat.name}
                       </button>
@@ -142,11 +137,10 @@ function FilterSidebar({
                       <li key={sub}>
                         <button
                           onClick={() => { setSelectedCategory(cat.name); setSelectedSubCategory(sub); }}
-                          className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${
-                            selectedSubCategory === sub
+                          className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${selectedSubCategory === sub
                               ? "bg-primary-50 text-primary-600 font-medium"
                               : "text-gray-500 hover:bg-gray-50"
-                          }`}
+                            }`}
                         >
                           {sub}
                         </button>
@@ -250,7 +244,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [sort, setSort] = useState("newest");
+  const [sort, setSort] = useState("name-asc");
   const [page, setPage] = useState(1);
   const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
@@ -336,7 +330,7 @@ export default function ProductsPage() {
     if (search.trim()) {
       const query = search.trim().toLowerCase();
       const fuseResults = fuse.search(query).map((r) => r.item);
-      
+
       // Boost exact name matches to the top
       fuseResults.sort((a, b) => {
         const aName = a.name.toLowerCase();
@@ -345,7 +339,7 @@ export default function ProductsPage() {
         const bExact = bName === query ? 0 : bName.startsWith(query) ? 1 : bName.includes(query) ? 2 : 3;
         return aExact - bExact;
       });
-      
+
       results = fuseResults;
     }
 
@@ -435,17 +429,17 @@ export default function ProductsPage() {
   const displayCategories = dbCategories.length > 0
     ? dbCategories
     : [
-        { name: "Chairs", subCategories: ["Armless Chairs", "Baby Chairs", "Economical Chairs", "HoReCa Chairs", "Medium Back Chairs", "Premium Chairs"] },
-        { name: "Stools", subCategories: [] },
-        { name: "Tables", subCategories: [] },
-        { name: "Houseware", subCategories: ["Storage Containers", "Bath & Kitchen", "Racks & Organizers"] },
-        { name: "Dustbins", subCategories: [] },
-        { name: "Household", subCategories: [] },
-        { name: "Cabinets", subCategories: [] },
-        { name: "Cleaning", subCategories: [] },
-        { name: "Crates & Baskets", subCategories: [] },
-        { name: "Insulated", subCategories: [] },
-      ] as CategoryHierarchy[];
+      { name: "Chairs", subCategories: ["Armless Chairs", "Baby Chairs", "Economical Chairs", "HoReCa Chairs", "Medium Back Chairs", "Premium Chairs"] },
+      { name: "Stools", subCategories: [] },
+      { name: "Tables", subCategories: [] },
+      { name: "Houseware", subCategories: ["Storage Containers", "Bath & Kitchen", "Racks & Organizers"] },
+      { name: "Dustbins", subCategories: [] },
+      { name: "Household", subCategories: [] },
+      { name: "Cabinets", subCategories: [] },
+      { name: "Cleaning", subCategories: [] },
+      { name: "Crates & Baskets", subCategories: [] },
+      { name: "Insulated", subCategories: [] },
+    ] as CategoryHierarchy[];
 
   const activeFilters: { label: string; onRemove: () => void }[] = [];
   if (selectedBrand) {
@@ -502,11 +496,10 @@ export default function ProductsPage() {
                   <button
                     key={option.value}
                     onClick={() => { setSort(option.value); setSortDropdownOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                      sort === option.value
+                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${sort === option.value
                         ? "bg-primary-50 text-primary-600 font-medium"
                         : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {option.label}
                   </button>
@@ -639,9 +632,8 @@ export default function ProductsPage() {
                           <button
                             key={p}
                             onClick={() => handlePageChange(p)}
-                            className={`px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors ${
-                              page === p ? "bg-primary-500 text-white" : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                            }`}
+                            className={`px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors ${page === p ? "bg-primary-500 text-white" : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                              }`}
                           >
                             {p}
                           </button>
