@@ -32,7 +32,30 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { customer, phone, address, notes, items } = body;
 
-    const total = items.reduce(
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "No items provided" }, { status: 400 });
+    }
+
+    // Server-side price validation: verify prices against database
+    const productIds = items.map((item: { productId: number }) => item.productId);
+    const dbProducts = await db.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, price: true },
+    });
+    const priceMap = new Map(dbProducts.map((p) => [p.id, p.price]));
+
+    const validatedItems = items.map((item: { productId: number; quantity: number; price: number }) => {
+      const dbPrice = priceMap.get(item.productId);
+      if (dbPrice === undefined) {
+        throw new Error(`Product ${item.productId} not found`);
+      }
+      if (item.quantity < 1) {
+        throw new Error(`Invalid quantity for product ${item.productId}`);
+      }
+      return { ...item, price: dbPrice };
+    });
+
+    const total = validatedItems.reduce(
       (sum: number, item: { quantity: number; price: number }) =>
         sum + item.quantity * item.price,
       0
@@ -80,7 +103,7 @@ export async function POST(request: NextRequest) {
         trackingToken,
         customerId: customerId || null,
         items: {
-          create: items.map((item: { productId: number; quantity: number; price: number }) => ({
+          create: validatedItems.map((item: { productId: number; quantity: number; price: number }) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.price,
