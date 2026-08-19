@@ -39,7 +39,7 @@ function FilterSidebar({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-y-auto">
       <div>
         <h3 className="font-bold text-gray-900 mb-3">{t("Brands", "ब्रांड")}</h3>
         <ul className="space-y-1">
@@ -90,17 +90,16 @@ function FilterSidebar({
           {categories.map((cat: CategoryHierarchy) => {
             const hasSubs = cat.subCategories && cat.subCategories.length > 0;
             const isActive = selectedCategory === cat.name && !selectedSubCategory;
-            const isExpanded = expandedCats[cat.name] || isActive;
+            const isExpanded = expandedCats[cat.name] ?? isActive;
             return (
               <li key={cat.name}>
                 <div className="flex items-center">
                   <button
                     onClick={() => {
+                      setSelectedCategory(cat.name);
+                      setSelectedSubCategory("");
                       if (hasSubs) {
-                        toggleExpand(cat.name);
-                      } else {
-                        setSelectedCategory(cat.name);
-                        setSelectedSubCategory("");
+                        setExpandedCats(prev => ({ ...prev, [cat.name]: true }));
                       }
                     }}
                     className={`text-sm flex-1 text-left px-3 py-2 rounded-lg transition-colors ${
@@ -113,7 +112,10 @@ function FilterSidebar({
                   </button>
                   {hasSubs && (
                     <button
-                      onClick={() => toggleExpand(cat.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand(cat.name);
+                      }}
                       className="p-1 text-gray-400 hover:text-gray-600"
                     >
                       <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -495,7 +497,7 @@ export default function ProductsPage() {
 
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           <aside className="hidden lg:block w-64 shrink-0">
-            <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-20">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <FilterSidebar {...filterSidebarProps} />
             </div>
           </aside>
