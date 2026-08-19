@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: [
+    "@libsql/client",
+    "@libsql/isomorphic-fetch",
+    "@libsql/isomorphic-ws",
+    "@libsql/hrana-client",
+    "@prisma/adapter-libsql",
+  ],
   images: {
     remotePatterns: [
       {

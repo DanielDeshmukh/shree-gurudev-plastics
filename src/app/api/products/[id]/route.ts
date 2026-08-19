@@ -11,7 +11,7 @@ export async function GET(
 
     const product = await db.product.findUnique({
       where: { id: parseInt(id) },
-      include: { brand: true },
+      include: { brand: true, images: true },
     });
 
     if (!product) {
@@ -79,7 +79,7 @@ export async function PUT(
     const product = await db.product.update({
       where: { id: parseInt(id) },
       data,
-      include: { brand: true },
+      include: { brand: true, images: true },
     });
 
     return NextResponse.json({ product });
