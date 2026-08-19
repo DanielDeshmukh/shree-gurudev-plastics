@@ -2,12 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateToken, verifyPassword } from "@/lib/auth";
 import { securityLogger } from "@/lib/security-logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { username, password } = body;
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+
+    const rateKey = `login:${ip}`;
+    const { allowed, remaining, resetAt } = checkRateLimit(rateKey, 5, 60_000);
+
+    if (!allowed) {
+      const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: `Too many login attempts. Try again in ${retryAfter}s` },
+        { status: 429, headers: { "Retry-After": String(retryAfter) } }
+      );
+    }
 
     const adminCount = await db.admin.count();
     if (adminCount !== 1) {
