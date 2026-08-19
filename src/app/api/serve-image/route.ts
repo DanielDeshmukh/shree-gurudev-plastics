@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { securityLogger } from "@/lib/security-logger";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const fileParam = searchParams.get("file");
   const imageUrl = searchParams.get("url");
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
 
   let localPath: string | null = null;
 
   if (fileParam) {
-    localPath = fileParam;
+    const resolved = path.resolve(fileParam);
+    if (!resolved.startsWith(process.cwd())) {
+      securityLogger.pathTraversalAttempt(fileParam, ip);
+      return new NextResponse("Access denied", { status: 403 });
+    }
+    localPath = resolved;
   } else if (imageUrl) {
     if (imageUrl.includes("cloudinary.com")) {
       const match = imageUrl.match(/\/shree-gurudev\/mango\/(.+)$/);
@@ -29,7 +36,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!fs.existsSync(localPath)) {
-    return new NextResponse("Not found: " + localPath, { status: 404 });
+    return new NextResponse("File not found", { status: 404 });
   }
 
   const ext = path.extname(localPath).toLowerCase();
