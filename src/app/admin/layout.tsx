@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import {
   MdDashboard,
   MdInventory,
@@ -28,7 +29,7 @@ const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: MdDashboard },
   { href: "/admin/products", label: "Products", icon: MdInventory },
   { href: "/admin/brands", label: "Brands", icon: MdCategory },
-  { href: "/admin/orders", label: "Orders", icon: MdReceipt },
+  { href: "/admin/orders", label: "Orders", icon: MdReceipt, showBadge: true },
   { href: "/admin/invoices", label: "Invoices", icon: MdDescription },
   { href: "/admin/reports", label: "Reports", icon: MdTrendingUp },
   { href: "/admin/analytics", label: "Analytics", icon: MdTrendingDown },
@@ -49,6 +50,28 @@ const navLinks = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [pendingOrders, setPendingOrders] = useState(0);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+
+    const fetchPending = async () => {
+      try {
+        const res = await fetch("/api/orders", { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          const open = (data.orders || []).filter(
+            (o: any) => o.status === "pending" || o.status === "confirmed"
+          ).length;
+          setPendingOrders(open);
+        }
+      } catch {}
+    };
+
+    fetchPending();
+    const interval = setInterval(fetchPending, 30000);
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
@@ -62,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950 text-gray-100">
       <aside className="flex w-64 flex-col bg-gray-900 border-r border-gray-800">
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
           {navLinks.map((link) => {
             const active = pathname.startsWith(link.href);
             const Icon = link.icon;
@@ -77,7 +100,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 }`}
               >
                 <Icon className="text-lg" />
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {link.showBadge && pendingOrders > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center animate-pulse">
+                    {pendingOrders}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -86,7 +114,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 items-center justify-between border-b border-gray-800 bg-gray-900 px-6">
-          <h1 className="text-lg font-semibold">Admin Panel</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg font-semibold">Admin Panel</h1>
+            {pendingOrders > 0 && (
+              <span className="text-xs text-red-400 font-medium">
+                {pendingOrders} open order{pendingOrders !== 1 ? "s" : ""} awaiting action
+              </span>
+            )}
+          </div>
           <button
             onClick={handleLogout}
             className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-red-500/20 hover:text-red-400"
