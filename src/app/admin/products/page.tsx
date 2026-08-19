@@ -24,7 +24,6 @@ interface Product {
   imageUrl: string | null;
   description: string | null;
   brand: Brand;
-  moq: number;
   tags: string;
   lowStockThreshold: number;
 }
@@ -43,7 +42,6 @@ const emptyForm = {
   stock: "",
   category: "general",
   description: "",
-  moq: "1",
   tags: "",
   lowStockThreshold: "10",
 };
@@ -108,7 +106,6 @@ export default function ProductsPage() {
       stock: String(product.stock),
       category: product.category,
       description: product.description || "",
-      moq: String(product.moq || 1),
       tags: product.tags || "",
       lowStockThreshold: String(product.lowStockThreshold ?? 10),
     });
@@ -379,16 +376,6 @@ export default function ProductsPage() {
                   type="text"
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Minimum Order Quantity</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={form.moq}
-                  onChange={(e) => setForm({ ...form, moq: e.target.value })}
                   className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
                 />
               </div>

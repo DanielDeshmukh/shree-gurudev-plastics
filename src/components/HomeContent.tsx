@@ -195,20 +195,16 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
                   </div>
-                  <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
-                  {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
-                  {product.moq > 1 && (
-                    <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
-                  )}
-                  <AddToCartButton
-                    id={product.id}
-                    name={product.name}
-                    color={product.color || ""}
-                    size={product.size || ""}
-                    price={product.price}
-                    imageUrl={product.imageUrl || ""}
-                    brand={product.brand?.name}
-                    moq={product.moq}
+                   <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
+                   {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
+                   <AddToCartButton
+                     id={product.id}
+                     name={product.name}
+                     color={product.color || ""}
+                     size={product.size || ""}
+                     price={product.price}
+                     imageUrl={product.imageUrl || ""}
+                     brand={product.brand?.name}
                   />
                   <CompareButton
                     product={{

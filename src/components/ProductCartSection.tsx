@@ -10,14 +10,13 @@ type ProductCartSectionProps = {
   price: number;
   imageUrl: string;
   brand?: string;
-  moq?: number;
 };
 
-export default function ProductCartSection({ id, name, color, size, price, imageUrl, brand, moq }: ProductCartSectionProps) {
+export default function ProductCartSection({ id, name, color, size, price, imageUrl, brand }: ProductCartSectionProps) {
   const { addItem, openCart } = useCart();
 
   const handleAdd = () => {
-    addItem({ id, name, color, size, price, imageUrl, brand, moq: moq || 1 });
+    addItem({ id, name, color, size, price, imageUrl, brand });
     openCart();
   };
 

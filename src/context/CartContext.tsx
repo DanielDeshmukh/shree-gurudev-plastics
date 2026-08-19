@@ -11,7 +11,6 @@ export type CartItem = {
   imageUrl: string;
   brand?: string;
   quantity: number;
-  moq: number;
 };
 
 type CartContextType = {
@@ -34,15 +33,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const addItem = useCallback((product: Omit<CartItem, "quantity">) => {
-    const moq = product.moq || 1;
     setItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + moq } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, quantity: moq }];
+      return [...prev, { ...product, quantity: 1 }];
     });
   }, []);
 
@@ -52,11 +50,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateQuantity = useCallback((id: number, quantity: number) => {
     setItems((prev) => {
-      const item = prev.find((i) => i.id === id);
-      const moq = item?.moq || 1;
-      if (quantity < moq) {
-        return prev;
-      }
       if (quantity <= 0) {
         return prev.filter((i) => i.id !== id);
       }

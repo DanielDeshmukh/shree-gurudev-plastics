@@ -19,7 +19,6 @@ export default function WishlistPage() {
       price: item.price,
       imageUrl: item.imageUrl,
       brand: item.brand,
-      moq: 1,
     });
     openCart();
   };

@@ -464,12 +464,9 @@ export default function ProductsPage() {
                         </div>
                         <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">₹{product.price}</p>
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
-                        {product.moq > 1 && (
-                          <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
-                        )}
                         <button
                           onClick={() => {
-                            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name, moq: product.moq || 1 });
+                            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name });
                             openCart();
                           }}
                           className="mt-2 md:mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"

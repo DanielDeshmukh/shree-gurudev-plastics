@@ -115,9 +115,6 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     {product.size && <span>• {product.size}</span>}
                   </div>
                   <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
-                  {product.moq > 1 && (
-                    <span className="inline-block mt-1 text-[10px] font-semibold bg-primary-500 text-white px-1.5 py-0.5 rounded">MOQ: {product.moq}</span>
-                  )}
                   <AddToCartButton
                     id={product.id}
                     name={product.name}
@@ -126,7 +123,6 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     price={product.price}
                     imageUrl={product.imageUrl || ""}
                     brand={brand?.name}
-                    moq={product.moq}
                   />
                   <CompareButton
                     product={{

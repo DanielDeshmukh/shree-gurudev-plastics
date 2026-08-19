@@ -15,7 +15,6 @@ export interface ProductType {
   lowStockThreshold: number;
   category: string;
   description: string | null;
-  moq: number;
   tags: string;
   createdAt: Date;
   updatedAt: Date;
