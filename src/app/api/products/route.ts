@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const brand = searchParams.get("brand");
     const search = searchParams.get("search");
     const category = searchParams.get("category");
+    const subCategory = searchParams.get("subCategory");
     const sort = searchParams.get("sort") || "newest";
     const minPrice = parseFloat(searchParams.get("minPrice") || "");
     const maxPrice = parseFloat(searchParams.get("maxPrice") || "");
@@ -33,6 +34,10 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
+    if (subCategory) {
+      where.subCategory = subCategory;
+    }
+
     if (!isNaN(minPrice) || !isNaN(maxPrice)) {
       where.price = {};
       if (!isNaN(minPrice)) (where.price as Record<string, number>).gte = minPrice;
@@ -51,7 +56,7 @@ export async function GET(request: NextRequest) {
       }
     })();
 
-    const [products, total, priceStats, categories] = await Promise.all([
+    const [products, total, priceStats, rawCategories] = await Promise.all([
       db.product.findMany({
         where,
         include: { brand: true },
@@ -63,11 +68,20 @@ export async function GET(request: NextRequest) {
       db.product.aggregate({ where: { ...where, price: { ...where.price as any, gt: 0 } }, _min: { price: true }, _max: { price: true } }),
       db.product.findMany({
         where: { ...where, category: { not: "" } },
-        select: { category: true },
-        distinct: ["category"],
+        select: { category: true, subCategory: true },
         orderBy: { category: "asc" },
       }),
     ]);
+
+    // Build hierarchical categories: { name, subCategories[] }
+    const catMap = new Map<string, Set<string>>();
+    for (const c of rawCategories) {
+      if (!catMap.has(c.category)) catMap.set(c.category, new Set());
+      if (c.subCategory) catMap.get(c.category)!.add(c.subCategory);
+    }
+    const categories = Array.from(catMap.entries())
+      .map(([name, subs]) => ({ name, subCategories: Array.from(subs).sort() }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     return NextResponse.json({
       products,
@@ -81,7 +95,7 @@ export async function GET(request: NextRequest) {
         min: priceStats._min.price ?? 0,
         max: priceStats._max.price ?? 0,
       },
-      categories: categories.map((c) => c.category).filter(Boolean),
+      categories,
     });
   } catch (error: any) {
     console.error("Products API error:", error?.message || error);
@@ -99,7 +113,7 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json();
-    const { name, color, size, brandId, imageUrl, price, stock, category, description, moq, tags, lowStockThreshold, retailerPrice, dealerPrice, distributorPrice, bulkPrice } = body;
+    const { name, color, size, brandId, imageUrl, price, stock, category, subCategory, description, tags, lowStockThreshold, retailerPrice, dealerPrice, distributorPrice, bulkPrice } = body;
 
     const product = await db.product.create({
       data: {
@@ -114,9 +128,9 @@ export async function POST(request: NextRequest) {
         distributorPrice: parseFloat(distributorPrice) || 0,
         bulkPrice: parseFloat(bulkPrice) || 0,
         stock: parseInt(stock) || 0,
-        category: category || "general",
+        category: category || "General",
+        subCategory: subCategory || null,
         description: description || null,
-        moq: parseInt(moq) || 1,
         tags: tags || "",
         lowStockThreshold: parseInt(lowStockThreshold) || 10,
       },

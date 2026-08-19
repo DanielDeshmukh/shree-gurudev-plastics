@@ -2,72 +2,118 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, LOCATION_KEYWORDS } from "@/lib/seo";
+import { getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY } from "@/lib/seo";
 import { apiFetch } from "@/lib/api-fetch";
 
 const categoryMeta: Record<string, { title: string; description: string; keywords: string[]; about: string; faqs: { question: string; answer: string }[] }> = {
-  furniture: {
-    title: "Plastic Furniture Bhayander | Chairs, Tables, Stools — Bulk Seller",
-    description: "Buy premium plastic furniture in Bhayander — chairs, tables, stools, and more from top brands like Aristo, KG Plast, Mango Chairs. Bulk orders available. Wholesale plastic furniture distributor in Mumbai area. Best prices on plastic chairs Bhayander, plastic tables Naigaon, plastic stools Vasai.",
-    keywords: ["plastic chairs Bhayander", "plastic tables Bhayander", "plastic stools Bhayander", "plastic furniture Mumbai", "wholesale plastic chairs", "bulk plastic tables", "plastic furniture distributor", "buy plastic chairs online", "plastic chair price", "plastic table price", "Aristo chairs", "KG Plast furniture", "Mango Chairs"],
-    about: "Shree Gurudev Plastics is Bhayander's leading plastic furniture distributor. We stock a wide range of plastic chairs, tables, stools, and garden furniture from trusted brands like Aristo, KG Plast, Mango Chairs, and Rajdhani. Whether you need a single chair or bulk furniture for an event, we offer the best wholesale prices in the Bhayander, Naigaon, Vasai, and Mumbai area. Our collection includes dining chairs, folding chairs, monoblock chairs, plastic tables, center tables, and more.",
+  chairs: {
+    title: "Plastic Chairs Bhayander | Armless, Premium, Medium Back — Bulk Seller",
+    description: "Buy plastic chairs in Bhayander — armless chairs, baby chairs, premium chairs, medium back chairs, HoReCa chairs from Mango, Aristo, Reego. Wholesale plastic chairs distributor in Mumbai. Best prices on bulk plastic chairs Bhayander, Naigaon, Vasai.",
+    keywords: ["plastic chairs Bhayander", "armless chairs Mumbai", "premium chairs wholesale", "medium back plastic chair", "baby chairs Bhayander", "HoReCa chairs bulk", "Mango chairs", "Aristo chairs", "plastic chair price", "wholesale plastic chairs Mumbai"],
+    about: "Shree Gurudev Plastics is Bhayander's leading plastic chair distributor. We stock armless chairs, baby chairs, premium chairs, medium back chairs, economical chairs, and HoReCa chairs from top brands like Mango Chairs, Aristo, and Reego. Whether you need chairs for your home, office, restaurant, or event, we offer the best wholesale prices in Bhayander, Naigaon, Vasai, and Mumbai area.",
     faqs: [
-      { question: "Do you offer bulk discounts on plastic chairs?", answer: "Yes, Shree Gurudev Plastics offers competitive bulk pricing on all plastic furniture. Contact us on WhatsApp at +91 85520 84251 for bulk order quotes." },
-      { question: "What brands of plastic furniture do you stock?", answer: "We stock Aristo, KG Plast, Mango Chairs, Rajdhani, Cosmos, and other leading plastic furniture brands at our Bhayander store." },
-      { question: "Do you deliver plastic furniture in Mumbai?", answer: "Yes, we deliver plastic furniture across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar. Contact us for delivery details." },
-      { question: "What is the price range of plastic chairs?", answer: "Our plastic chairs start from ₹300 and go up to ₹3,000 depending on the brand, design, and quality. We have options for every budget." },
+      { question: "What types of plastic chairs do you sell?", answer: "We stock armless chairs, baby chairs, premium chairs, medium back chairs, economical chairs, HoReCa chairs, armrest chairs, executive chairs, and more from brands like Mango, Aristo, and Reego." },
+      { question: "Do you offer bulk discounts on chairs?", answer: "Yes, Shree Gurudev Plastics offers competitive bulk pricing on all plastic chairs. Contact us on WhatsApp at +91 85520 84251 for bulk order quotes." },
+      { question: "Which brands of chairs do you stock?", answer: "We stock Mango Chairs, Aristo, Reego, KG Plast, and other leading plastic chair brands at our Bhayander store." },
+      { question: "Do you deliver chairs in Mumbai?", answer: "Yes, we deliver plastic chairs across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar." },
     ],
   },
-  containers: {
-    title: "Plastic Containers Bhayander | Storage & Kitchen Containers — Bulk Seller",
-    description: "Shop plastic containers in Bhayander — storage containers, kitchen containers, tiffin boxes, water bottles from Milton, Borosil, Signoraware. Wholesale plastic containers distributor in Mumbai. Best prices on bulk plastic containers Bhayander, Naigaon, Vasai. Durable and quality plastic containers.",
-    keywords: ["plastic containers Bhayander", "storage containers Bhayander", "kitchen containers Bhayander", "plastic boxes Bhayander", "wholesale plastic containers", "bulk plastic containers Mumbai", "Milton containers", "Borosil containers", "plastic container price", "plastic tiffin box", "water bottles Bhayander"],
-    about: "Shree Gurudev Plastics is the go-to plastic container distributor in Bhayander. We offer a comprehensive range of plastic containers including storage containers, kitchen containers, tiffin boxes, water bottles, and food storage solutions from brands like Milton, Borosil, Signoraware, and more. Our containers are durable, food-safe, and available at wholesale prices for both retail and bulk buyers across Mumbai.",
+  stools: {
+    title: "Plastic Stools Bhayander | Round & Square Stools — Wholesale Seller",
+    description: "Buy plastic stools in Bhayander — round stools, square stools, folding stools from Mango, Aristo. Wholesale plastic stools distributor in Mumbai. Best prices on bulk plastic stools Bhayander, Naigaon, Vasai.",
+    keywords: ["plastic stools Bhayander", "round plastic stool", "square plastic stool", "wholesale plastic stools", "bulk plastic stools Mumbai", "Mango stools", "Aristo stools", "plastic stool price", "folding stool Bhayander"],
+    about: "Shree Gurudev Plastics offers a wide range of plastic stools in Bhayander. From round stools and square stools to folding and step stools, we have durable options for homes, shops, and commercial spaces. Available at wholesale prices from top brands.",
     faqs: [
-      { question: "Do you sell plastic containers in bulk?", answer: "Yes, we are a wholesale plastic container distributor. We offer bulk pricing for retailers, restaurants, caterers, and businesses. Contact us on WhatsApp for quotes." },
-      { question: "What brands of containers do you have?", answer: "We stock Milton, Borosil, Signoraware, and other top brands for plastic containers, water bottles, and kitchen storage solutions." },
-      { question: "Are your plastic containers food-safe?", answer: "Yes, all our kitchen and food storage containers are made from food-grade materials and are completely safe for storing food items." },
-      { question: "Do you deliver containers in Mumbai?", answer: "Yes, we deliver across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar. Minimum order may apply for bulk deliveries." },
+      { question: "What types of plastic stools do you have?", answer: "We stock round stools, square stools, step stools, folding stools, and backless stools in various sizes and colors." },
+      { question: "Do you sell stools in bulk?", answer: "Yes, we offer special bulk pricing for plastic stools. Ideal for retailers, restaurants, and businesses. Contact us on WhatsApp for quotes." },
     ],
   },
-  storage: {
-    title: "Plastic Storage Bhayander | Boxes, Crates, Organizers — Bulk Wholesale",
-    description: "Buy plastic storage products in Bhayander — storage boxes, crates, organizers, baskets at wholesale prices. Leading plastic storage distributor in Mumbai area. Affordable bulk plastic storage solutions for homes, offices, and businesses in Bhayander, Naigaon, Vasai.",
-    keywords: ["plastic storage Bhayander", "plastic boxes Bhayander", "plastic crates Bhayander", "storage baskets Bhayander", "wholesale plastic storage", "bulk plastic boxes Mumbai", "plastic organizer", "plastic drawer", "storage solutions Bhayander", "plastic storage wholesale"],
-    about: "Shree Gurudev Plastics offers the best range of plastic storage solutions in Bhayander. From storage boxes and crates to baskets, organizers, and drawer units, we have everything to keep your space tidy. As a leading plastic storage distributor, we cater to homes, offices, shops, and warehouses across Bhayander, Naigaon, Vasai, Virar, and Mumbai with competitive bulk pricing.",
+  tables: {
+    title: "Plastic Tables Bhayander | Dining & Folding Tables — Wholesale Distributor",
+    description: "Buy plastic tables in Bhayander — dining tables, folding tables, center tables, utility tables from Mango Chairs. Wholesale plastic tables distributor in Mumbai. Best prices on bulk plastic tables Bhayander, Naigaon, Vasai.",
+    keywords: ["plastic tables Bhayander", "plastic dining table", "folding table Bhayander", "wholesale plastic tables", "bulk plastic tables Mumbai", "Mango tables", "plastic table price", "plastic center table"],
+    about: "Shree Gurudev Plastics stocks a variety of plastic tables in Bhayander including dining tables, folding tables, juice tables, fruit tables, and utility tables from Mango Chairs. Perfect for homes, restaurants, events, and commercial use at wholesale prices.",
     faqs: [
-      { question: "Do you offer bulk storage box pricing?", answer: "Yes, we offer special bulk pricing for storage boxes, crates, and organizers. Ideal for retailers, offices, and warehouses. Contact us on WhatsApp for quotes." },
-      { question: "What sizes of plastic boxes do you have?", answer: "We stock small, medium, large, and extra-large plastic storage boxes in various designs and colors to suit different needs." },
-      { question: "Can I buy storage products for my shop?", answer: "Absolutely. We are a wholesale distributor and supply storage products to retail shops across Bhayander, Mumbai, and surrounding areas." },
+      { question: "What types of plastic tables do you sell?", answer: "We stock dining tables, folding tables, center tables, juice tables, fruit tables, and utility tables from Mango Chairs." },
+      { question: "Do you offer bulk pricing on tables?", answer: "Yes, we offer competitive bulk pricing on all plastic tables. Contact us on WhatsApp for quotes." },
     ],
   },
-  kitchen: {
-    title: "Plastic Kitchenware Bhayander | Kitchen Products — Wholesale Distributor",
-    description: "Shop plastic kitchenware in Bhayander — mugs, jugs, plates, glasses, spoons, containers at wholesale prices. Top kitchen products distributor in Mumbai. Buy plastic kitchen items in bulk from Shree Gurudev Plastics, Bhayander. Best prices on kitchen essentials.",
-    keywords: ["plastic kitchenware Bhayander", "plastic mugs Bhayander", "plastic jugs Bhayander", "plastic plates Bhayander", "wholesale kitchen products", "bulk plastic kitchenware Mumbai", "plastic glasses", "plastic spoons", "kitchen accessories Bhayander", "plastic kitchen distributor"],
-    about: "Shree Gurudev Plastics is Bhayander's trusted plastic kitchenware distributor. We offer a complete range of plastic kitchen products including mugs, jugs, plates, glasses, spoons, containers, and more. Whether you're setting up a new kitchen or stocking your retail shop, our wholesale prices on quality kitchenware make us the preferred choice across Bhayander, Naigaon, Vasai, and Mumbai.",
+  houseware: {
+    title: "Plastic Houseware Bhayander | Containers, Kitchen, Storage — Wholesale",
+    description: "Buy plastic houseware in Bhayander — storage containers, kitchen items, bath accessories, racks, planters from Aristo. Wholesale plastic houseware distributor in Mumbai. Best prices on bulk houseware Bhayander, Naigaon, Vasai.",
+    keywords: ["plastic houseware Bhayander", "storage containers Bhayander", "kitchen accessories Bhayander", "Aristo houseware", "wholesale plastic houseware", "bulk houseware Mumbai", "plastic containers price", "bath accessories Bhayander"],
+    about: "Shree Gurudev Plastics is Bhayander's trusted houseware distributor. We offer storage containers, kitchen items, bath accessories, baskets, bowls, planters, sprayers, racks, and more from Aristo. Wholesale prices for both retail and bulk buyers across Mumbai.",
     faqs: [
-      { question: "Do you sell kitchenware in bulk?", answer: "Yes, we are a wholesale plastic kitchenware distributor. We offer bulk pricing for retailers, restaurants, hostels, and canteens. Contact us for quotes." },
-      { question: "What kitchen products do you stock?", answer: "We stock mugs, jugs, bottles, plates, glasses, spoons, containers, tiffin boxes, water bottles, and a wide range of kitchen accessories." },
-      { question: "Are your products food-grade?", answer: "Yes, all our kitchenware products are made from food-grade, BPA-free plastic materials safe for daily kitchen use." },
+      { question: "What houseware products do you stock?", answer: "We stock storage containers, kitchen items, bath accessories, baskets, bowls, planters, sprayers, racks, school items, and more from Aristo." },
+      { question: "Do you sell houseware in bulk?", answer: "Yes, we are a wholesale houseware distributor. We offer bulk pricing for retailers and businesses across Mumbai." },
     ],
   },
-  accessories: {
-    title: "Plastic Accessories Bhayander | Buckets, Mugs, Baskets — Wholesale Seller",
-    description: "Buy plastic accessories in Bhayander — buckets, mugs, baskets, trays, dustbins at wholesale prices. Leading plastic accessories distributor in Mumbai. Bulk plastic household items from Shree Gurudev Plastics. Best prices in Bhayander, Naigaon, Vasai.",
-    keywords: ["plastic buckets Bhayander", "plastic mugs Bhayander", "plastic baskets Bhayander", "plastic trays Bhayander", "wholesale plastic accessories", "bulk plastic buckets Mumbai", "plastic dustbin", "plastic hangers", "household plastic items", "plastic accessories distributor"],
-    about: "Shree Gurudev Plastics offers a wide range of plastic accessories and household items in Bhayander. From buckets and mugs to baskets, trays, dustbins, and hangers, we stock everything you need for your home or business. As a leading plastic accessories distributor, we provide wholesale pricing to retailers and bulk buyers across Bhayander, Naigaon, Vasai, Virar, and Mumbai.",
+  dustbins: {
+    title: "Plastic Dustbins Bhayander | Pedal Bins, Swing Bins — Wholesale Seller",
+    description: "Buy plastic dustbins in Bhayander — pedal bins, swing bins, waste baskets, trash cans from Aristo, Mango. Wholesale plastic dustbin distributor in Mumbai. Best prices on bulk dustbins Bhayander, Naigaon, Vasai.",
+    keywords: ["plastic dustbins Bhayander", "pedal bin Bhayander", "swing bin Mumbai", "waste basket wholesale", "trash can Bhayander", "Aristo dustbins", "Mango dustbins", "plastic dustbin price", "bulk dustbins Mumbai"],
+    about: "Shree Gurudev Plastics stocks a wide range of plastic dustbins in Bhayander. From pedal bins and swing bins to open waste baskets and kitchen dustbins, we offer durable waste management solutions from Aristo and Mango at wholesale prices.",
     faqs: [
-      { question: "Do you sell plastic buckets in bulk?", answer: "Yes, we are a wholesale plastic bucket supplier. We offer bulk pricing for retailers and businesses. Contact us on WhatsApp for the best rates." },
-      { question: "What plastic accessories do you stock?", answer: "We stock buckets, mugs, jugs, baskets, trays, dustbins, hangers, soap cases, and a wide range of plastic household accessories." },
-      { question: "Do you supply to shops?", answer: "Yes, we are a wholesale distributor and supply plastic accessories to retail shops, supermarkets, and general stores across the Mumbai region." },
+      { question: "What types of dustbins do you have?", answer: "We stock pedal bins, swing bins, open waste baskets, kitchen dustbins, and industrial waste bins in various sizes and colors." },
+      { question: "Do you sell dustbins in bulk?", answer: "Yes, we offer bulk pricing on all dustbin products. Ideal for housing societies, offices, restaurants, and retailers. Contact us on WhatsApp." },
+    ],
+  },
+  household: {
+    title: "Plastic Household Products Bhayander | Home Essentials — Wholesale",
+    description: "Buy plastic household products in Bhayander — bathroom accessories, home storage, utility items from Mango Chairs. Wholesale household products distributor in Mumbai. Best prices on bulk household items Bhayander.",
+    keywords: ["plastic household Bhayander", "home accessories Bhayander", "bathroom accessories", "wholesale household products", "bulk home items Mumbai", "Mango household", "plastic home essentials"],
+    about: "Shree Gurudev Plastics offers a range of plastic household products in Bhayander. From bathroom accessories and home storage to utility items, we stock everything you need for your home at wholesale prices from Mango Chairs.",
+    faqs: [
+      { question: "What household products do you stock?", answer: "We stock bathroom accessories, home storage solutions, utility items, and general household plastic products." },
+      { question: "Do you offer bulk pricing on household items?", answer: "Yes, we offer competitive bulk pricing on all household products. Contact us on WhatsApp for quotes." },
+    ],
+  },
+  cabinets: {
+    title: "Plastic Cabinets Bhayander | Storage Cabinets & Drawers — Wholesale Seller",
+    description: "Buy plastic cabinets in Bhayander — storage cabinets, drawer units, multi-shelf cabinets from Mango Chairs (Checkmate, Spencer, Spark series). Wholesale plastic cabinet distributor in Mumbai. Best prices on bulk cabinets Bhayander.",
+    keywords: ["plastic cabinets Bhayander", "storage cabinet Mumbai", "drawer unit Bhayander", "wholesale plastic cabinets", "Mango cabinets", "Checkmate cabinet", "Spencer cabinet", "plastic cabinet price"],
+    about: "Shree Gurudev Plastics is the go-to plastic cabinet distributor in Bhayander. We stock storage cabinets, drawer units, and multi-shelf cabinets from Mango Chairs including the Checkmate, Spencer, and Spark series. Durable, space-saving storage at wholesale prices.",
+    faqs: [
+      { question: "What types of cabinets do you have?", answer: "We stock storage cabinets, drawer units, multi-shelf cabinets, and decorative cabinets in various sizes and designs." },
+      { question: "Do you sell cabinets in bulk?", answer: "Yes, we offer special bulk pricing for plastic cabinets. Ideal for retailers, offices, and home furnishing shops. Contact us on WhatsApp." },
+    ],
+  },
+  cleaning: {
+    title: "Cleaning Products Bhayander | Brooms, Mops, Brushes — Wholesale Distributor",
+    description: "Buy cleaning products in Bhayander — brooms, mops, brushes, toilet cleaners from Aristo. Wholesale cleaning products distributor in Mumbai. Best prices on bulk cleaning supplies Bhayander, Naigaon, Vasai.",
+    keywords: ["cleaning products Bhayander", "broom Bhayander", "mop Mumbai", "plastic brush wholesale", "toilet cleaner Bhayander", "Aristo cleaning", "bulk cleaning supplies", "cleaning products price"],
+    about: "Shree Gurudev Plastics stocks a complete range of cleaning products in Bhayander. From brooms and mops to brushes and toilet cleaners, we offer quality cleaning supplies from Aristo at wholesale prices for homes, offices, and commercial spaces.",
+    faqs: [
+      { question: "What cleaning products do you stock?", answer: "We stock brooms, mops, brushes, toilet cleaners, dusting tools, and general cleaning supplies." },
+      { question: "Do you sell cleaning products in bulk?", answer: "Yes, we offer bulk pricing on all cleaning products. Ideal for retailers, hotels, and offices. Contact us on WhatsApp." },
+    ],
+  },
+  "crates & baskets": {
+    title: "Plastic Crates & Baskets Bhayander | Storage & Shopping — Wholesale",
+    description: "Buy plastic crates and baskets in Bhayander — shopping baskets, storage crates, dairy crates, produce baskets from Aristo. Wholesale crates and baskets distributor in Mumbai. Best prices on bulk crates Bhayander.",
+    keywords: ["plastic crates Bhayander", "shopping baskets Mumbai", "storage crates wholesale", "dairy crate Bhayander", "Aristo crates", "plastic baskets Bhayander", "bulk crates Mumbai"],
+    about: "Shree Gurudev Plastics offers a range of plastic crates and baskets in Bhayander. From shopping baskets and storage crates to dairy crates and produce baskets, we stock durable storage solutions from Aristo at wholesale prices.",
+    faqs: [
+      { question: "What types of crates do you have?", answer: "We stock shopping baskets, storage crates, dairy crates, produce baskets, and general-purpose crates in various sizes." },
+      { question: "Do you sell crates in bulk?", answer: "Yes, we offer competitive bulk pricing on all crates and baskets. Contact us on WhatsApp for quotes." },
+    ],
+  },
+  insulated: {
+    title: "Insulated Products Bhayander | Ice Boxes, Flasks, Coolers — Wholesale Seller",
+    description: "Buy insulated products in Bhayander — ice boxes, flasks, coolers, water jugs from Aristo. Wholesale insulated products distributor in Mumbai. Best prices on bulk insulated items Bhayander, Naigaon, Vasai.",
+    keywords: ["insulated products Bhayander", "ice box Mumbai", "flask Bhayander", "cooler wholesale", "water jug Bhayander", "Aristo insulated", "bulk insulated products", "insulated bottle price"],
+    about: "Shree Gurudev Plastics stocks insulated products in Bhayander including ice boxes, flasks, coolers, and water jugs from Aristo. Perfect for picnics, events, restaurants, and daily use at wholesale prices.",
+    faqs: [
+      { question: "What insulated products do you stock?", answer: "We stock ice boxes, flasks, coolers, water jugs, and insulated containers in various sizes and designs." },
+      { question: "Do you sell insulated products in bulk?", answer: "Yes, we offer bulk pricing on all insulated products. Ideal for retailers and event organizers. Contact us on WhatsApp." },
     ],
   },
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const meta = categoryMeta[slug];
+  const decoded = decodeURIComponent(slug).toLowerCase();
+  const meta = categoryMeta[decoded];
   if (!meta) {
     return { title: "Category Not Found" };
   }
@@ -89,15 +135,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 async function getProductsByCategory(category: string) {
   try {
-    const categoryMap: Record<string, string> = {
-      furniture: "Furniture",
-      containers: "Containers",
-      storage: "Storage",
-      kitchen: "Kitchen",
-      accessories: "Accessories",
-    };
-    const apiCategory = categoryMap[category] || category;
-    const res = await apiFetch(`/api/products?category=${apiCategory}`);
+    const decoded = decodeURIComponent(category).toLowerCase();
+    const res = await apiFetch(`/api/products?category=${encodeURIComponent(decoded)}`);
     if (!res.ok) return [];
     const data = await res.json();
     return data.products || [];
@@ -108,7 +147,8 @@ async function getProductsByCategory(category: string) {
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const meta = categoryMeta[slug];
+  const decoded = decodeURIComponent(slug).toLowerCase();
+  const meta = categoryMeta[decoded];
   const products = await getProductsByCategory(slug);
 
   if (!meta) {
@@ -117,8 +157,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Category Not Found</h1>
           <p className="text-gray-500 mb-6">The category you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
-            Go Home
+          <Link href="/products" className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+            Browse All Products
           </Link>
         </div>
       </main>

@@ -110,7 +110,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     { label: product.name },
   ];
 
-  const categorySlug = (product.category || "").toLowerCase().replace(/\s+/g, "");
+  const categorySlug = encodeURIComponent(product.category || "");
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -166,7 +166,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 {product.category && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-sm w-20">Category</span>
-                    <Link href={`/category/${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
+                    <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
                   </div>
                 )}
 
@@ -257,7 +257,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {product.category && (
               <div className="flex gap-2">
                 <span className="text-gray-500 w-24">Category:</span>
-                <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline">{product.category}</Link>
+                <Link href={`/products?category=${categorySlug}`} className="text-primary-500 hover:underline">{product.category}</Link>
               </div>
             )}
             {product.height && (
@@ -346,7 +346,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {product.category && (
           <section className="mt-8 text-center">
-            <Link href={`/category/${categorySlug}`} className="text-primary-500 hover:underline font-medium">
+            <Link href={`/products?category=${categorySlug}`} className="text-primary-500 hover:underline font-medium">
               Browse More {product.category} Products →
             </Link>
           </section>

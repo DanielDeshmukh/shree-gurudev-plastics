@@ -32,6 +32,7 @@ model Product {
   stock             Int      @default(0)
   lowStockThreshold Int      @default(10)
   category    String   @default("general")
+  subCategory String?
   description String?
   height      Float?
   width       Float?
@@ -54,6 +55,7 @@ model Product {
 
   @@index([brandId])
   @@index([category])
+  @@index([subCategory])
   @@index([createdAt])
 }
 

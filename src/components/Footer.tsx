@@ -6,12 +6,12 @@ import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
 const productCategories = [
-  { name: "Plastic Chairs", href: "/category/furniture" },
-  { name: "Plastic Tables", href: "/category/furniture" },
-  { name: "Plastic Buckets", href: "/category/accessories" },
-  { name: "Plastic Containers", href: "/category/containers" },
-  { name: "Plastic Storage", href: "/category/storage" },
-  { name: "Plastic Kitchenware", href: "/category/kitchen" },
+  { name: "Plastic Chairs", href: "/products?category=Chairs" },
+  { name: "Plastic Stools", href: "/products?category=Stools" },
+  { name: "Plastic Tables", href: "/products?category=Tables" },
+  { name: "Houseware", href: "/products?category=Houseware" },
+  { name: "Dustbins", href: "/products?category=Dustbins" },
+  { name: "Cabinets", href: "/products?category=Cabinets" },
 ];
 
 const brands = [

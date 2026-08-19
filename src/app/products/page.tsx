@@ -10,13 +10,17 @@ import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { useLanguage } from "@/context/LanguageContext";
 
+type CategoryHierarchy = { name: string; subCategories: string[] };
+
 function FilterSidebar({
   brands,
   selectedBrand,
   setSelectedBrand,
-  displayCategories,
+  categories,
   selectedCategory,
   setSelectedCategory,
+  selectedSubCategory,
+  setSelectedSubCategory,
   sliderMin,
   sliderMax,
   priceRange,
@@ -28,6 +32,12 @@ function FilterSidebar({
   resetAll,
   t,
 }: any) {
+  const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (cat: string) => {
+    setExpandedCats(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -35,7 +45,7 @@ function FilterSidebar({
         <ul className="space-y-1">
           <li>
             <button
-              onClick={() => setSelectedBrand("")}
+              onClick={() => { setSelectedBrand(""); setSelectedCategory(""); setSelectedSubCategory(""); }}
               className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
                 !selectedBrand
                   ? "bg-primary-100 text-primary-600 font-medium"
@@ -48,7 +58,7 @@ function FilterSidebar({
           {brands.map((brand: any) => (
             <li key={brand.id}>
               <button
-                onClick={() => setSelectedBrand(brand.slug || brand.name)}
+                onClick={() => { setSelectedBrand(brand.slug || brand.name); setSelectedCategory(""); setSelectedSubCategory(""); }}
                 className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
                   selectedBrand === (brand.slug || brand.name)
                     ? "bg-primary-100 text-primary-600 font-medium"
@@ -67,7 +77,7 @@ function FilterSidebar({
         <ul className="space-y-1">
           <li>
             <button
-              onClick={() => setSelectedCategory("")}
+              onClick={() => { setSelectedCategory(""); setSelectedSubCategory(""); }}
               className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
                 !selectedCategory
                   ? "bg-primary-100 text-primary-600 font-medium"
@@ -77,20 +87,74 @@ function FilterSidebar({
               {t("All Categories", "सभी श्रेणियां")}
             </button>
           </li>
-          {displayCategories.map((cat: string) => (
-            <li key={cat}>
-              <button
-                onClick={() => setSelectedCategory(cat)}
-                className={`text-sm w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                  selectedCategory === cat
-                    ? "bg-primary-100 text-primary-600 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                {cat}
-              </button>
-            </li>
-          ))}
+          {categories.map((cat: CategoryHierarchy) => {
+            const hasSubs = cat.subCategories && cat.subCategories.length > 0;
+            const isActive = selectedCategory === cat.name && !selectedSubCategory;
+            const isExpanded = expandedCats[cat.name] || isActive;
+            return (
+              <li key={cat.name}>
+                <div className="flex items-center">
+                  <button
+                    onClick={() => {
+                      if (hasSubs) {
+                        toggleExpand(cat.name);
+                      } else {
+                        setSelectedCategory(cat.name);
+                        setSelectedSubCategory("");
+                      }
+                    }}
+                    className={`text-sm flex-1 text-left px-3 py-2 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-primary-100 text-primary-600 font-medium"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                  {hasSubs && (
+                    <button
+                      onClick={() => toggleExpand(cat.name)}
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {hasSubs && isExpanded && (
+                  <ul className="ml-4 mt-1 space-y-0.5 border-l border-gray-200 pl-3">
+                    <li>
+                      <button
+                        onClick={() => { setSelectedCategory(cat.name); setSelectedSubCategory(""); }}
+                        className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${
+                          selectedCategory === cat.name && !selectedSubCategory
+                            ? "bg-primary-50 text-primary-600 font-medium"
+                            : "text-gray-500 hover:bg-gray-50"
+                        }`}
+                      >
+                        {t("All", "सभी")} {cat.name}
+                      </button>
+                    </li>
+                    {cat.subCategories.map((sub: string) => (
+                      <li key={sub}>
+                        <button
+                          onClick={() => { setSelectedCategory(cat.name); setSelectedSubCategory(sub); }}
+                          className={`text-xs w-full text-left px-2 py-1.5 rounded transition-colors ${
+                            selectedSubCategory === sub
+                              ? "bg-primary-50 text-primary-600 font-medium"
+                              : "text-gray-500 hover:bg-gray-50"
+                          }`}
+                        >
+                          {sub}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -186,7 +250,8 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
-  const [dbCategories, setDbCategories] = useState<string[]>([]);
+  const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
@@ -257,6 +322,10 @@ export default function ProductsPage() {
       results = results.filter((p) => p.category === selectedCategory);
     }
 
+    if (selectedSubCategory) {
+      results = results.filter((p) => p.subCategory === selectedSubCategory);
+    }
+
     const min = priceApplied ? userMin : sliderMin;
     const max = priceApplied ? userMax : sliderMax;
     if (min > 0 || max > 0) {
@@ -285,7 +354,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, selectedBrand, selectedCategory, sort]);
+  }, [search, selectedBrand, selectedCategory, selectedSubCategory, sort]);
 
   const applyPrice = (min: number, max: number) => {
     setUserMin(min);
@@ -314,6 +383,7 @@ export default function ProductsPage() {
     setSearch("");
     setSelectedBrand("");
     setSelectedCategory("");
+    setSelectedSubCategory("");
     setSort("newest");
     setUserMin(sliderMin);
     setUserMax(sliderMax);
@@ -329,15 +399,28 @@ export default function ProductsPage() {
 
   const displayCategories = dbCategories.length > 0
     ? dbCategories
-    : ["Furniture", "Containers", "Storage", "Kitchen", "Accessories", "General"];
+    : [
+        { name: "Chairs", subCategories: ["Armless Chairs", "Baby Chairs", "Economical Chairs", "HoReCa Chairs", "Medium Back Chairs", "Premium Chairs"] },
+        { name: "Stools", subCategories: [] },
+        { name: "Tables", subCategories: [] },
+        { name: "Houseware", subCategories: ["Storage Containers", "Bath & Kitchen", "Racks & Organizers"] },
+        { name: "Dustbins", subCategories: [] },
+        { name: "Household", subCategories: [] },
+        { name: "Cabinets", subCategories: [] },
+        { name: "Cleaning", subCategories: [] },
+        { name: "Crates & Baskets", subCategories: [] },
+        { name: "Insulated", subCategories: [] },
+      ] as CategoryHierarchy[];
 
   const activeFilters: { label: string; onRemove: () => void }[] = [];
   if (selectedBrand) {
     const b = brands.find((br: any) => (br.slug || br.name) === selectedBrand);
-    activeFilters.push({ label: b?.name || selectedBrand, onRemove: () => setSelectedBrand("") });
+    activeFilters.push({ label: b?.name || selectedBrand, onRemove: () => { setSelectedBrand(""); setSelectedCategory(""); setSelectedSubCategory(""); } });
   }
-  if (selectedCategory) {
-    activeFilters.push({ label: selectedCategory, onRemove: () => setSelectedCategory("") });
+  if (selectedSubCategory) {
+    activeFilters.push({ label: selectedSubCategory, onRemove: () => setSelectedSubCategory("") });
+  } else if (selectedCategory) {
+    activeFilters.push({ label: selectedCategory, onRemove: () => { setSelectedCategory(""); setSelectedSubCategory(""); } });
   }
   if (priceApplied && (userMin > sliderMin || userMax < sliderMax)) {
     activeFilters.push({
@@ -347,8 +430,8 @@ export default function ProductsPage() {
   }
 
   const filterSidebarProps = {
-    brands, selectedBrand, setSelectedBrand, displayCategories, selectedCategory,
-    setSelectedCategory, sliderMin, sliderMax, priceRange, setPriceRange,
+    brands, selectedBrand, setSelectedBrand, categories: displayCategories, selectedCategory,
+    setSelectedCategory, selectedSubCategory, setSelectedSubCategory, sliderMin, sliderMax, priceRange, setPriceRange,
     minRef, maxRef, handlePriceApply, resetPrice, resetAll, t,
   };
 

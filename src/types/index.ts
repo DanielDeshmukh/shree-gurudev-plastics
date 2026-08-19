@@ -14,6 +14,7 @@ export interface ProductType {
   stock: number;
   lowStockThreshold: number;
   category: string;
+  subCategory?: string | null;
   description: string | null;
   tags: string;
   createdAt: Date;
