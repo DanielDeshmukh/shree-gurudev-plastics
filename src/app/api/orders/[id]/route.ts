@@ -43,12 +43,24 @@ export async function PUT(
   if (!admin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+const VALID_STATUSES = [
+  "pending", "confirmed", "processing", "shipped",
+  "out_for_delivery", "delivered", "cancelled",
+  "Order Placed", "Confirmed", "Processing", "Shipped",
+  "Out for Delivery", "Delivered",
+];
+
   try {
     const { id } = await params;
     const body = await request.json();
 
     const data: Record<string, unknown> = {};
-    if (body.status !== undefined) data.status = body.status;
+    if (body.status !== undefined) {
+      if (!VALID_STATUSES.includes(body.status)) {
+        return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+      }
+      data.status = body.status;
+    }
     if (body.customer !== undefined) data.customer = body.customer;
     if (body.phone !== undefined) data.phone = body.phone;
     if (body.address !== undefined) data.address = body.address;
