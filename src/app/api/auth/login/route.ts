@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
 
     const adminCount = await db.admin.count();
     if (adminCount !== 1) {
+      // Integrity check: exactly 1 admin must exist. If count != 1,
+      // something is wrong — refuse login to prevent exploitation.
+      console.error(`[SECURITY] Admin count integrity violation: expected 1, got ${adminCount}`);
       return NextResponse.json({ error: "System integrity error" }, { status: 500 });
     }
 
