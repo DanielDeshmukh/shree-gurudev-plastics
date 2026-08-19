@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 
 export async function GET(
   _req: NextRequest,
@@ -11,7 +11,7 @@ export async function GET(
     return NextResponse.json({ error: "Invalid tracking link" }, { status: 400 });
   }
 
-  const order = await prisma.order.findUnique({
+  const order = await db.order.findUnique({
     where: { trackingToken: token },
     select: {
       id: true,
@@ -44,14 +44,14 @@ export async function GET(
     status: order.status,
     total: order.total,
     createdAt: order.createdAt,
-    items: order.items.map((item) => ({
+    items: order.items.map((item: any) => ({
       name: item.product.name,
       color: item.product.color,
       brand: item.product.brand.name,
       quantity: item.quantity,
       price: item.price,
     })),
-    timeline: order.statusHistory.map((h) => ({
+    timeline: order.statusHistory.map((h: any) => ({
       status: h.status,
       note: h.note,
       timestamp: h.timestamp,
