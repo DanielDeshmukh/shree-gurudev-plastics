@@ -46,6 +46,11 @@ model Product {
   orderItems  OrderItem[]
   reviews     Review[]
   images      ProductImage[]
+  priceLocks  PriceLock[]
+  priceHistory PriceHistory[]
+  recurringOrders RecurringOrder[]
+  purchaseOrders  PurchaseOrder[]
+  bundleItems BundleItem[]
 
   @@index([brandId])
   @@index([category])
@@ -91,6 +96,9 @@ model Customer {
   lastOrderAt DateTime?
   createdAt   DateTime @default(now())
   orders      Order[] @relation("CustomerOrders")
+  recurringOrders RecurringOrder[] @relation("RecurringOrders")
+  deliveries  DeliverySchedule[] @relation("Deliveries")
+  ledgerEntries LedgerEntry[] @relation("LedgerEntries")
 }
 
 model Order {
@@ -104,6 +112,8 @@ model Order {
   customerId Int?
   customerRef Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
   items      OrderItem[]
+  invoices   Invoice[]
+  deliveries DeliverySchedule[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -135,6 +145,7 @@ model Invoice {
   id             Int          @id @default(autoincrement())
   invoiceNumber  String       @unique
   orderId        Int?
+  order          Order?       @relation(fields: [orderId], references: [id], onDelete: SetNull)
   customerName   String
   customerPhone  String
   customerAddress String?
@@ -150,6 +161,8 @@ model Invoice {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   items          InvoiceItem[]
+
+  @@index([orderId])
 }
 
 model InvoiceItem {
@@ -172,28 +185,36 @@ model InvoiceItem {
 model PriceLock {
   id         Int      @id @default(autoincrement())
   productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   lockedPrice Float
   lockedAt   DateTime @default(now())
   expiresAt  DateTime
   status     String   @default("active")
   notes      String?
   createdAt  DateTime @default(now())
+
+  @@index([productId])
 }
 
 model PriceHistory {
   id         Int      @id @default(autoincrement())
   productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   oldPrice   Float
   newPrice   Float
   changedBy  String?
   reason     String?
   createdAt  DateTime @default(now())
+
+  @@index([productId])
 }
 
 model RecurringOrder {
   id                Int      @id @default(autoincrement())
   customerId        Int
+  customer          Customer @relation("RecurringOrders", fields: [customerId], references: [id], onDelete: Cascade)
   productId         Int
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productName       String
   quantity          Int
   frequency         String   @default("weekly")
@@ -206,23 +227,29 @@ model RecurringOrder {
   notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([productId])
 }
 
 model Supplier {
-  id        Int      @id @default(autoincrement())
-  name      String
-  phone     String
-  email     String?
-  address   String?
-  gstNumber String?
-  notes     String?
-  createdAt DateTime @default(now())
+  id            Int              @id @default(autoincrement())
+  name          String
+  phone         String
+  email         String?
+  address       String?
+  gstNumber     String?
+  notes         String?
+  createdAt     DateTime         @default(now())
+  purchaseOrders PurchaseOrder[]
 }
 
 model PurchaseOrder {
   id            Int      @id @default(autoincrement())
   supplierId    Int
+  supplier      Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   productId     Int
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productName   String
   quantity      Int
   unitCost      Float
@@ -234,6 +261,9 @@ model PurchaseOrder {
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([supplierId])
+  @@index([productId])
 }
 
 model DeliverySlot {
@@ -243,13 +273,17 @@ model DeliverySlot {
   endTime   String
   maxOrders Int      @default(5)
   active    Boolean  @default(true)
+  schedules DeliverySchedule[]
 }
 
 model DeliverySchedule {
   id          Int      @id @default(autoincrement())
   orderId     Int
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   customerId  Int
+  customer    Customer @relation("Deliveries", fields: [customerId], references: [id], onDelete: Cascade)
   slotId      Int
+  slot        DeliverySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
   date        DateTime
   address     String
   pincode     String
@@ -261,11 +295,16 @@ model DeliverySchedule {
   notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([customerId])
+  @@index([slotId])
 }
 
 model LedgerEntry {
   id           Int      @id @default(autoincrement())
   customerId   Int
+  customer     Customer @relation("LedgerEntries", fields: [customerId], references: [id], onDelete: Cascade)
   orderId      Int?
   type         String
   amount       Float
@@ -273,6 +312,8 @@ model LedgerEntry {
   description  String
   referenceNo  String?
   createdAt    DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Bundle {
@@ -294,7 +335,10 @@ model BundleItem {
   bundleId  Int
   bundle    Bundle   @relation(fields: [bundleId], references: [id], onDelete: Cascade)
   productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int      @default(1)
+
+  @@index([productId])
 }
 
 model CustomerUser {
