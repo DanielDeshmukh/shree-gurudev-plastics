@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import {
   MdCheckCircle,
   MdShoppingCart,
@@ -42,8 +43,9 @@ function formatDateTime(dateStr: string) {
     " " + d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function TrackOrderPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = use(params);
+export default function TrackOrderPage() {
+  const routeParams = useParams();
+  const token = routeParams.token as string;
   const [order, setOrder] = useState<OrderData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
