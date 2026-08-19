@@ -151,18 +151,6 @@ export default function TrackOrderPage() {
                 style={{ width: `${truckProgress}%` }}
               />
 
-              {/* Truck */}
-              <div
-                className="absolute top-0 transition-all duration-1000 ease-out -translate-x-1/2"
-                style={{ left: `${truckProgress}%` }}
-              >
-                <div className="relative -top-1">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce">
-                    <MdLocalShipping className="w-5 h-5 text-white" />
-                  </div>
-                </div>
-              </div>
-
               {/* Nodes */}
               <div className="relative flex justify-between">
                 {STAGES.map((stage, i) => {
