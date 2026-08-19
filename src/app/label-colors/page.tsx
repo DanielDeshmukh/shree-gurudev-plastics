@@ -8,6 +8,7 @@ interface ColorItem {
   localUrl: string | null;
   productName: string;
   dbColor: string;
+  aiColor: string | null;
   newColor: string | null;
   decided: boolean;
 }
@@ -280,6 +281,17 @@ export default function LabelColorsPage() {
                     <span className="font-medium text-gray-700 truncate">{item.dbColor}</span>
                   </div>
 
+                  {item.aiColor && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-gray-400 w-10">AI:</span>
+                      <span
+                        className="w-4 h-4 rounded-full border border-gray-300 shrink-0"
+                        style={{ backgroundColor: getColorHex(item.aiColor) }}
+                      />
+                      <span className="font-medium text-amber-600 truncate">{item.aiColor}</span>
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-gray-400 w-10">To:</span>
                     <span
@@ -303,6 +315,16 @@ export default function LabelColorsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-1">
+                    {item.aiColor && (
+                      <button
+                        onClick={() => {
+                          setEdits((prev) => ({ ...prev, [item.id]: item.aiColor! }));
+                        }}
+                        className="px-1.5 py-0.5 text-[10px] rounded border border-amber-300 bg-amber-50 hover:bg-amber-100 flex items-center gap-1 text-amber-700 font-medium"
+                      >
+                        Use AI: {item.aiColor}
+                      </button>
+                    )}
                     {Object.keys(MANGO_COLORS)
                       .filter((c) => {
                         const search = (edits[item.id] || "").toLowerCase().replace(/[\s_]/g, "");

@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, relative } from "path";
 
 const DECISIONS_PATH = join(process.cwd(), "scripts", "color-labeler-decisions.json");
+const AI_DECISIONS_PATH = join(process.cwd(), "scripts", "ai-color-decisions.json");
 const MANGO_DIR = join(process.cwd(), "mango-images");
 
 interface Decision {
@@ -75,6 +76,11 @@ export async function GET(request: NextRequest) {
       decisions = JSON.parse(readFileSync(DECISIONS_PATH, "utf-8"));
     }
 
+    let aiDecisions: Record<string, { currentColor: string; aiColor: string; raw: string; file: string }> = {};
+    if (existsSync(AI_DECISIONS_PATH)) {
+      aiDecisions = JSON.parse(readFileSync(AI_DECISIONS_PATH, "utf-8"));
+    }
+
     const productIds = [...new Set(images.map((img) => img.productId))];
     const products = await db.product.findMany({
       where: { id: { in: productIds } },
@@ -103,6 +109,7 @@ export async function GET(request: NextRequest) {
       const saved = decisions[String(img.id)];
       const product = productMap.get(img.productId);
       let localFile: string | null = null;
+      let aiColor: string | null = null;
 
       const productDir = productDirMap.get(img.productId);
       if (productDir) {
@@ -112,6 +119,22 @@ export async function GET(request: NextRequest) {
           const fileBase = entry.replace(/\.[^.]+$/, "").toLowerCase().replace(/[\s-]+/g, "_").replace(/[^a-z0-9_-]/g, "");
           if (fileBase === normalizedColor) {
             localFile = `/api/serve-image?file=${encodeURIComponent(join(productDir, entry))}`;
+            const relPath = relative(MANGO_DIR, join(productDir, entry)).replace(/\\/g, "/");
+            for (const key of Object.keys(aiDecisions)) {
+              if (key === relPath || key.replace(/\\/g, "/") === relPath) {
+                aiColor = aiDecisions[key].aiColor;
+                break;
+              }
+            }
+            if (!aiColor) {
+              const fileName = entry;
+              for (const key of Object.keys(aiDecisions)) {
+                if (aiDecisions[key].file === fileName && key.includes(normalizedColor.replace(/_/g, "_"))) {
+                  aiColor = aiDecisions[key].aiColor;
+                  break;
+                }
+              }
+            }
             break;
           }
         }
@@ -123,6 +146,7 @@ export async function GET(request: NextRequest) {
         localUrl: localFile,
         productName: product?.name || "Unknown",
         dbColor: img.color || "Unknown",
+        aiColor: aiColor,
         newColor: saved?.newColor || null,
         decided: !!saved,
       };
