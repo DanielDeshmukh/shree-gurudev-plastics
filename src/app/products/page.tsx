@@ -255,6 +255,27 @@ export default function ProductsPage() {
   const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  const sortOptions = [
+    { value: "newest", label: t("Newest", "नवीनतम") },
+    { value: "oldest", label: t("Oldest", "पुराने") },
+    { value: "price-asc", label: "Price ↑" },
+    { value: "price-desc", label: "Price ↓" },
+    { value: "name-asc", label: "Name A-Z" },
+    { value: "name-desc", label: "Name Z-A" },
+  ];
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [sliderMin, setSliderMin] = useState(0);
@@ -445,26 +466,42 @@ export default function ProductsPage() {
           <p className="text-xs md:text-sm text-gray-500">{filteredProducts.length} products</p>
         </div>
 
-        <div className="flex gap-2 mb-4 md:mb-6">
+        <div className="flex flex-wrap items-center gap-2 mb-4 md:mb-6">
           <input
             type="text"
             placeholder={t("Search products...", "उत्पादन खोजें...")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+            className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
           />
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="newest">{t("Newest", "नवीनतम")}</option>
-            <option value="oldest">{t("Oldest", "पुराने")}</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-            <option value="name-asc">Name A-Z</option>
-            <option value="name-desc">Name Z-A</option>
-          </select>
+          <div className="relative" ref={sortDropdownRef}>
+            <button
+              onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+              className="flex items-center gap-2 px-3 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+              {sortOptions.find(o => o.value === sort)?.label || "Sort"}
+              <svg className={`w-4 h-4 transition-transform ${sortDropdownOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {sortDropdownOpen && (
+              <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1 overflow-hidden">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => { setSort(option.value); setSortDropdownOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                      sort === option.value
+                        ? "bg-primary-50 text-primary-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setMobileFiltersOpen(true)}
             className="lg:hidden flex items-center gap-1.5 px-3 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
