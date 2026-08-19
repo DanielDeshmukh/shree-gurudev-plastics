@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { securityLogger } from "@/lib/security-logger";
 
 const ALLOWED_DIRS = [
   path.join(process.cwd(), "mango-images"),
@@ -15,12 +16,14 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const fileParam = searchParams.get("file");
   const imageUrl = searchParams.get("url");
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
 
   let localPath: string | null = null;
 
   if (fileParam) {
     const resolved = path.resolve(fileParam);
     if (!isPathSafe(resolved)) {
+      securityLogger.pathTraversalAttempt(fileParam, ip);
       return new NextResponse("Access denied", { status: 403 });
     }
     localPath = resolved;
