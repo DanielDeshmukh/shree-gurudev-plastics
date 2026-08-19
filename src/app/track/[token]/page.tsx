@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import {
   MdCheckCircle,
   MdShoppingCart,
@@ -30,6 +31,7 @@ type TimelineEntry = {
 type OrderData = {
   orderId: number;
   customer: string;
+  phone: string;
   status: string;
   total: number;
   createdAt: string;
@@ -46,27 +48,56 @@ function formatDateTime(dateStr: string) {
 export default function TrackOrderPage() {
   const routeParams = useParams();
   const token = routeParams.token as string;
+  const { user, loading: authLoading } = useCustomerAuth();
   const [order, setOrder] = useState<OrderData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [ownershipError, setOwnershipError] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     fetch(`/api/orders/track/${token}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.error) setError(data.error);
-        else setOrder(data);
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        // Ownership check: logged-in user's phone must match order's phone
+        if (user) {
+          const orderPhone = (data.phone || "").replace(/\s/g, "").replace(/^\+91/, "");
+          const userPhone = (user.phone || "").replace(/\s/g, "").replace(/^\+91/, "");
+          if (orderPhone && userPhone && orderPhone !== userPhone) {
+            setOwnershipError(true);
+            return;
+          }
+        }
+        setOrder(data);
       })
       .catch(() => setError("Failed to load order details"))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, user, authLoading]);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-500">Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (ownershipError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-4">
+          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <MdCancel className="w-8 h-8 text-orange-500" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">This order does not belong to you</h1>
+          <p className="text-gray-500 text-sm">You can only track orders placed from your own account.</p>
         </div>
       </div>
     );
