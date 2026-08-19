@@ -28,13 +28,23 @@ export async function verifyPassword(password: string, hashed: string): Promise<
   return bcrypt.compare(password, hashed);
 }
 
+const JWT_ISSUER = "shreegurudevplastics.com";
+const JWT_AUDIENCE = "shreegurudevplastics-admin";
+
 export function generateToken(username: string): string {
-  return jwt.sign({ username }, getJwtSecret(), { expiresIn: "1d" });
+  return jwt.sign({ username }, getJwtSecret(), {
+    expiresIn: "1d",
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
+  });
 }
 
 export function verifyToken(token: string): { username: string } | null {
   try {
-    return jwt.verify(token, getJwtSecret()) as { username: string };
+    return jwt.verify(token, getJwtSecret(), {
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as { username: string };
   } catch {
     return null;
   }
