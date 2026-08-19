@@ -11,14 +11,19 @@ export async function GET(
 
     const product = await db.product.findUnique({
       where: { id: parseInt(id) },
-      include: { brand: true, images: true },
+      include: { brand: true },
     });
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ product });
+    const images = await db.productImage.findMany({
+      where: { productId: parseInt(id) },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    return NextResponse.json({ product: { ...product, images } });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch product" },
@@ -79,7 +84,7 @@ export async function PUT(
     const product = await db.product.update({
       where: { id: parseInt(id) },
       data,
-      include: { brand: true, images: true },
+      include: { brand: true },
     });
 
     return NextResponse.json({ product });
