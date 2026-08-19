@@ -334,7 +334,19 @@ export default function ProductsPage() {
     let results = allProducts;
 
     if (search.trim()) {
-      results = fuse.search(search.trim()).map((r) => r.item);
+      const query = search.trim().toLowerCase();
+      const fuseResults = fuse.search(query).map((r) => r.item);
+      
+      // Boost exact name matches to the top
+      fuseResults.sort((a, b) => {
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        const aExact = aName === query ? 0 : aName.startsWith(query) ? 1 : aName.includes(query) ? 2 : 3;
+        const bExact = bName === query ? 0 : bName.startsWith(query) ? 1 : bName.includes(query) ? 2 : 3;
+        return aExact - bExact;
+      });
+      
+      results = fuseResults;
     }
 
     if (selectedBrand) {
