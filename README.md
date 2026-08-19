@@ -7,6 +7,7 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 ---
 
 [![CI](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml/badge.svg)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-179%20passing-brightgreen)](https://github.com/DanielDeshmukh/shree-gurudev-plastics/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
