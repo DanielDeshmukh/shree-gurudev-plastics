@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob: https://res.cloudinary.com",
+            "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com",
             "font-src 'self'",
             "connect-src 'self' https://www.google-analytics.com https://shreegurudevplastics.com",
             "frame-ancestors 'none'",
