@@ -46,7 +46,7 @@ export const BUSINESS_KEYWORDS = [
 export const ALL_KEYWORDS = [...PRIMARY_KEYWORDS, ...LOCATION_KEYWORDS, ...BUSINESS_KEYWORDS];
 
 export function getProductSchema(product: any) {
-  return {
+  const schema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
@@ -55,11 +55,14 @@ export function getProductSchema(product: any) {
     brand: product.brand ? { "@type": "Brand", name: product.brand.name } : undefined,
     category: product.category,
     color: product.color,
+    sku: product.id?.toString(),
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
       price: product.price,
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: BUSINESS_NAME },
       availableAtOrFrom: {
         "@type": "Organization",
@@ -68,6 +71,22 @@ export function getProductSchema(product: any) {
       },
     },
   };
+
+  if (product.reviews && product.reviews.length > 0) {
+    const approved = product.reviews.filter((r: any) => r.approved !== false);
+    if (approved.length > 0) {
+      const avg = approved.reduce((sum: number, r: any) => sum + r.rating, 0) / approved.length;
+      schema.aggregateRating = {
+        "@type": "AggregateRating",
+        ratingValue: Math.round(avg * 10) / 10,
+        reviewCount: approved.length,
+        bestRating: 5,
+        worstRating: 1,
+      };
+    }
+  }
+
+  return schema;
 }
 
 export function getLocalBusinessSchema() {

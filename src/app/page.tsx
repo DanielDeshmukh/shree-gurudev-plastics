@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_URL, BUSINESS_NAME, CITY, PHONE, getFAQSchema } from "@/lib/seo";
+import { SITE_URL, BUSINESS_NAME, CITY, PHONE, PHONE_DISPLAY, ADDRESS, STATE, getFAQSchema } from "@/lib/seo";
 import { apiFetch } from "@/lib/api-fetch";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import HomeContent from "@/components/HomeContent";
@@ -59,6 +59,43 @@ export default async function Home() {
       <HomeContent brands={brands} featured={featured} />
       <RecentlyViewed />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: BUSINESS_NAME,
+        url: SITE_URL,
+        telephone: PHONE_DISPLAY,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: ADDRESS,
+          addressLocality: CITY,
+          addressRegion: STATE,
+          addressCountry: "IN",
+        },
+        areaServed: [
+          { "@type": "City", name: "Bhayander" },
+          { "@type": "City", name: "Naigaon" },
+          { "@type": "City", name: "Vasai" },
+          { "@type": "City", name: "Virar" },
+          { "@type": "City", name: "Mumbai" },
+          { "@type": "City", name: "Thane" },
+        ],
+        sameAs: [],
+      }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: BUSINESS_NAME,
+        url: SITE_URL,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${SITE_URL}/products?search={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      }) }} />
     </main>
   );
 }

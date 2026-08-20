@@ -44,7 +44,7 @@ async function getProduct(id: string) {
   try {
     return await db.product.findUnique({
       where: { id: parseInt(id) },
-      include: { brand: true, images: { orderBy: { sortOrder: "asc" } } },
+      include: { brand: true, images: { orderBy: { sortOrder: "asc" } }, reviews: { where: { approved: true }, select: { rating: true, approved: true } } },
     });
   } catch {
     return null;
