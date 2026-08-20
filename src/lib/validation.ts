@@ -3,13 +3,22 @@ import { z } from "zod";
 export const createOrderSchema = z.object({
   customer: z.string().min(1).max(200).trim(),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
+  deliveryMethod: z.enum(["pickup", "delivery"]).default("delivery"),
   address: z.string().max(500).trim().optional(),
   notes: z.string().max(500).trim().optional(),
   items: z.array(z.object({
     productId: z.number().int().positive(),
     quantity: z.number().int().min(1).max(10000),
   })).min(1).max(100),
-});
+}).refine(
+  (data) => {
+    if (data.deliveryMethod === "delivery") {
+      return !!data.address && data.address.trim().length > 0;
+    }
+    return true;
+  },
+  { message: "Delivery address is required for home delivery", path: ["address"] }
+);
 
 export const createReviewSchema = z.object({
   name: z.string().min(1).max(200).trim(),
