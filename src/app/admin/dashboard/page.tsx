@@ -22,9 +22,10 @@ interface DashboardData {
     items: { product: { name: string }; quantity: number; price: number }[];
   }[];
   topProducts: { id: number; name: string; price: number; orderCount: number }[];
-  revenueLast30Days: number;
+  revenueThisYear: number;
   revenueThisMonth: number;
   revenueLastMonth: number;
+  monthlyRevenue12Months: { month: string; revenue: number }[];
   orderStatusData: { status: string; count: number }[];
   brandRevenueData: { name: string; revenue: number }[];
   revenueTimeline: { date: string; revenue: number }[];
@@ -125,8 +126,8 @@ export default function DashboardPage() {
       {/* Revenue Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-4">
-          <p className="text-xs text-gray-400">Revenue (30 days)</p>
-          <p className="mt-1 text-xl font-bold text-primary-400">₹{data.revenueLast30Days.toLocaleString("en-IN")}</p>
+          <p className="text-xs text-gray-400">This Year ({new Date().getFullYear()})</p>
+          <p className="mt-1 text-xl font-bold text-primary-400">₹{data.revenueThisYear.toLocaleString("en-IN")}</p>
         </div>
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-4">
           <p className="text-xs text-gray-400">This Month</p>
@@ -143,6 +144,31 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 12-Month Revenue Chart */}
+      <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
+        <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Revenue — Last 12 Months</h3>
+        {data.monthlyRevenue12Months.length > 0 ? (
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={data.monthlyRevenue12Months}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="month" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+              <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                formatter={(value: number) => [`₹${value.toLocaleString("en-IN")}`, "Revenue"]}
+              />
+              <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                {data.monthlyRevenue12Months.map((entry, i) => (
+                  <Cell key={i} fill={i === data.monthlyRevenue12Months.length - 1 ? "#F97316" : "#6366F1"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-sm text-gray-500 py-20 text-center">No data yet</p>
+        )}
       </div>
 
       {/* Charts Row 1: Revenue Timeline + Order Status */}

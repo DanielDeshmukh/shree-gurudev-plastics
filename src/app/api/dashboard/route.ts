@@ -14,6 +14,9 @@ export async function GET() {
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    const thisYearStart = new Date(now.getFullYear(), 0, 1);
+    // 12 months ago from start of current month
+    const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
 
     const [
       totalProducts, totalOrders, totalBrands, totalCustomers,
@@ -51,18 +54,38 @@ export async function GET() {
     }));
 
     // Optional enhanced data — wrapped in catches so dashboard always loads
-    const [revenueLast30DaysResult, ordersThisMonth, ordersLastMonth, ordersByStatus, brandRevenueRaw, ordersByDay30] = await Promise.all([
-      db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true } }).catch(() => []),
+    const [revenueThisYearResult, ordersThisMonth, ordersLastMonth, ordersByStatus, brandRevenueRaw, ordersByDay30, orders12Months] = await Promise.all([
+      db.order.findMany({ where: { createdAt: { gte: thisYearStart } }, select: { total: true } }).catch(() => []),
       db.order.findMany({ where: { createdAt: { gte: thisMonthStart } }, select: { total: true } }).catch(() => []),
       db.order.findMany({ where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } }, select: { total: true } }).catch(() => []),
       db.order.groupBy({ by: ["status"], _count: { id: true } }).catch(() => []),
       db.orderItem.findMany({ include: { product: { select: { brand: { select: { name: true } } } } } }).catch(() => []),
       db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true, createdAt: true }, orderBy: { createdAt: "asc" } }).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: twelveMonthsAgo } }, select: { total: true, createdAt: true }, orderBy: { createdAt: "asc" } }).catch(() => []),
     ]);
 
-    const revenueLast30Days = (revenueLast30DaysResult as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
+    const revenueThisYear = (revenueThisYearResult as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
     const revenueThisMonth = (ordersThisMonth as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
     const revenueLastMonth = (ordersLastMonth as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
+
+    // Build 12-month revenue breakdown
+    const monthlyMap: Record<string, number> = {};
+    // Initialize all 12 months with 0
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      monthlyMap[key] = 0;
+    }
+    for (const o of orders12Months as any[]) {
+      const d = new Date(o.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      if (key in monthlyMap) monthlyMap[key] += o.total;
+    }
+    const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthlyRevenue12Months = Object.entries(monthlyMap).map(([key, revenue]) => {
+      const [y, m] = key.split("-");
+      return { month: `${MONTH_NAMES[parseInt(m) - 1]} ${y.slice(2)}`, revenue: Math.round(revenue) };
+    });
 
     const orderStatusData = (ordersByStatus as any[]).map((s: any) => ({
       status: s.status,
@@ -91,7 +114,8 @@ export async function GET() {
       totalProducts, totalOrders, totalBrands, totalCustomers,
       totalRevenue, lowStockCount, recentOrders,
       topProducts: topProductsWithCount,
-      revenueLast30Days, revenueThisMonth, revenueLastMonth,
+      revenueThisYear, revenueThisMonth, revenueLastMonth,
+      monthlyRevenue12Months,
       orderStatusData, brandRevenueData, revenueTimeline,
     });
   } catch (error) {
