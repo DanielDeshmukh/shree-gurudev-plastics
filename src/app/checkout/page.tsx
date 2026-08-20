@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
+import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack } from "react-icons/md";
 
 const DELIVERY_AREAS = [
   "Bhayander",
@@ -17,6 +18,8 @@ const DELIVERY_AREAS = [
   "Other",
 ];
 
+const STORE_ADDRESS = "Shree Gurudev Plastics, Bhayander (West), Maharashtra";
+
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const router = useRouter();
@@ -28,10 +31,13 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
+    deliveryMethod: "delivery" as "pickup" | "delivery",
     address: "",
     area: "Bhayander",
     notes: "",
   });
+
+  const isDelivery = form.deliveryMethod === "delivery";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,14 +50,18 @@ export default function CheckoutPage() {
       setError("Please enter a valid 10-digit phone number");
       return;
     }
+    if (isDelivery && !form.address.trim()) {
+      setError("Delivery address is required for home delivery");
+      return;
+    }
 
     setLoading(true);
     setError("");
 
     try {
-      const fullAddress = form.address
+      const fullAddress = isDelivery
         ? `${form.address}, ${form.area}`
-        : form.area;
+        : STORE_ADDRESS;
 
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -59,6 +69,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           customer: form.name.trim(),
           phone: form.phone.trim(),
+          deliveryMethod: form.deliveryMethod,
           address: fullAddress,
           notes: form.notes.trim() || null,
           items: items.map((item) => ({
@@ -91,13 +102,16 @@ export default function CheckoutPage() {
       <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            <MdCheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Placed!</h1>
           <p className="text-gray-600 mb-2">
             Your order <span className="font-semibold text-primary-500">#{orderId}</span> has been received.
+          </p>
+          <p className="text-gray-500 text-sm mb-4">
+            {isDelivery
+              ? "We will deliver to your address shortly."
+              : "Your order is ready for pickup at our Bhayander store."}
           </p>
           <p className="text-gray-500 text-sm mb-4">
             We&apos;ll confirm your order via WhatsApp shortly.
@@ -109,9 +123,7 @@ export default function CheckoutPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-primary-500 hover:text-primary-600 font-medium mb-4"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <MdCheckCircle className="w-4 h-4" />
               Track Your Order
             </a>
           )}
@@ -162,19 +174,88 @@ export default function CheckoutPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-primary-500 mb-6 transition-colors"
+        >
+          <MdArrowBack className="w-4 h-4" />
+          Back
+        </button>
+
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Order Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-              <h2 className="text-lg font-bold text-gray-900">Your Details</h2>
+
+              {/* Delivery Method Toggle */}
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">How would you like to receive your order?</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, deliveryMethod: "pickup" })}
+                    className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                      form.deliveryMethod === "pickup"
+                        ? "border-primary-500 bg-primary-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <MdStore className={`w-6 h-6 shrink-0 ${
+                      form.deliveryMethod === "pickup" ? "text-primary-500" : "text-gray-400"
+                    }`} />
+                    <div className="text-left">
+                      <p className={`font-semibold ${
+                        form.deliveryMethod === "pickup" ? "text-primary-700" : "text-gray-900"
+                      }`}>Store Pickup</p>
+                      <p className="text-xs text-gray-500">Pick up from Bhayander</p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, deliveryMethod: "delivery" })}
+                    className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                      form.deliveryMethod === "delivery"
+                        ? "border-primary-500 bg-primary-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <MdLocalShipping className={`w-6 h-6 shrink-0 ${
+                      form.deliveryMethod === "delivery" ? "text-primary-500" : "text-gray-400"
+                    }`} />
+                    <div className="text-left">
+                      <p className={`font-semibold ${
+                        form.deliveryMethod === "delivery" ? "text-primary-700" : "text-gray-900"
+                      }`}>Home Delivery</p>
+                      <p className="text-xs text-gray-500">Delivered to your door</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Pickup Info Card */}
+              {form.deliveryMethod === "pickup" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <MdStore className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-blue-900">Pickup Location</p>
+                      <p className="text-sm text-blue-700">{STORE_ADDRESS}</p>
+                      <p className="text-xs text-blue-600 mt-1">Free — Ready after order confirmation</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
+
+              <h2 className="text-lg font-bold text-gray-900">Your Details</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -201,32 +282,40 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
-                <input
-                  type="text"
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  placeholder="Street address, landmark (optional)"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
-                />
-              </div>
+              {/* Delivery Address — only shown for home delivery */}
+              {isDelivery && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Delivery Address *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={form.address}
+                      onChange={(e) => setForm({ ...form, address: e.target.value })}
+                      placeholder="Street address, landmark"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Area *</label>
-                <select
-                  required
-                  value={form.area}
-                  onChange={(e) => setForm({ ...form, area: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-white"
-                >
-                  {DELIVERY_AREAS.map((area) => (
-                    <option key={area} value={area}>
-                      {area}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Area *</label>
+                    <select
+                      required
+                      value={form.area}
+                      onChange={(e) => setForm({ ...form, area: e.target.value })}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                    >
+                      {DELIVERY_AREAS.map((area) => (
+                        <option key={area} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Order Notes (optional)</label>
@@ -266,8 +355,8 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
                       <p className="text-xs text-gray-500">
-                        {item.brand && <span>{item.brand} • </span>}
-                        {item.color && <span>{item.color} • </span>}
+                        {item.brand && <span>{item.brand} · </span>}
+                        {item.color && <span>{item.color} · </span>}
                         ₹{item.price} × {item.quantity}
                       </p>
                     </div>
@@ -284,7 +373,14 @@ export default function CheckoutPage() {
                   <span className="font-medium">₹{totalPrice.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Delivery</span>
+                  <span className="text-gray-500 flex items-center gap-1">
+                    {isDelivery ? (
+                      <MdLocalShipping className="w-4 h-4" />
+                    ) : (
+                      <MdStore className="w-4 h-4" />
+                    )}
+                    {isDelivery ? "Delivery" : "Pickup"}
+                  </span>
                   <span className="text-green-600 font-medium">Free</span>
                 </div>
                 <div className="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
@@ -297,7 +393,8 @@ export default function CheckoutPage() {
                 href="/products"
                 className="block text-center text-sm text-primary-500 hover:underline mt-4"
               >
-                ← Add more products
+                <MdArrowBack className="w-4 h-4 inline mr-1" />
+                Add more products
               </Link>
             </div>
           </div>
