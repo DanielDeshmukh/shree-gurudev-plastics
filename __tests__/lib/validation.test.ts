@@ -23,6 +23,17 @@ describe("validation", () => {
       const data = {
         customer: "Test User",
         phone: "9123456789",
+        address: "123 Main St",
+        items: [{ productId: 1, quantity: 1 }],
+      };
+      expect(createOrderSchema.safeParse(data).success).toBe(true);
+    });
+
+    it("accepts pickup order without address", () => {
+      const data = {
+        customer: "Test User",
+        phone: "9123456789",
+        deliveryMethod: "pickup",
         items: [{ productId: 1, quantity: 1 }],
       };
       expect(createOrderSchema.safeParse(data).success).toBe(true);
