@@ -193,67 +193,89 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="relative">
               <button
                 onClick={() => setShowMaintenancePicker(!showMaintenancePicker)}
-                className={`p-2 rounded-lg text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   maintenanceMode
-                    ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    ? "bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse"
+                    : "bg-green-500/10 text-green-400 border border-green-500/30"
                 }`}
-                title={maintenanceMode ? "Maintenance ON" : "Maintenance OFF"}
               >
-                <MdBuild className="w-4 h-4" />
+                <span className={`w-2 h-2 rounded-full ${maintenanceMode ? "bg-red-500" : "bg-green-500"}`} />
+                {maintenanceMode ? "MAINTENANCE" : "LIVE"}
               </button>
               {showMaintenancePicker && (
-                <div className="absolute right-0 top-full mt-2 bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-xl z-50 w-80">
-                  <p className="text-xs text-gray-400 font-medium mb-3">Maintenance Mode</p>
-                  <label className="flex items-center gap-3 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={maintenanceMode}
-                      onChange={() => toggleMaintenance()}
-                      className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-primary-500 focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-300">
-                      {maintenanceMode ? "Active — visitors see maintenance page" : "Off — site is live"}
-                    </span>
-                  </label>
-                  {maintenanceMode && (
-                    <>
-                      <label className="text-xs text-gray-500 block mb-1">Estimated completion</label>
-                      <input
-                        type="datetime-local"
-                        value={maintenanceEta}
-                        onChange={(e) => setMaintenanceEta(e.target.value)}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white mb-3 focus:outline-none focus:border-primary-500"
-                      />
+                <div className="absolute right-0 top-full mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 w-80 overflow-hidden">
+                  {/* Status banner */}
+                  <div className={`px-4 py-3 ${maintenanceMode ? "bg-red-500/10 border-b border-red-500/20" : "bg-green-500/10 border-b border-green-500/20"}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-3 h-3 rounded-full ${maintenanceMode ? "bg-red-500 animate-pulse" : "bg-green-500"}`} />
+                        <span className={`text-sm font-bold ${maintenanceMode ? "text-red-400" : "text-green-400"}`}>
+                          {maintenanceMode ? "SITE IS DOWN" : "SITE IS LIVE"}
+                        </span>
+                      </div>
                       <button
-                        onClick={() => toggleMaintenance(true)}
-                        className="w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors mb-3"
+                        onClick={() => setShowMaintenancePicker(false)}
+                        className="p-1 text-gray-500 hover:text-gray-300"
                       >
-                        Update ETA
+                        <MdClose className="w-4 h-4" />
                       </button>
-                    </>
-                  )}
-                  {/* Deploy gate status */}
-                  <div className={`border-t pt-3 mt-1 ${maintenanceMode ? "border-green-500/30" : "border-amber-500/30"}`}>
-                    <p className="text-[10px] uppercase tracking-widest font-medium mb-1.5" style={{ color: maintenanceMode ? "#22c55e" : "#f59e0b" }}>
-                      Deploy Gate
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {maintenanceMode
+                        ? "Visitors see the maintenance page"
+                        : "All visitors can access the site"}
                     </p>
-                    {maintenanceMode ? (
-                      <p className="text-xs text-green-400">
-                        Deployment allowed. Push to main to deploy.
-                      </p>
-                    ) : (
-                      <p className="text-xs text-amber-400">
-                        Deployment blocked. Enable maintenance before deploying.
-                      </p>
-                    )}
                   </div>
-                  <button
-                    onClick={() => setShowMaintenancePicker(false)}
-                    className="absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-300"
-                  >
-                    <MdClose className="w-3.5 h-3.5" />
-                  </button>
+
+                  <div className="p-4 space-y-4">
+                    {/* Big toggle */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-300">Enable maintenance mode</span>
+                      <button
+                        onClick={() => toggleMaintenance()}
+                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                          maintenanceMode ? "bg-red-500" : "bg-gray-600"
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                            maintenanceMode ? "translate-x-6" : ""
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* ETA (only when ON) */}
+                    {maintenanceMode && (
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1.5">Back online by (optional)</label>
+                        <input
+                          type="datetime-local"
+                          value={maintenanceEta}
+                          onChange={(e) => setMaintenanceEta(e.target.value)}
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary-500"
+                        />
+                        {maintenanceEta && (
+                          <button
+                            onClick={() => toggleMaintenance(true)}
+                            className="mt-2 w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+                          >
+                            Save ETA
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Deploy gate */}
+                    <div className="border-t border-gray-800 pt-3">
+                      <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Deploy Gate</p>
+                      <p className={`text-xs ${maintenanceMode ? "text-green-400" : "text-amber-400"}`}>
+                        {maintenanceMode
+                          ? "Deployments allowed"
+                          : "Deployments blocked — turn on maintenance first"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

@@ -8,11 +8,11 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
+// Paths that are always exempt from maintenance redirect
 const MAINTENANCE_EXEMPT = [
   "/admin",
   "/api/admin",
   "/api/maintenance",
-  "/api/maintenance/status",
   "/maintenance",
   "/api/auth/login",
   "/api/auth/logout",
@@ -20,33 +20,48 @@ const MAINTENANCE_EXEMPT = [
   "/favicon",
 ];
 
-// In-memory cache for maintenance status (persists across requests in same function instance)
+// In-memory cache — avoids DB hit on every single request
 let maintenanceCache: { enabled: boolean; eta: string | null; fetchedAt: number } | null = null;
-const CACHE_TTL_MS = 15_000; // 15 seconds
+const CACHE_TTL_MS = 10_000; // 10 seconds
 
 export function _resetMaintenanceCache() {
   maintenanceCache = null;
 }
 
-async function isMaintenanceEnabled(): Promise<{ enabled: boolean; eta: string | null }> {
+function getBaseUrl(): string {
+  // On Vercel: VERCEL_URL is set automatically (e.g. "shree-gurudev-plastics-xxx.vercel.app")
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Explicit env var
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // Local fallback
+  return "http://localhost:3000";
+}
+
+async function checkMaintenance(): Promise<{ enabled: boolean; eta: string | null }> {
   const now = Date.now();
 
-  // Return cached if fresh
+  // Serve from cache if fresh
   if (maintenanceCache && now - maintenanceCache.fetchedAt < CACHE_TTL_MS) {
     return { enabled: maintenanceCache.enabled, eta: maintenanceCache.eta };
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com";
+    const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/maintenance/status`, {
-      next: { revalidate: 15 },
+      cache: "no-store",
     });
     if (res.ok) {
       const data = await res.json();
-      maintenanceCache = { ...data, fetchedAt: now };
-      return data;
+      maintenanceCache = { enabled: !!data.enabled, eta: data.eta || null, fetchedAt: now };
+      return maintenanceCache;
     }
-  } catch {}
+  } catch {
+    // Fetch failed — don't block the site
+  }
 
   return { enabled: false, eta: null };
 }
@@ -67,10 +82,10 @@ export async function middleware(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
   const origin = request.headers.get("origin");
 
-  // Maintenance mode check (async — reads from DB via public endpoint)
+  // --- Maintenance mode ---
   const isExempt = MAINTENANCE_EXEMPT.some((prefix) => pathname.startsWith(prefix));
   if (!isExempt && pathname !== "/maintenance") {
-    const { enabled, eta } = await isMaintenanceEnabled();
+    const { enabled, eta } = await checkMaintenance();
     if (enabled) {
       const url = new URL("/maintenance", request.url);
       if (eta) url.searchParams.set("eta", eta);
@@ -78,17 +93,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Handle CORS preflight
+  // --- CORS preflight ---
   if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
-    const response = new NextResponse(null, { status: 204 });
-    return setCorsHeaders(response, origin);
+    return setCorsHeaders(new NextResponse(null, { status: 204 }), origin);
   }
 
-  if (pathname.startsWith("/api/auth/admin-register") || pathname.startsWith("/api/auth/signup") || pathname.startsWith("/api/auth/register")) {
+  // --- Block registration endpoints ---
+  if (
+    pathname.startsWith("/api/auth/admin-register") ||
+    pathname.startsWith("/api/auth/signup") ||
+    pathname.startsWith("/api/auth/register")
+  ) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Defense-in-depth: verify admin token for /api/admin/** routes
+  // --- Admin API auth ---
   if (pathname.startsWith("/api/admin/")) {
     const token = request.cookies.get("admin_token")?.value;
     if (!token || !verifyToken(token)) {
@@ -98,13 +117,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // --- Public API passthrough ---
   if (pathname === "/admin/login" || pathname.startsWith("/api/")) {
     const response = NextResponse.next();
     if (pathname.startsWith("/api/")) setCorsHeaders(response, origin);
     return response;
   }
 
-  // Admin panel auth check
+  // --- Admin page auth ---
   if (pathname.startsWith("/admin")) {
     const token = request.cookies.get("admin_token")?.value;
     if (!token) {
