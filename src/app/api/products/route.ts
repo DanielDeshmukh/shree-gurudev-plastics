@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, unknown> = {};
 
+    where.isActive = true;
+
     if (brand) {
       where.brand = { slug: brand };
     }
