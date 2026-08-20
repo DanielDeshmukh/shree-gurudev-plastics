@@ -1,13 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MdRefresh } from "react-icons/md";
-
-interface MaintenanceInfo {
-  enabled: boolean;
-  eta: string | null;
-}
 
 function useCountdown(eta: string | null) {
   const [remaining, setRemaining] = useState<{ h: number; m: number; s: number; expired: boolean }>({
@@ -40,17 +35,19 @@ function useCountdown(eta: string | null) {
   return remaining;
 }
 
-export default function MaintenancePage() {
-  const [info, setInfo] = useState<MaintenanceInfo | null>(null);
+export default function MaintenancePage({ eta: etaProp }: { eta?: string | null }) {
+  const [eta, setEta] = useState<string | null>(etaProp ?? null);
   const [checking, setChecking] = useState(false);
-  const countdown = useCountdown(info?.eta ?? null);
+  const countdown = useCountdown(eta);
 
+  // Fetch ETA from API if not provided as prop
   useEffect(() => {
-    fetch("/api/maintenance")
+    if (etaProp !== undefined) return;
+    fetch("/api/maintenance/status")
       .then((r) => r.json())
-      .then(setInfo)
-      .catch(() => setInfo({ enabled: true, eta: null }));
-  }, []);
+      .then((d) => setEta(d.eta || null))
+      .catch(() => {});
+  }, [etaProp]);
 
   useEffect(() => {
     if (countdown.expired) window.location.reload();
@@ -61,11 +58,12 @@ export default function MaintenancePage() {
     window.location.reload();
   };
 
-  const hasEta = info?.eta && !countdown.expired;
+  const hasEta = eta && !countdown.expired;
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <main className="min-h-screen relative overflow-hidden flex items-center justify-center px-4"
+    <main
+      className="min-h-screen relative overflow-hidden flex items-center justify-center px-4"
       style={{
         background: "linear-gradient(135deg, #F59E0B 0%, #F97316 40%, #FB923C 60%, #FBBF24 100%)",
       }}
@@ -78,25 +76,22 @@ export default function MaintenancePage() {
 
       {/* Card */}
       <div className="relative z-10 bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-        {/* Top accent line */}
-        <div className="h-1.5 w-full"
+        <div
+          className="h-1.5 w-full"
           style={{ background: "linear-gradient(90deg, #F97316, #FBBF24, #F97316)" }}
         />
 
         <div className="px-8 pt-8 pb-6 text-center">
-          {/* Logo */}
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-900">
               Shree Gurudev <span className="text-primary-600">Plastics</span>
             </h2>
           </div>
 
-          {/* Heading */}
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">
             We&apos;re improving your experience
           </h1>
 
-          {/* Subtext */}
           <p className="text-gray-500 text-sm sm:text-base mb-1">
             We&apos;ll be back up and running again shortly.
           </p>
@@ -104,7 +99,6 @@ export default function MaintenancePage() {
             Please check our WhatsApp for the latest updates.
           </p>
 
-          {/* Countdown / Status */}
           <div className="mt-6 bg-gray-50 rounded-xl p-5 border border-gray-100">
             {hasEta ? (
               <>
@@ -135,7 +129,6 @@ export default function MaintenancePage() {
                     <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">sec</p>
                   </div>
                 </div>
-                {/* Progress bar */}
                 <div className="mt-4 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-1000"
@@ -165,7 +158,6 @@ export default function MaintenancePage() {
             )}
           </div>
 
-          {/* Retry button */}
           <button
             onClick={handleRetry}
             disabled={checking}
@@ -176,7 +168,6 @@ export default function MaintenancePage() {
           </button>
         </div>
 
-        {/* Footer */}
         <div className="border-t border-gray-100 px-8 py-4 flex items-center justify-between text-xs text-gray-400">
           <a
             href="https://wa.me/918552084251"
@@ -187,7 +178,9 @@ export default function MaintenancePage() {
             WhatsApp: +91 85520 84251
           </a>
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-primary-500 transition-colors">
+              Home
+            </Link>
           </div>
         </div>
       </div>

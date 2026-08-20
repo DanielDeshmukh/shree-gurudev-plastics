@@ -54,12 +54,12 @@ async function getProduct(id: string) {
 async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
   try {
     const sameBrand = await db.product.findMany({
-      where: { brandId, id: { not: excludeId } },
+      where: { brandId, id: { not: excludeId }, isActive: true },
       include: { brand: true },
       take: 4,
     });
     const sameCategory = await db.product.findMany({
-      where: { category, id: { not: excludeId }, brandId: { not: brandId } },
+      where: { category, id: { not: excludeId }, brandId: { not: brandId }, isActive: true },
       include: { brand: true },
       take: 4,
     });
