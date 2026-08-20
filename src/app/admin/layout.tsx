@@ -25,7 +25,6 @@ import {
   MdCampaign,
   MdMenu,
   MdClose,
-  MdBuild,
 } from "react-icons/md";
 
 const navLinks = [
@@ -59,6 +58,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [maintenanceEta, setMaintenanceEta] = useState("");
   const [showMaintenancePicker, setShowMaintenancePicker] = useState(false);
+  const [maintenanceSaving, setMaintenanceSaving] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   useEffect(() => {
     if (pathname === "/admin/login") return;
@@ -108,6 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const toggleMaintenance = async (forceState?: boolean) => {
     const next = forceState !== undefined ? forceState : !maintenanceMode;
     const eta = next && maintenanceEta ? new Date(maintenanceEta).toISOString() : null;
+    setMaintenanceSaving(true);
     try {
       const res = await fetch("/api/maintenance", {
         method: "POST",
@@ -118,12 +125,72 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (res.ok) {
         const d = await res.json();
         setMaintenanceMode(d.enabled);
+        if (next) {
+          const etaDate = d.eta ? new Date(d.eta) : null;
+          const etaStr = etaDate
+            ? etaDate.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) +
+              " on " +
+              etaDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+            : null;
+          showToast(etaStr ? `Maintenance ON — back by ${etaStr}` : "Maintenance ON — no ETA set");
+        } else {
+          showToast("Site is back live!");
+        }
+      } else {
+        showToast("Failed to save", "error");
       }
-    } catch {}
+    } catch {
+      showToast("Failed to save", "error");
+    } finally {
+      setMaintenanceSaving(false);
+    }
+  };
+
+  const saveEta = async () => {
+    setMaintenanceSaving(true);
+    const eta = maintenanceEta ? new Date(maintenanceEta).toISOString() : null;
+    try {
+      const res = await fetch("/api/maintenance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ enabled: maintenanceMode, eta }),
+      });
+      if (res.ok) {
+        const etaDate = eta ? new Date(eta) : null;
+        const etaStr = etaDate
+          ? etaDate.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) +
+            " on " +
+            etaDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+          : null;
+        showToast(etaStr ? `ETA updated — back by ${etaStr}` : "ETA cleared");
+        setTimeout(() => setShowMaintenancePicker(false), 1200);
+      } else {
+        showToast("Failed to save", "error");
+      }
+    } catch {
+      showToast("Failed to save", "error");
+    } finally {
+      setMaintenanceSaving(false);
+    }
   };
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950 text-gray-100">
+      {/* Toast notification */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-[100] flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-sm transition-all duration-300 ${
+            toast.type === "success"
+              ? "bg-green-500/10 border-green-500/30 text-green-400"
+              : "bg-red-500/10 border-red-500/30 text-red-400"
+          }`}
+        >
+          <span className={`w-2 h-2 rounded-full ${toast.type === "success" ? "bg-green-500" : "bg-red-500"}`} />
+          <span className="text-sm font-medium">{toast.msg}</span>
+        </div>
+      )}
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -233,7 +300,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <span className="text-sm text-gray-300">Enable maintenance mode</span>
                       <button
                         onClick={() => toggleMaintenance()}
-                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                        disabled={maintenanceSaving}
+                        className={`relative w-12 h-6 rounded-full transition-colors disabled:opacity-50 ${
                           maintenanceMode ? "bg-red-500" : "bg-gray-600"
                         }`}
                       >
@@ -257,10 +325,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         />
                         {maintenanceEta && (
                           <button
-                            onClick={() => toggleMaintenance(true)}
-                            className="mt-2 w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+                            onClick={saveEta}
+                            disabled={maintenanceSaving}
+                            className="mt-2 w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-50"
                           >
-                            Save ETA
+                            {maintenanceSaving ? "Saving..." : "Save ETA"}
                           </button>
                         )}
                       </div>
