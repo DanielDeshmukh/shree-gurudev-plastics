@@ -24,6 +24,10 @@ const MAINTENANCE_EXEMPT = [
 let maintenanceCache: { enabled: boolean; eta: string | null; fetchedAt: number } | null = null;
 const CACHE_TTL_MS = 15_000; // 15 seconds
 
+export function _resetMaintenanceCache() {
+  maintenanceCache = null;
+}
+
 async function isMaintenanceEnabled(): Promise<{ enabled: boolean; eta: string | null }> {
   const now = Date.now();
 
