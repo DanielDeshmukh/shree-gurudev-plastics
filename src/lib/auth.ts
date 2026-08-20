@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { cookies } from "next/headers";
+
+const PEPPER = "shreegurudevplastics";
 
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -20,12 +23,18 @@ export function getAdminPassword(): string {
   return password;
 }
 
+export function pepperPassword(password: string): string {
+  return crypto.createHash("sha256").update(PEPPER + password).digest("hex");
+}
+
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  const peppered = pepperPassword(password);
+  return bcrypt.hash(peppered, 12);
 }
 
 export async function verifyPassword(password: string, hashed: string): Promise<boolean> {
-  return bcrypt.compare(password, hashed);
+  const peppered = pepperPassword(password);
+  return bcrypt.compare(peppered, hashed);
 }
 
 const JWT_ISSUER = "shreegurudevplastics.com";

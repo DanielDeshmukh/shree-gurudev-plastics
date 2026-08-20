@@ -1,5 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+const PEPPER = "shreegurudevplastics";
+
+function pepperPassword(password: string): string {
+  return crypto.createHash("sha256").update(PEPPER + password).digest("hex");
+}
 
 const prisma = new PrismaClient();
 
@@ -20,7 +27,8 @@ async function main() {
   }
 
   if (existingCount === 0) {
-    const hash = await bcrypt.hash(password, 10);
+    const peppered = pepperPassword(password);
+    const hash = await bcrypt.hash(peppered, 12);
     await prisma.admin.create({
       data: { username, password: hash },
     });
