@@ -12,12 +12,40 @@ const MAINTENANCE_EXEMPT = [
   "/admin",
   "/api/admin",
   "/api/maintenance",
+  "/api/maintenance/status",
   "/maintenance",
   "/api/auth/login",
   "/api/auth/logout",
   "/_next",
   "/favicon",
 ];
+
+// In-memory cache for maintenance status (persists across requests in same function instance)
+let maintenanceCache: { enabled: boolean; eta: string | null; fetchedAt: number } | null = null;
+const CACHE_TTL_MS = 15_000; // 15 seconds
+
+async function isMaintenanceEnabled(): Promise<{ enabled: boolean; eta: string | null }> {
+  const now = Date.now();
+
+  // Return cached if fresh
+  if (maintenanceCache && now - maintenanceCache.fetchedAt < CACHE_TTL_MS) {
+    return { enabled: maintenanceCache.enabled, eta: maintenanceCache.eta };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com";
+    const res = await fetch(`${baseUrl}/api/maintenance/status`, {
+      next: { revalidate: 15 },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      maintenanceCache = { ...data, fetchedAt: now };
+      return data;
+    }
+  } catch {}
+
+  return { enabled: false, eta: null };
+}
 
 function setCorsHeaders(response: NextResponse, origin: string | null): NextResponse {
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
@@ -30,17 +58,19 @@ function setCorsHeaders(response: NextResponse, origin: string | null): NextResp
   return response;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
   const origin = request.headers.get("origin");
 
-  // Maintenance mode check — redirect to /maintenance unless exempt
-  const isMaintenance = process.env.MAINTENANCE_MODE === "true";
-  if (isMaintenance) {
-    const isExempt = MAINTENANCE_EXEMPT.some((prefix) => pathname.startsWith(prefix));
-    if (!isExempt && pathname !== "/maintenance") {
-      return NextResponse.redirect(new URL("/maintenance", request.url));
+  // Maintenance mode check (async — reads from DB via public endpoint)
+  const isExempt = MAINTENANCE_EXEMPT.some((prefix) => pathname.startsWith(prefix));
+  if (!isExempt && pathname !== "/maintenance") {
+    const { enabled, eta } = await isMaintenanceEnabled();
+    if (enabled) {
+      const url = new URL("/maintenance", request.url);
+      if (eta) url.searchParams.set("eta", eta);
+      return NextResponse.redirect(url);
     }
   }
 

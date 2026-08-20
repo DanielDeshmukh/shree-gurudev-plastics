@@ -203,7 +203,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <MdBuild className="w-4 h-4" />
               </button>
               {showMaintenancePicker && (
-                <div className="absolute right-0 top-full mt-2 bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-xl z-50 w-72">
+                <div className="absolute right-0 top-full mt-2 bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-xl z-50 w-80">
                   <p className="text-xs text-gray-400 font-medium mb-3">Maintenance Mode</p>
                   <label className="flex items-center gap-3 mb-3">
                     <input
@@ -227,12 +227,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       />
                       <button
                         onClick={() => toggleMaintenance(true)}
-                        className="w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+                        className="w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors mb-3"
                       >
                         Update ETA
                       </button>
                     </>
                   )}
+                  {/* Deploy gate status */}
+                  <div className={`border-t pt-3 mt-1 ${maintenanceMode ? "border-green-500/30" : "border-amber-500/30"}`}>
+                    <p className="text-[10px] uppercase tracking-widest font-medium mb-1.5" style={{ color: maintenanceMode ? "#22c55e" : "#f59e0b" }}>
+                      Deploy Gate
+                    </p>
+                    {maintenanceMode ? (
+                      <p className="text-xs text-green-400">
+                        Deployment allowed. Push to main to deploy.
+                      </p>
+                    ) : (
+                      <p className="text-xs text-amber-400">
+                        Deployment blocked. Enable maintenance before deploying.
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() => setShowMaintenancePicker(false)}
                     className="absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-300"

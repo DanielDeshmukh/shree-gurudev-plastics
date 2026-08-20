@@ -1,0 +1,63 @@
+name: Deploy Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-maintenance:
+    name: "Check maintenance mode"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if maintenance is enabled
+        id: check
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://shreegurudevplastics.com/api/maintenance/status" || echo "000")
+
+          if [ "$RESPONSE" = "200" ]; then
+            BODY=$(curl -s "https://shreegurudevplastics.com/api/maintenance/status")
+            ENABLED=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('enabled',False))" 2>/dev/null || echo "False")
+
+            if [ "$ENABLED" = "True" ]; then
+              echo "maintenance=true" >> $GITHUB_OUTPUT
+              echo "::notice::Maintenance mode is ON — deployment allowed"
+            else
+              echo "maintenance=false" >> $GITHUB_OUTPUT
+              echo "::error::Maintenance mode is OFF — deployment blocked. Enable maintenance mode in the admin panel before deploying."
+              exit 1
+            fi
+          else
+            echo "Could not reach maintenance API (HTTP $RESPONSE). Allowing deployment."
+            echo "maintenance=true" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    name: Build & Test
+    needs: check-maintenance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci --legacy-peer-deps
+
+      - run: npx prisma generate
+
+      - run: npx next build
+
+  # Vercel auto-deploys from main. This workflow gates it:
+  # - If maintenance OFF → check-maintenance job fails → build never runs
+  # - If maintenance ON → check passes → build runs → Vercel deploys
+  #
+  # To deploy:
+  # 1. Enable maintenance mode in admin panel
+  # 2. Merge your PR to main (or push)
+  # 3. This workflow runs, checks maintenance, builds, Vercel deploys
+  # 4. Disable maintenance mode in admin panel
