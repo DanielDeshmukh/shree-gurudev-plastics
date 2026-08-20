@@ -21,7 +21,9 @@ export async function GET(request: NextRequest) {
     where.isActive = true;
 
     if (brand) {
-      where.brand = { slug: brand };
+      // Normalize slug: hyphens to underscores to match DB format
+      const normalizedBrand = brand.replace(/-/g, "_");
+      where.brand = { slug: normalizedBrand };
     }
 
     if (search) {

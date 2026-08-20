@@ -1,3 +1,4 @@
+const { PrismaLibSql } = require("@prisma/adapter-libsql");
 const { PrismaClient } = require("@prisma/client");
 
 async function main() {
@@ -5,23 +6,34 @@ async function main() {
   const token = process.env.TURSO_AUTH_TOKEN;
 
   if (!url || !token) {
-    console.error("Missing TURSO_DATABASE_URL or TURSO_AUTH_TOKEN in .env");
+    console.error("Missing TURSO_DATABASE_URL or TURSO_AUTH_TOKEN");
     process.exit(1);
   }
 
-  const { createClient } = require("@libsql/client");
-  const { PrismaLibSQL } = require("@prisma/adapter-libsql");
-
-  const libsql = createClient({ url, authToken: token });
-  const adapter = new PrismaLibSQL(libsql);
+  const adapter = new PrismaLibSql({ url, authToken: token });
   const prisma = new PrismaClient({ adapter });
 
   try {
+    // Add isActive column if it doesn't exist
+    try {
+      await prisma.$executeRaw`ALTER TABLE Product ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1`;
+      console.log("Added isActive column to Product table");
+    } catch (e) {
+      if (e.message?.includes("duplicate column")) {
+        console.log("isActive column already exists");
+      } else {
+        console.log("Column check:", e.message);
+      }
+    }
+
     const brands = await prisma.brand.findMany();
     console.log("Brands:", brands.length);
     brands.forEach((b) => console.log(`  ${b.name} (id=${b.id}, slug=${b.slug})`));
 
-    const mangoBrand = brands.find((b) => b.slug === "mango-chairs");
+    const totalBefore = await prisma.product.count();
+    console.log("Total products:", totalBefore);
+
+    const mangoBrand = brands.find((b) => b.slug === "mango_chairs" || b.slug === "mango-chairs");
 
     if (mangoBrand) {
       const result = await prisma.product.updateMany({
@@ -35,6 +47,7 @@ async function main() {
       const nonMangoIds = allProducts
         .filter((p) => !p.name.toLowerCase().includes("mango"))
         .map((p) => p.id);
+      console.log(`Found ${nonMangoIds.length} non-Mango products out of ${allProducts.length}`);
       if (nonMangoIds.length > 0) {
         const result = await prisma.product.updateMany({
           where: { id: { in: nonMangoIds } },
@@ -46,7 +59,7 @@ async function main() {
 
     const active = await prisma.product.count({ where: { isActive: true } });
     const inactive = await prisma.product.count({ where: { isActive: false } });
-    console.log(`Final: ${active} active, ${inactive} inactive`);
+    console.log(`\nFinal: ${active} active, ${inactive} inactive`);
   } catch (e) {
     console.error("Error:", e.message || e);
   } finally {
