@@ -11,79 +11,66 @@ export async function GET() {
 
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const [
       totalProducts, totalOrders, totalBrands, totalCustomers,
       revenueResult, recentOrders, topProducts, allProducts,
-      ordersLast30Days, ordersThisMonth, ordersLastMonth,
-      ordersByStatus, ordersByBrand, ordersByDay30,
     ] = await Promise.all([
       db.product.count(),
       db.order.count(),
       db.brand.count(),
       db.customer.count(),
-      db.order.aggregate({ _sum: { total: true } }),
+      db.order.aggregate({ _sum: { total: true } }).catch(() => ({ _sum: { total: 0 } })),
       db.order.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
         include: { items: { include: { product: true } } },
-      }),
+      }).catch(() => []),
       db.orderItem.groupBy({
         by: ["productId"],
         _count: { id: true },
         orderBy: { _count: { id: "desc" } },
         take: 5,
-      }),
-      db.product.findMany({ select: { stock: true, lowStockThreshold: true } }),
-      db.order.findMany({
-        where: { createdAt: { gte: thirtyDaysAgo } },
-        select: { total: true, createdAt: true, status: true },
-      }),
-      db.order.findMany({
-        where: { createdAt: { gte: thisMonthStart } },
-        select: { total: true },
-      }),
-      db.order.findMany({
-        where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } },
-        select: { total: true },
-      }),
-      db.order.groupBy({
-        by: ["status"],
-        _count: { id: true },
-      }),
-      db.orderItem.findMany({
-        include: { product: { select: { brand: { select: { name: true } } } } },
-      }),
-      db.order.findMany({
-        where: { createdAt: { gte: thirtyDaysAgo } },
-        select: { total: true, createdAt: true },
-        orderBy: { createdAt: "asc" },
-      }),
+      }).catch(() => []),
+      db.product.findMany({ select: { stock: true, lowStockThreshold: true } }).catch(() => []),
     ]);
 
     const lowStockCount = allProducts.filter((p) => p.stock <= p.lowStockThreshold).length;
-    const totalRevenue = revenueResult._sum.total || 0;
-    const revenueLast30Days = ordersLast30Days.reduce((sum, o) => sum + o.total, 0);
-    const revenueThisMonth = ordersThisMonth.reduce((sum, o) => sum + o.total, 0);
-    const revenueLastMonth = ordersLastMonth.reduce((sum, o) => sum + o.total, 0);
+    const totalRevenue = revenueResult._sum?.total || 0;
 
     const topProductIds = topProducts.map((tp) => tp.productId);
-    const topProductDetails = await db.product.findMany({ where: { id: { in: topProductIds } } });
+    const topProductDetails = topProductIds.length > 0
+      ? await db.product.findMany({ where: { id: { in: topProductIds } } }).catch(() => [])
+      : [];
     const topProductsWithCount = topProducts.map((tp) => ({
       ...topProductDetails.find((p) => p.id === tp.productId),
       orderCount: tp._count.id,
     }));
 
-    const orderStatusData = ordersByStatus.map((s) => ({
+    // Optional enhanced data — wrapped in catches so dashboard always loads
+    const [revenueLast30DaysResult, ordersThisMonth, ordersLastMonth, ordersByStatus, brandRevenueRaw, ordersByDay30] = await Promise.all([
+      db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true } }).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: thisMonthStart } }, select: { total: true } }).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } }, select: { total: true } }).catch(() => []),
+      db.order.groupBy({ by: ["status"], _count: { id: true } }).catch(() => []),
+      db.orderItem.findMany({ include: { product: { select: { brand: { select: { name: true } } } } } }).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true, createdAt: true }, orderBy: { createdAt: "asc" } }).catch(() => []),
+    ]);
+
+    const revenueLast30Days = (revenueLast30DaysResult as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
+    const revenueThisMonth = (ordersThisMonth as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
+    const revenueLastMonth = (ordersLastMonth as any[]).reduce((sum: number, o: any) => sum + o.total, 0);
+
+    const orderStatusData = (ordersByStatus as any[]).map((s: any) => ({
       status: s.status,
       count: s._count.id,
     }));
 
     const brandRevenue: Record<string, number> = {};
-    for (const item of ordersByBrand) {
+    for (const item of brandRevenueRaw as any[]) {
       const brandName = item.product?.brand?.name || "Unknown";
       brandRevenue[brandName] = (brandRevenue[brandName] || 0) + item.quantity * item.price;
     }
@@ -93,7 +80,7 @@ export async function GET() {
       .slice(0, 8);
 
     const dailyData: Record<string, { date: string; revenue: number }> = {};
-    for (const o of ordersByDay30) {
+    for (const o of ordersByDay30 as any[]) {
       const dateStr = new Date(o.createdAt).toISOString().split("T")[0];
       if (!dailyData[dateStr]) dailyData[dateStr] = { date: dateStr, revenue: 0 };
       dailyData[dateStr].revenue += o.total;
@@ -108,6 +95,7 @@ export async function GET() {
       orderStatusData, brandRevenueData, revenueTimeline,
     });
   } catch (error) {
+    console.error("[Dashboard API]", error);
     return NextResponse.json({ error: "Failed to fetch dashboard stats" }, { status: 500 });
   }
 }
