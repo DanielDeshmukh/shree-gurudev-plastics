@@ -36,5 +36,9 @@ export async function POST(request: Request) {
     create: { key: "maintenance_eta", value: eta || "" },
   });
 
+  // Also set env var as fallback for middleware
+  process.env.MAINTENANCE_MODE = String(enabled);
+  process.env.MAINTENANCE_ETA = eta || "";
+
   return NextResponse.json({ enabled, eta });
 }

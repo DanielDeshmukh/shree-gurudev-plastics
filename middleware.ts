@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { securityLogger } from "@/lib/security-logger";
+import { createClient } from "@libsql/client";
 
 const ALLOWED_ORIGINS = [
   "https://shreegurudevplastics.com",
@@ -32,27 +33,40 @@ async function checkMaintenance(): Promise<{ enabled: boolean; eta: string | nul
     return { enabled: maintenanceCache.enabled, eta: maintenanceCache.eta };
   }
 
+  // Fallback: env var
+  const envFlag = process.env.MAINTENANCE_MODE === "true";
+  const envEta = process.env.MAINTENANCE_ETA || null;
+
+  // Strategy 1: Direct Turso query
   try {
     const url = process.env.TURSO_DATABASE_URL;
     const token = process.env.TURSO_AUTH_TOKEN;
-    if (!url || !token) return { enabled: false, eta: null };
+    if (url && token) {
+      const client = createClient({ url, authToken: token });
+      const [modeRow, etaRow] = await Promise.all([
+        client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_mode'", args: [] }),
+        client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_eta'", args: [] }),
+      ]);
+      const enabled = modeRow.rows[0]?.value === "true";
+      const eta = (etaRow.rows[0]?.value as string) || null;
+      maintenanceCache = { enabled, eta, fetchedAt: now };
+      return maintenanceCache;
+    }
+  } catch {}
 
-    const mod = await import("@libsql/client");
-    const client = mod.createClient({ url, authToken: token });
+  // Strategy 2: Fetch from API (relative URL works on Vercel)
+  try {
+    const res = await fetch("/api/maintenance/status", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      maintenanceCache = { enabled: !!data.enabled, eta: data.eta || null, fetchedAt: now };
+      return maintenanceCache;
+    }
+  } catch {}
 
-    const [modeRow, etaRow] = await Promise.all([
-      client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_mode'", args: [] }),
-      client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_eta'", args: [] }),
-    ]);
-
-    const enabled = modeRow.rows[0]?.value === "true";
-    const eta = (etaRow.rows[0]?.value as string) || null;
-
-    maintenanceCache = { enabled, eta, fetchedAt: now };
-    return maintenanceCache;
-  } catch {
-    return { enabled: false, eta: null };
-  }
+  // Strategy 3: Env var fallback
+  maintenanceCache = { enabled: envFlag, eta: envEta, fetchedAt: now };
+  return maintenanceCache;
 }
 
 function setCorsHeaders(response: NextResponse, origin: string | null): NextResponse {
