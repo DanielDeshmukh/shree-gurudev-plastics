@@ -35,19 +35,18 @@ function useCountdown(eta: string | null) {
   return remaining;
 }
 
-export default function MaintenancePage({ eta: etaProp }: { eta?: string | null }) {
-  const [eta, setEta] = useState<string | null>(etaProp ?? null);
+export default function MaintenancePage() {
+  const [eta, setEta] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const countdown = useCountdown(eta);
 
-  // Fetch ETA from API if not provided as prop
+  // Fetch ETA from API
   useEffect(() => {
-    if (etaProp !== undefined) return;
     fetch("/api/maintenance/status")
       .then((r) => r.json())
       .then((d) => setEta(d.eta || null))
       .catch(() => {});
-  }, [etaProp]);
+  }, []);
 
   useEffect(() => {
     if (countdown.expired) window.location.reload();
