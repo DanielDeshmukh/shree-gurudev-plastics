@@ -11,6 +11,7 @@ import {
   MdDeliveryDining,
   MdHome,
   MdCancel,
+  MdStore,
 } from "react-icons/md";
 
 const STAGES = [
@@ -33,6 +34,8 @@ type OrderData = {
   customer: string;
   phone: string;
   status: string;
+  deliveryMethod: string;
+  address: string | null;
   total: number;
   createdAt: string;
   items: { name: string; color: string; brand: string; quantity: number; price: number }[];
@@ -285,10 +288,35 @@ export default function TrackOrderPage() {
           </div>
         </div>
 
-        {/* Delivery To */}
+        {/* Delivery Info */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">Delivery To</h2>
-          <p className="text-sm text-gray-900 font-medium">{order.customer}</p>
+          <h2 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">
+            {order.deliveryMethod === "pickup" ? "Pickup Details" : "Delivery To"}
+          </h2>
+          <div className="flex items-start gap-3">
+            {order.deliveryMethod === "pickup" ? (
+              <MdStore className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+            ) : (
+              <MdLocalShipping className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+            )}
+            <div>
+              <p className="text-sm font-medium text-gray-900">{order.customer}</p>
+              {order.deliveryMethod === "pickup" ? (
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {order.address || "Shree Gurudev Plastics, Bhayander (West), Maharashtra"}
+                </p>
+              ) : (
+                order.address && (
+                  <p className="text-sm text-gray-500 mt-0.5">{order.address}</p>
+                )
+              )}
+              <p className="text-xs text-gray-400 mt-1">
+                {order.deliveryMethod === "pickup"
+                  ? "Ready for pickup after order confirmation"
+                  : "Free delivery to your address"}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}

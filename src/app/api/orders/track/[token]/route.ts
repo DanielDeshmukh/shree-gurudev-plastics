@@ -18,6 +18,8 @@ export async function GET(
       customer: true,
       phone: true,
       status: true,
+      deliveryMethod: true,
+      address: true,
       total: true,
       createdAt: true,
       items: {
@@ -43,6 +45,8 @@ export async function GET(
     customer: order.customer,
     phone: order.phone,
     status: order.status,
+    deliveryMethod: order.deliveryMethod,
+    address: order.address,
     total: order.total,
     createdAt: order.createdAt,
     items: order.items.map((item: any) => ({
