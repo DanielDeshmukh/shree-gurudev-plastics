@@ -9,6 +9,7 @@ import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { useLanguage } from "@/context/LanguageContext";
+import { MdStore, MdLocalShipping } from "react-icons/md";
 
 type CategoryHierarchy = { name: string; subCategories: string[] };
 
@@ -557,6 +558,34 @@ export default function ProductsPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : paginatedProducts.length === 0 && selectedBrand ? (
+              <div className="text-center py-16 md:py-20">
+                <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <MdStore className="w-10 h-10 text-primary-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedBrand.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}</h2>
+                <p className="text-lg text-gray-500 mb-2">Coming Soon</p>
+                <p className="text-gray-400 max-w-md mx-auto mb-8">
+                  We&apos;re bringing this brand to Shree Gurudev Plastics. Stay tuned for wholesale pricing and bulk orders.
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <Link
+                    href="/products"
+                    className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium inline-flex items-center gap-2"
+                  >
+                    <MdLocalShipping className="w-4 h-4" />
+                    Browse Mango Products
+                  </Link>
+                  <a
+                    href="https://wa.me/918552084251"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  >
+                    Contact on WhatsApp
+                  </a>
+                </div>
               </div>
             ) : paginatedProducts.length === 0 ? (
               <div className="text-center py-16 md:py-20 text-gray-500">
