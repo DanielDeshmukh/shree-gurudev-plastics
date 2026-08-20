@@ -110,6 +110,7 @@ model Order {
   address        String?
   total          Float
   status         String            @default("pending")
+  deliveryMethod String            @default("delivery")
   trackingToken  String?           @unique
   notes          String?
   customerId     Int?
