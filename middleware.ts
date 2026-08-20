@@ -8,7 +8,6 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
-// Paths that are always exempt from maintenance redirect
 const MAINTENANCE_EXEMPT = [
   "/admin",
   "/api/admin",
@@ -20,50 +19,40 @@ const MAINTENANCE_EXEMPT = [
   "/favicon",
 ];
 
-// In-memory cache — avoids DB hit on every single request
 let maintenanceCache: { enabled: boolean; eta: string | null; fetchedAt: number } | null = null;
-const CACHE_TTL_MS = 10_000; // 10 seconds
+const CACHE_TTL_MS = 10_000;
 
 export function _resetMaintenanceCache() {
   maintenanceCache = null;
 }
 
-function getBaseUrl(): string {
-  // On Vercel: VERCEL_URL is set automatically (e.g. "shree-gurudev-plastics-xxx.vercel.app")
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  // Explicit env var
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-  // Local fallback
-  return "http://localhost:3000";
-}
-
 async function checkMaintenance(): Promise<{ enabled: boolean; eta: string | null }> {
   const now = Date.now();
-
-  // Serve from cache if fresh
   if (maintenanceCache && now - maintenanceCache.fetchedAt < CACHE_TTL_MS) {
     return { enabled: maintenanceCache.enabled, eta: maintenanceCache.eta };
   }
 
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/maintenance/status`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      maintenanceCache = { enabled: !!data.enabled, eta: data.eta || null, fetchedAt: now };
-      return maintenanceCache;
-    }
-  } catch {
-    // Fetch failed — don't block the site
-  }
+    const url = process.env.TURSO_DATABASE_URL;
+    const token = process.env.TURSO_AUTH_TOKEN;
+    if (!url || !token) return { enabled: false, eta: null };
 
-  return { enabled: false, eta: null };
+    const mod = await import("@libsql/client");
+    const client = mod.createClient({ url, authToken: token });
+
+    const [modeRow, etaRow] = await Promise.all([
+      client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_mode'", args: [] }),
+      client.execute({ sql: "SELECT value FROM Setting WHERE key = 'maintenance_eta'", args: [] }),
+    ]);
+
+    const enabled = modeRow.rows[0]?.value === "true";
+    const eta = (etaRow.rows[0]?.value as string) || null;
+
+    maintenanceCache = { enabled, eta, fetchedAt: now };
+    return maintenanceCache;
+  } catch {
+    return { enabled: false, eta: null };
+  }
 }
 
 function setCorsHeaders(response: NextResponse, origin: string | null): NextResponse {

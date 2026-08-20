@@ -5,6 +5,12 @@ import jwt from "jsonwebtoken";
 
 const SECRET = process.env.JWT_SECRET || "test-jwt-secret-for-testing-only-12345678901234567890";
 
+// Mock libsql client
+const mockExecute = vi.fn();
+vi.mock("@libsql/client", () => ({
+  createClient: () => ({ execute: mockExecute }),
+}));
+
 function makeRequest(path: string, options: Record<string, any> = {}): NextRequest {
   const url = new URL(path, "http://localhost:3000");
   const req = new NextRequest(url, {
@@ -18,14 +24,25 @@ function makeRequest(path: string, options: Record<string, any> = {}): NextReque
   return req;
 }
 
+function mockMaintenance(enabled: boolean, eta: string | null = null) {
+  mockExecute.mockImplementation(({ sql }: { sql: string }) => {
+    if (sql.includes("maintenance_mode")) {
+      return Promise.resolve({ rows: [{ value: String(enabled) }] });
+    }
+    if (sql.includes("maintenance_eta")) {
+      return Promise.resolve({ rows: [{ value: eta || "" }] });
+    }
+    return Promise.resolve({ rows: [] });
+  });
+}
+
 describe("middleware", () => {
   beforeEach(() => {
     process.env.JWT_SECRET = SECRET;
+    process.env.TURSO_DATABASE_URL = "libsql://test.turso.io";
+    process.env.TURSO_AUTH_TOKEN = "test-token";
     _resetMaintenanceCache();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ enabled: false, eta: null }),
-    }));
+    mockExecute.mockReset();
   });
 
   afterEach(() => {
@@ -55,18 +72,21 @@ describe("middleware", () => {
 
   describe("blocked registration endpoints", () => {
     it("returns 404 for /api/auth/admin-register", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/auth/admin-register");
       const res = await middleware(req);
       expect(res.status).toBe(404);
     });
 
     it("returns 404 for /api/auth/signup", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/auth/signup");
       const res = await middleware(req);
       expect(res.status).toBe(404);
     });
 
     it("returns 404 for /api/auth/register", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/auth/register");
       const res = await middleware(req);
       expect(res.status).toBe(404);
@@ -75,18 +95,21 @@ describe("middleware", () => {
 
   describe("admin API routes", () => {
     it("returns 401 for /api/admin/ without token", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/admin/products");
       const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
     it("returns 401 for invalid token", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/admin/products", { cookie: "invalid-token" });
       const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
     it("allows valid token for /api/admin/", async () => {
+      mockMaintenance(false);
       const token = jwt.sign({ username: "admin" }, SECRET, {
         issuer: "shreegurudevplastics.com",
         audience: "shreegurudevplastics-admin",
@@ -99,18 +122,21 @@ describe("middleware", () => {
 
   describe("public API passthrough", () => {
     it("passes through /api/products", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/products");
       const res = await middleware(req);
       expect(res.status).toBe(200);
     });
 
     it("passes through /api/auth/login", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/auth/login");
       const res = await middleware(req);
       expect(res.status).toBe(200);
     });
 
     it("passes through /api/orders", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/api/orders");
       const res = await middleware(req);
       expect(res.status).toBe(200);
@@ -119,6 +145,7 @@ describe("middleware", () => {
 
   describe("admin pages", () => {
     it("redirects to /admin/login when no token", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/admin/dashboard");
       const res = await middleware(req);
       expect(res.status).toBe(307);
@@ -126,12 +153,14 @@ describe("middleware", () => {
     });
 
     it("redirects to /admin/login for invalid token", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/admin/dashboard", { cookie: "bad-token" });
       const res = await middleware(req);
       expect(res.status).toBe(307);
     });
 
     it("allows valid token for admin pages", async () => {
+      mockMaintenance(false);
       const token = jwt.sign({ username: "admin" }, SECRET, {
         issuer: "shreegurudevplastics.com",
         audience: "shreegurudevplastics-admin",
@@ -142,6 +171,7 @@ describe("middleware", () => {
     });
 
     it("passes /admin/login without token", async () => {
+      mockMaintenance(false);
       const req = makeRequest("/admin/login");
       const res = await middleware(req);
       expect(res.status).toBe(200);
@@ -150,11 +180,7 @@ describe("middleware", () => {
 
   describe("maintenance mode", () => {
     it("redirects to /maintenance when maintenance is ON", async () => {
-      _resetMaintenanceCache();
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ enabled: true, eta: null }),
-      }));
+      mockMaintenance(true);
       const req = makeRequest("/products");
       const res = await middleware(req);
       expect(res.status).toBe(307);
@@ -162,11 +188,7 @@ describe("middleware", () => {
     });
 
     it("does not redirect admin pages during maintenance", async () => {
-      _resetMaintenanceCache();
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ enabled: true, eta: null }),
-      }));
+      mockMaintenance(true);
       const token = jwt.sign({ username: "admin" }, SECRET, {
         issuer: "shreegurudevplastics.com",
         audience: "shreegurudevplastics-admin",
@@ -177,22 +199,14 @@ describe("middleware", () => {
     });
 
     it("does not redirect /api/maintenance during maintenance", async () => {
-      _resetMaintenanceCache();
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ enabled: true, eta: null }),
-      }));
+      mockMaintenance(true);
       const req = makeRequest("/api/maintenance");
       const res = await middleware(req);
       expect(res.status).toBe(200);
     });
 
     it("passes through when maintenance is OFF", async () => {
-      _resetMaintenanceCache();
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ enabled: false, eta: null }),
-      }));
+      mockMaintenance(false);
       const req = makeRequest("/products");
       const res = await middleware(req);
       expect(res.status).toBe(200);

@@ -180,13 +180,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Toast notification */}
       {toast && (
         <div
-          className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-[100] flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-sm transition-all duration-300 ${
+          className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-[100] flex items-center gap-2.5 px-5 py-3 rounded-lg shadow-lg transition-all duration-300 ${
             toast.type === "success"
-              ? "bg-green-500/10 border-green-500/30 text-green-400"
-              : "bg-red-500/10 border-red-500/30 text-red-400"
+              ? "bg-gray-900 border border-gray-700 text-orange-400"
+              : "bg-gray-900 border border-red-800 text-red-400"
           }`}
         >
-          <span className={`w-2 h-2 rounded-full ${toast.type === "success" ? "bg-green-500" : "bg-red-500"}`} />
+          <span className={`w-2 h-2 rounded-full shrink-0 ${toast.type === "success" ? "bg-orange-500" : "bg-red-500"}`} />
           <span className="text-sm font-medium">{toast.msg}</span>
         </div>
       )}
