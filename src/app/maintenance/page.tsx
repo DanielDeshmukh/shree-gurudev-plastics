@@ -49,12 +49,33 @@ export default function MaintenancePage() {
   }, []);
 
   useEffect(() => {
-    if (countdown.expired) window.location.reload();
+    if (countdown.expired) {
+      // Re-check if maintenance is actually off now
+      fetch("/api/maintenance/status")
+        .then((r) => r.json())
+        .then((d) => {
+          if (!d.enabled) {
+            window.location.href = "/";
+          }
+          // else: still ON, don't reload — show expired state
+        })
+        .catch(() => {});
+    }
   }, [countdown.expired]);
 
   const handleRetry = () => {
     setChecking(true);
-    window.location.reload();
+    fetch("/api/maintenance/status")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.enabled) {
+          window.location.href = "/";
+        } else {
+          setEta(d.eta || null);
+          setChecking(false);
+        }
+      })
+      .catch(() => setChecking(false));
   };
 
   const hasEta = eta && !countdown.expired;
@@ -99,7 +120,21 @@ export default function MaintenancePage() {
           </p>
 
           <div className="mt-6 bg-gray-50 rounded-xl p-5 border border-gray-100">
-            {hasEta ? (
+            {countdown.expired ? (
+              <>
+                <p className="text-[11px] text-gray-400 uppercase tracking-widest mb-2 font-medium">
+                  Status
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="relative flex h-3 w-3">
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+                  </span>
+                  <p className="text-base font-semibold text-gray-700">
+                    Maintenance complete — please refresh
+                  </p>
+                </div>
+              </>
+            ) : hasEta ? (
               <>
                 <p className="text-[11px] text-gray-400 uppercase tracking-widest mb-3 font-medium">
                   Estimated time remaining
