@@ -242,6 +242,14 @@ export default function InvoicesPage() {
                 >
                   Delete
                 </button>
+                <a
+                  href={`/admin/invoices/print/${selectedInvoice.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20"
+                >
+                  Print
+                </a>
               </div>
             </div>
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
-import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack } from "react-icons/md";
+import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney } from "react-icons/md";
 
 const DELIVERY_AREAS = [
   "Bhayander",
@@ -32,6 +32,7 @@ export default function CheckoutPage() {
     name: "",
     phone: "",
     deliveryMethod: "delivery" as "pickup" | "delivery",
+    paymentMethod: "cod" as "cod" | "upi" | "card" | "bank_transfer" | "other",
     address: "",
     area: "Bhayander",
     notes: "",
@@ -70,6 +71,7 @@ export default function CheckoutPage() {
           customer: form.name.trim(),
           phone: form.phone.trim(),
           deliveryMethod: form.deliveryMethod,
+          paymentMethod: form.paymentMethod,
           address: fullAddress,
           notes: form.notes.trim() || null,
           items: items.map((item) => ({
@@ -248,6 +250,40 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               )}
+
+              {/* Payment Method */}
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">How would you like to pay?</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { key: "cod" as const, icon: MdMoney, label: "Cash on Delivery", desc: "Pay at delivery" },
+                    { key: "upi" as const, icon: MdPayment, label: "UPI", desc: "GPay, PhonePe, etc." },
+                    { key: "card" as const, icon: MdCreditCard, label: "Card", desc: "Debit / Credit" },
+                    { key: "bank_transfer" as const, icon: MdAccountBalance, label: "Bank Transfer", desc: "NEFT / RTGS / IMPS" },
+                  ].map(({ key, icon: Icon, label, desc }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setForm({ ...form, paymentMethod: key })}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center ${
+                        form.paymentMethod === key
+                          ? "border-primary-500 bg-primary-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${form.paymentMethod === key ? "text-primary-500" : "text-gray-400"}`} />
+                      <span className={`text-xs font-semibold ${form.paymentMethod === key ? "text-primary-700" : "text-gray-900"}`}>{label}</span>
+                      <span className="text-[10px] text-gray-500">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+                {form.paymentMethod === "upi" && (
+                  <p className="text-xs text-gray-500 mt-2">Our UPI ID will be shared after order confirmation. You can pay via any UPI app.</p>
+                )}
+                {form.paymentMethod === "bank_transfer" && (
+                  <p className="text-xs text-gray-500 mt-2">Bank details will be shared after order confirmation via WhatsApp.</p>
+                )}
+              </div>
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">

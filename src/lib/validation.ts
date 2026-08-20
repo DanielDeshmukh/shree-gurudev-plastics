@@ -4,6 +4,7 @@ export const createOrderSchema = z.object({
   customer: z.string().min(1).max(200).trim(),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
   deliveryMethod: z.enum(["pickup", "delivery"]).default("delivery"),
+  paymentMethod: z.enum(["cod", "upi", "card", "bank_transfer", "other"]).default("cod"),
   address: z.string().max(500).trim().optional(),
   notes: z.string().max(500).trim().optional(),
   items: z.array(z.object({

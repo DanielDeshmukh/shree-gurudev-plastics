@@ -35,6 +35,8 @@ type OrderData = {
   phone: string;
   status: string;
   deliveryMethod: string;
+  paymentMethod: string | null;
+  paymentStatus: string;
   address: string | null;
   total: number;
   createdAt: string;
@@ -151,7 +153,17 @@ export default function TrackOrderPage() {
               <h1 className="text-lg font-bold text-gray-900">Track Your Order</h1>
               <p className="text-sm text-gray-500 mt-0.5">Order #{order.orderId}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end gap-1.5">
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                order.paymentStatus === "paid" ? "bg-green-100 text-green-700" :
+                order.paymentStatus === "partial" ? "bg-blue-100 text-blue-700" :
+                order.paymentStatus === "refunded" ? "bg-red-100 text-red-700" :
+                "bg-amber-100 text-amber-700"
+              }`}>
+                {order.paymentStatus === "paid" ? "Paid" :
+                 order.paymentStatus === "partial" ? "Partially Paid" :
+                 order.paymentStatus === "refunded" ? "Refunded" : "Payment Pending"}
+              </span>
               <p className="text-sm text-gray-500">Ordered on</p>
               <p className="text-sm font-medium text-gray-900">{formatDateTime(order.createdAt)}</p>
             </div>

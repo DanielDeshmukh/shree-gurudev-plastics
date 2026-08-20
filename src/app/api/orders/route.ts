@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
-    const { customer, phone, deliveryMethod, address, notes, items } = validation.data;
+    const { customer, phone, deliveryMethod, address, notes, items, paymentMethod } = validation.data;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items provided" }, { status: 400 });
@@ -105,6 +105,8 @@ export async function POST(request: NextRequest) {
         phone,
         address: orderAddress,
         deliveryMethod: deliveryMethod || "delivery",
+        paymentMethod: paymentMethod || "cod",
+        paymentStatus: paymentMethod === "cod" ? "unpaid" : "unpaid",
         notes: notes || null,
         total,
         trackingToken,

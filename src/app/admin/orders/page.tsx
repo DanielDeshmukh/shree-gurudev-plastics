@@ -16,6 +16,9 @@ interface Order {
   phone: string;
   address: string | null;
   deliveryMethod: string;
+  paymentMethod: string | null;
+  paymentStatus: string;
+  paymentNote: string | null;
   notes: string | null;
   total: number;
   status: string;
@@ -31,6 +34,21 @@ const statusStyles: Record<string, string> = {
   shipped: "bg-blue-500/10 text-blue-400",
   arrived: "bg-purple-500/10 text-purple-400",
   delivered: "bg-green-500/10 text-green-400",
+};
+
+const paymentStatusStyles: Record<string, string> = {
+  unpaid: "bg-amber-500/10 text-amber-400",
+  paid: "bg-green-500/10 text-green-400",
+  partial: "bg-blue-500/10 text-blue-400",
+  refunded: "bg-red-500/10 text-red-400",
+};
+
+const paymentMethodLabels: Record<string, string> = {
+  cod: "Cash on Delivery",
+  upi: "UPI",
+  card: "Card",
+  bank_transfer: "Bank Transfer",
+  other: "Other",
 };
 
 export default function OrdersPage() {
@@ -115,6 +133,21 @@ export default function OrdersPage() {
     } catch {}
   };
 
+  const handlePaymentUpdate = async (orderId: number, paymentStatus: string, paymentNote?: string) => {
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentStatus, paymentNote: paymentNote || undefined }),
+      });
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? { ...o, paymentStatus, paymentNote: paymentNote || o.paymentNote } : o))
+        );
+      }
+    } catch {}
+  };
+
   const filtered = statusFilter
     ? orders.filter((o) => o.status === statusFilter)
     : orders;
@@ -154,6 +187,7 @@ export default function OrdersPage() {
                 <th className="px-4 py-3 font-medium">Customer</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
                 <th className="px-4 py-3 font-medium">Delivery</th>
+                <th className="px-4 py-3 font-medium">Payment</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Date</th>
@@ -185,6 +219,12 @@ export default function OrdersPage() {
                         {order.deliveryMethod === "pickup" ? "Pickup" : "Delivery"}
                       </span>
                     </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${paymentStatusStyles[order.paymentStatus] || paymentStatusStyles.unpaid}`}>
+                        {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
+                      </span>
+                      <span className="block text-[10px] text-gray-500 mt-0.5">{paymentMethodLabels[order.paymentMethod || "cod"]}</span>
+                    </td>
                     <td className="px-4 py-3">₹{order.total.toLocaleString("en-IN")}</td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <select
@@ -204,6 +244,14 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
+                        {order.paymentStatus !== "paid" && (
+                          <button
+                            onClick={() => handlePaymentUpdate(order.id, "paid")}
+                            className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-colors"
+                          >
+                            Mark Paid
+                          </button>
+                        )}
                         {order.status === "arrived" && (
                           <button
                             onClick={() => handleNotifyArrival(order)}
@@ -229,7 +277,7 @@ export default function OrdersPage() {
                   </tr>
                   {expandedId === order.id && (
                     <tr key={`${order.id}-expanded`}>
-                      <td colSpan={8} className="bg-gray-900/50 px-4 py-4">
+                      <td colSpan={9} className="bg-gray-900/50 px-4 py-4">
                         <div className="space-y-3">
                           <p className="text-sm text-gray-400">
                             <span className="font-medium text-gray-300">Delivery Method:</span>{" "}

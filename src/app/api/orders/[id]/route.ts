@@ -66,6 +66,9 @@ const VALID_STATUSES = [
     if (body.address !== undefined) data.address = body.address;
     if (body.notes !== undefined) data.notes = body.notes;
     if (body.total !== undefined) data.total = parseFloat(body.total);
+    if (body.paymentStatus !== undefined) data.paymentStatus = body.paymentStatus;
+    if (body.paymentMethod !== undefined) data.paymentMethod = body.paymentMethod;
+    if (body.paymentNote !== undefined) data.paymentNote = body.paymentNote;
 
     const order = await db.order.update({
       where: { id: parseInt(id) },
