@@ -9,53 +9,105 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [totalProducts, totalOrders, totalBrands, totalCustomers, revenueResult, recentOrders, topProducts, allProducts] =
-      await Promise.all([
-        db.product.count(),
-        db.order.count(),
-        db.brand.count(),
-        db.customer.count(),
-        db.order.aggregate({ _sum: { total: true } }),
-        db.order.findMany({
-          take: 5,
-          orderBy: { createdAt: "desc" },
-          include: { items: { include: { product: true } } },
-        }),
-        db.orderItem.groupBy({
-          by: ["productId"],
-          _count: { id: true },
-          orderBy: { _count: { id: "desc" } },
-          take: 5,
-        }),
-        db.product.findMany({ select: { stock: true, lowStockThreshold: true } }),
-      ]);
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [
+      totalProducts, totalOrders, totalBrands, totalCustomers,
+      revenueResult, recentOrders, topProducts, allProducts,
+      ordersLast30Days, ordersThisMonth, ordersLastMonth,
+      ordersByStatus, ordersByBrand, ordersByDay30,
+    ] = await Promise.all([
+      db.product.count(),
+      db.order.count(),
+      db.brand.count(),
+      db.customer.count(),
+      db.order.aggregate({ _sum: { total: true } }),
+      db.order.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: { items: { include: { product: true } } },
+      }),
+      db.orderItem.groupBy({
+        by: ["productId"],
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 5,
+      }),
+      db.product.findMany({ select: { stock: true, lowStockThreshold: true } }),
+      db.order.findMany({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+        select: { total: true, createdAt: true, status: true },
+      }),
+      db.order.findMany({
+        where: { createdAt: { gte: thisMonthStart } },
+        select: { total: true },
+      }),
+      db.order.findMany({
+        where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } },
+        select: { total: true },
+      }),
+      db.order.groupBy({
+        by: ["status"],
+        _count: { id: true },
+      }),
+      db.orderItem.findMany({
+        include: { product: { select: { brand: { select: { name: true } } } } },
+      }),
+      db.order.findMany({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+        select: { total: true, createdAt: true },
+        orderBy: { createdAt: "asc" },
+      }),
+    ]);
 
     const lowStockCount = allProducts.filter((p) => p.stock <= p.lowStockThreshold).length;
+    const totalRevenue = revenueResult._sum.total || 0;
+    const revenueLast30Days = ordersLast30Days.reduce((sum, o) => sum + o.total, 0);
+    const revenueThisMonth = ordersThisMonth.reduce((sum, o) => sum + o.total, 0);
+    const revenueLastMonth = ordersLastMonth.reduce((sum, o) => sum + o.total, 0);
 
     const topProductIds = topProducts.map((tp) => tp.productId);
-    const topProductDetails = await db.product.findMany({
-      where: { id: { in: topProductIds } },
-    });
-
+    const topProductDetails = await db.product.findMany({ where: { id: { in: topProductIds } } });
     const topProductsWithCount = topProducts.map((tp) => ({
       ...topProductDetails.find((p) => p.id === tp.productId),
       orderCount: tp._count.id,
     }));
 
+    const orderStatusData = ordersByStatus.map((s) => ({
+      status: s.status,
+      count: s._count.id,
+    }));
+
+    const brandRevenue: Record<string, number> = {};
+    for (const item of ordersByBrand) {
+      const brandName = item.product?.brand?.name || "Unknown";
+      brandRevenue[brandName] = (brandRevenue[brandName] || 0) + item.quantity * item.price;
+    }
+    const brandRevenueData = Object.entries(brandRevenue)
+      .map(([name, revenue]) => ({ name, revenue: Math.round(revenue) }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 8);
+
+    const dailyData: Record<string, { date: string; revenue: number }> = {};
+    for (const o of ordersByDay30) {
+      const dateStr = new Date(o.createdAt).toISOString().split("T")[0];
+      if (!dailyData[dateStr]) dailyData[dateStr] = { date: dateStr, revenue: 0 };
+      dailyData[dateStr].revenue += o.total;
+    }
+    const revenueTimeline = Object.values(dailyData);
+
     return NextResponse.json({
-      totalProducts,
-      totalOrders,
-      totalRevenue: revenueResult._sum.total || 0,
-      totalBrands,
-      totalCustomers,
-      lowStockCount,
-      recentOrders,
+      totalProducts, totalOrders, totalBrands, totalCustomers,
+      totalRevenue, lowStockCount, recentOrders,
       topProducts: topProductsWithCount,
+      revenueLast30Days, revenueThisMonth, revenueLastMonth,
+      orderStatusData, brandRevenueData, revenueTimeline,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard stats" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch dashboard stats" }, { status: 500 });
   }
 }
