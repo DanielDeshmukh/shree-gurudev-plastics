@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import PublicShell from "@/components/PublicShell";
 import SWRegister from "@/components/SWRegister";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
 import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
@@ -74,7 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CompareProvider>
                 <RecentlyViewedProvider>
                   <WishlistProvider>
-                    <PublicShell>{children}</PublicShell>
+                    <PublicShell>
+                      <MaintenanceGuard>{children}</MaintenanceGuard>
+                    </PublicShell>
                     <PhonePromptModal />
                     <SWRegister />
                   </WishlistProvider>
