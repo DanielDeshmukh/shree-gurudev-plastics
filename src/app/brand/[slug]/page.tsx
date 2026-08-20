@@ -13,11 +13,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const data = await res.json();
   const brands = data.brands || [];
   const brand = brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug);
-  if (!brand) return { title: "Brand Not Found" };
+  const brandName = brand?.name || KNOWN_BRANDS[slug]?.name;
+  if (!brandName) return { title: "Brand Not Found" };
   return {
-    title: brand.name,
-    description: `Browse ${brand.name} plastic products at Shree Gurudev Plastics. Quality chairs, tables, and more.`,
-    openGraph: { title: `${brand.name} | Shree Gurudev Plastics`, description: `Browse ${brand.name} plastic products.` },
+    title: brandName,
+    description: `Browse ${brandName} plastic products at Shree Gurudev Plastics. Quality chairs, tables, and more.`,
+    openGraph: { title: `${brandName} | Shree Gurudev Plastics`, description: `Browse ${brandName} plastic products.` },
   };
 }
 
@@ -46,9 +47,23 @@ async function getProductsByBrand(slug: string) {
 
 const ACTIVE_BRAND_SLUGS = ["mango-chairs"];
 
+const KNOWN_BRANDS: Record<string, { name: string }> = {
+  "aristo": { name: "Aristo" },
+  "kg-plast": { name: "KG Plast" },
+  "rajdhani": { name: "Rajdhani" },
+  "milton": { name: "Milton" },
+  "borosil": { name: "Borosil" },
+  "mango-chairs": { name: "Mango Chairs" },
+};
+
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const brand = await getBrand(slug);
+  let brand = await getBrand(slug);
+
+  // Fallback to known brands if not in database
+  if (!brand && KNOWN_BRANDS[slug]) {
+    brand = { name: KNOWN_BRANDS[slug].name, slug, _count: { products: 0 } };
+  }
 
   if (!brand) {
     return (
