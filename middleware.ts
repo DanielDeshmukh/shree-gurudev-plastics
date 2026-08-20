@@ -8,6 +8,17 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
+const MAINTENANCE_EXEMPT = [
+  "/admin",
+  "/api/admin",
+  "/api/maintenance",
+  "/maintenance",
+  "/api/auth/login",
+  "/api/auth/logout",
+  "/_next",
+  "/favicon",
+];
+
 function setCorsHeaders(response: NextResponse, origin: string | null): NextResponse {
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     response.headers.set("Access-Control-Allow-Origin", origin);
@@ -23,6 +34,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
   const origin = request.headers.get("origin");
+
+  // Maintenance mode check — redirect to /maintenance unless exempt
+  const isMaintenance = process.env.MAINTENANCE_MODE === "true";
+  if (isMaintenance) {
+    const isExempt = MAINTENANCE_EXEMPT.some((prefix) => pathname.startsWith(prefix));
+    if (!isExempt && pathname !== "/maintenance") {
+      return NextResponse.redirect(new URL("/maintenance", request.url));
+    }
+  }
 
   // Handle CORS preflight
   if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
@@ -50,23 +70,23 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  const token = request.cookies.get("admin_token")?.value;
-
-  if (!token) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
-
-  const payload = verifyToken(token);
-
-  if (!payload) {
-    const response = NextResponse.redirect(new URL("/admin/login", request.url));
-    response.cookies.delete("admin_token");
-    return response;
+  // Admin panel auth check
+  if (pathname.startsWith("/admin")) {
+    const token = request.cookies.get("admin_token")?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+    const payload = verifyToken(token);
+    if (!payload) {
+      const response = NextResponse.redirect(new URL("/admin/login", request.url));
+      response.cookies.delete("admin_token");
+      return response;
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
