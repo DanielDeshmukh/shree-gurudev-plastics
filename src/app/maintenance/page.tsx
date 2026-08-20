@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { MdRefresh } from "react-icons/md";
 
 interface MaintenanceInfo {
@@ -186,7 +187,7 @@ export default function MaintenancePage() {
             WhatsApp: +91 85520 84251
           </a>
           <div className="flex items-center gap-3">
-            <a href="/" className="hover:text-primary-500 transition-colors">Home</a>
+            <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
           </div>
         </div>
       </div>
