@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MdStore, MdLocalShipping } from "react-icons/md";
 
 interface OrderItem {
   id: number;
@@ -14,6 +15,7 @@ interface Order {
   customer: string;
   phone: string;
   address: string | null;
+  deliveryMethod: string;
   notes: string | null;
   total: number;
   status: string;
@@ -151,6 +153,7 @@ export default function OrdersPage() {
                 <th className="px-4 py-3 font-medium">ID</th>
                 <th className="px-4 py-3 font-medium">Customer</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
+                <th className="px-4 py-3 font-medium">Delivery</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Date</th>
@@ -168,6 +171,20 @@ export default function OrdersPage() {
                     <td className="px-4 py-3">#{order.id}</td>
                     <td className="px-4 py-3 font-medium">{order.customer}</td>
                     <td className="px-4 py-3">{order.phone}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                        order.deliveryMethod === "pickup"
+                          ? "bg-blue-500/10 text-blue-400"
+                          : "bg-green-500/10 text-green-400"
+                      }`}>
+                        {order.deliveryMethod === "pickup" ? (
+                          <MdStore className="w-3 h-3" />
+                        ) : (
+                          <MdLocalShipping className="w-3 h-3" />
+                        )}
+                        {order.deliveryMethod === "pickup" ? "Pickup" : "Delivery"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">₹{order.total.toLocaleString("en-IN")}</td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <select
@@ -212,8 +229,18 @@ export default function OrdersPage() {
                   </tr>
                   {expandedId === order.id && (
                     <tr key={`${order.id}-expanded`}>
-                      <td colSpan={7} className="bg-gray-900/50 px-4 py-4">
+                      <td colSpan={8} className="bg-gray-900/50 px-4 py-4">
                         <div className="space-y-3">
+                          <p className="text-sm text-gray-400">
+                            <span className="font-medium text-gray-300">Delivery Method:</span>{" "}
+                            <span className="inline-flex items-center gap-1">
+                              {order.deliveryMethod === "pickup" ? (
+                                <><MdStore className="w-3 h-3" /> Store Pickup</>
+                              ) : (
+                                <><MdLocalShipping className="w-3 h-3" /> Home Delivery</>
+                              )}
+                            </span>
+                          </p>
                           {order.address && (
                             <p className="text-sm text-gray-400">
                               <span className="font-medium text-gray-300">Address:</span>{" "}
