@@ -131,14 +131,20 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/admin")) {
     const token = request.cookies.get("admin_token")?.value;
     if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      const res = NextResponse.redirect(new URL("/admin/login", request.url));
+      res.headers.set("x-sgp-admin", "1");
+      return res;
     }
     const payload = verifyToken(token);
     if (!payload) {
       const response = NextResponse.redirect(new URL("/admin/login", request.url));
       response.cookies.delete("admin_token");
+      response.headers.set("x-sgp-admin", "1");
       return response;
     }
+    const res = NextResponse.next();
+    res.headers.set("x-sgp-admin", "1");
+    return res;
   }
 
   return NextResponse.next();

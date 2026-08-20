@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import PublicShell from "@/components/PublicShell";
 import SWRegister from "@/components/SWRegister";
 import { CartProvider } from "@/context/CartContext";
@@ -9,6 +10,8 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
 import PhonePromptModal from "@/components/PhonePromptModal";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
+import { checkMaintenance } from "@/lib/maintenance";
+import MaintenancePage from "@/app/maintenance/page";
 import "./globals.css";
 
 const localBusinessSchema = getLocalBusinessSchema();
@@ -52,7 +55,23 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const hdrs = await headers();
+  const isAdmin = hdrs.get("x-sgp-admin") === "1";
+
+  if (!isAdmin) {
+    const { enabled, eta } = await checkMaintenance();
+    if (enabled) {
+      return (
+        <html lang="en">
+          <body>
+            <MaintenancePage />
+          </body>
+        </html>
+      );
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
