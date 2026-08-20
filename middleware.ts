@@ -120,9 +120,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // --- Public API passthrough ---
+  // --- Public API passthrough (with admin header for /admin/login) ---
   if (pathname === "/admin/login" || pathname.startsWith("/api/")) {
-    const response = NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    if (pathname === "/admin/login") requestHeaders.set("x-sgp-admin", "1");
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
     if (pathname.startsWith("/api/")) setCorsHeaders(response, origin);
     return response;
   }
@@ -131,20 +133,18 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/admin")) {
     const token = request.cookies.get("admin_token")?.value;
     if (!token) {
-      const res = NextResponse.redirect(new URL("/admin/login", request.url));
-      res.headers.set("x-sgp-admin", "1");
-      return res;
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     const payload = verifyToken(token);
     if (!payload) {
       const response = NextResponse.redirect(new URL("/admin/login", request.url));
       response.cookies.delete("admin_token");
-      response.headers.set("x-sgp-admin", "1");
       return response;
     }
-    const res = NextResponse.next();
-    res.headers.set("x-sgp-admin", "1");
-    return res;
+    // Set header on request so root layout can read it
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-sgp-admin", "1");
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   return NextResponse.next();
