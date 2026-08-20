@@ -180,7 +180,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Toast notification */}
       {toast && (
         <div
-          className={`fixed top-4 right-4 z-[100] flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-sm transition-all duration-300 ${
+          className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-[100] flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-sm transition-all duration-300 ${
             toast.type === "success"
               ? "bg-green-500/10 border-green-500/30 text-green-400"
               : "bg-red-500/10 border-red-500/30 text-red-400"
@@ -270,7 +270,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {maintenanceMode ? "MAINTENANCE" : "LIVE"}
               </button>
               {showMaintenancePicker && (
-                <div className="absolute right-0 top-full mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 w-80 overflow-hidden">
+                <div className="fixed right-2 top-16 sm:absolute sm:right-0 sm:top-full sm:mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 w-[calc(100vw-1rem)] sm:w-80 max-w-80 overflow-hidden">
                   {/* Status banner */}
                   <div className={`px-4 py-3 ${maintenanceMode ? "bg-red-500/10 border-b border-red-500/20" : "bg-green-500/10 border-b border-green-500/20"}`}>
                     <div className="flex items-center justify-between">
