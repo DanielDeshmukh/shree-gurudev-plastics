@@ -44,10 +44,11 @@ async function getProductsByBrand(slug: string) {
   }
 }
 
+const ACTIVE_BRAND_SLUGS = ["mango-chairs"];
+
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const brand = await getBrand(slug);
-  const products = await getProductsByBrand(slug);
 
   if (!brand) {
     return (
@@ -62,6 +63,53 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
       </main>
     );
   }
+
+  const isActiveBrand = ACTIVE_BRAND_SLUGS.includes(slug);
+
+  if (!isActiveBrand) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <nav className="text-sm text-gray-500 mb-8">
+            <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
+            <span className="mx-2">/</span>
+            <span className="text-gray-900">{brand.name}</span>
+          </nav>
+
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-6">
+              <svg className="w-12 h-12 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-3">{brand.name}</h1>
+            <p className="text-xl text-gray-500 mb-2">Coming Soon</p>
+            <p className="text-gray-400 max-w-md mb-8">
+              We&apos;re bringing {brand.name} products to Shree Gurudev Plastics. Stay tuned for wholesale pricing and bulk orders.
+            </p>
+            <div className="flex gap-4">
+              <Link
+                href="/products"
+                className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium"
+              >
+                Browse Mango Products
+              </Link>
+              <a
+                href="https://wa.me/918552084251"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Contact on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const products = await getProductsByBrand(slug);
 
   return (
     <main className="min-h-screen bg-gray-50">

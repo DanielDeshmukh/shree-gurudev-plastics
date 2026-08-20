@@ -140,17 +140,29 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             We are authorized distributors for top plastic product brands in {CITY}.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {brands.map((brand: any) => (
-              <Link
-                key={brand.id}
-                href={`/brand/${brand.slug}`}
-                className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
-              >
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-500 transition-colors">{brand.name}</h3>
-                <p className="text-gray-500 mt-2">{brand._count?.products ?? 0} Products</p>
-                <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">Explore →</span>
-              </Link>
-            ))}
+            {brands.map((brand: any) => {
+              const isComingSoon = brand.slug !== "mango-chairs";
+              return (
+                <Link
+                  key={brand.id}
+                  href={`/brand/${brand.slug}`}
+                  className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-500 transition-colors">{brand.name}</h3>
+                    {isComingSoon && (
+                      <span className="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Coming Soon</span>
+                    )}
+                  </div>
+                  <p className="text-gray-500 mt-2">
+                    {isComingSoon ? "Launching soon with wholesale pricing" : `${brand._count?.products ?? 0} Products`}
+                  </p>
+                  <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">
+                    {isComingSoon ? "Notify Me →" : "Explore →"}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
