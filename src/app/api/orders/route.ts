@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
-    const { customer, phone, address, notes, items } = validation.data;
+    const { customer, phone, deliveryMethod, address, notes, items } = validation.data;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items provided" }, { status: 400 });
@@ -95,11 +95,16 @@ export async function POST(request: NextRequest) {
 
     const trackingToken = crypto.randomBytes(16).toString("hex");
 
+    const orderAddress = deliveryMethod === "pickup"
+      ? (address || "Store Pickup - Bhayander")
+      : (address || null);
+
     const order = await db.order.create({
       data: {
         customer,
         phone,
-        address: address || null,
+        address: orderAddress,
+        deliveryMethod: deliveryMethod || "delivery",
         notes: notes || null,
         total,
         trackingToken,
