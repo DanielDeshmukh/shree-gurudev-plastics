@@ -37,73 +37,6 @@ export async function POST(request: NextRequest) {
     }
     const { customer, phone, deliveryMethod, address, notes, items, paymentMethod } = validation.data;
 
-    // Server-side price + stock validation: verify against database
-    const productIds = items.map((item) => item.productId);
-    const dbProducts = await db.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, price: true, stock: true, name: true },
-    });
-    const productMap = new Map(dbProducts.map((p) => [p.id, p]));
-
-    const stockIssues: string[] = [];
-    const validatedItems = items.map((item) => {
-      const dbProduct = productMap.get(item.productId);
-      if (!dbProduct) {
-        throw new Error(`Product ${item.productId} not found`);
-      }
-      if (item.quantity > dbProduct.stock) {
-        stockIssues.push(
-          `${dbProduct.name}: requested ${item.quantity}, only ${dbProduct.stock} in stock`
-        );
-      }
-      return { ...item, price: dbProduct.price };
-    });
-
-    if (stockIssues.length > 0) {
-      return NextResponse.json(
-        { error: "Insufficient stock", stockIssues },
-        { status: 400 }
-      );
-    }
-
-    const total = validatedItems.reduce(
-      (sum: number, item: { quantity: number; price: number }) =>
-        sum + item.quantity * item.price,
-      0
-    );
-
-    const existingCustomer = await db.customer.findUnique({
-      where: { phone },
-    });
-
-    let customerId: number | undefined;
-    if (existingCustomer) {
-      await db.customer.update({
-        where: { id: existingCustomer.id },
-        data: {
-          totalOrders: existingCustomer.totalOrders + 1,
-          totalSpent: existingCustomer.totalSpent + total,
-          lastOrderAt: new Date(),
-          address: address || existingCustomer.address,
-        },
-      });
-      customerId = existingCustomer.id;
-    } else {
-      const newCustomer = await db.customer.create({
-        data: {
-          name: customer,
-          phone,
-          address: address || null,
-          totalOrders: 1,
-          totalSpent: total,
-          lastOrderAt: new Date(),
-        },
-      });
-      customerId = newCustomer.id;
-    }
-
-    const trackingToken = crypto.randomBytes(16).toString("hex");
-
     // Generate unique 10-digit public ID
     let publicId: string;
     let attempts = 0;
@@ -114,42 +47,118 @@ export async function POST(request: NextRequest) {
       attempts++;
     } while (attempts < 10);
 
-    const orderAddress = deliveryMethod === "pickup"
-      ? (address || "Store Pickup - Bhayander")
-      : (address || null);
+    const trackingToken = crypto.randomBytes(16).toString("hex");
 
-    const order = await db.order.create({
-      data: {
-        customer,
-        phone,
-        address: orderAddress,
-        publicId,
-        deliveryMethod: deliveryMethod || "delivery",
-        paymentMethod: paymentMethod || "cod",
-        paymentStatus: paymentMethod === "cod" ? "unpaid" : "unpaid",
-        notes: notes || null,
-        total,
-        trackingToken,
-        customerId: customerId || null,
-        items: {
-          create: validatedItems.map((item: { productId: number; quantity: number; price: number }) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.price,
-          })),
+    // Atomic transaction: validate stock, deduct stock, create order
+    const order = await db.$transaction(async (tx) => {
+      // 1. Fetch products with stock info (select for update equivalent via transaction)
+      const productIds = items.map((item) => item.productId);
+      const dbProducts = await tx.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, price: true, stock: true, name: true },
+      });
+      const productMap = new Map(dbProducts.map((p) => [p.id, p]));
+
+      // 2. Validate stock and prices
+      const stockIssues: string[] = [];
+      const validatedItems = items.map((item) => {
+        const dbProduct = productMap.get(item.productId);
+        if (!dbProduct) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+        if (item.quantity > dbProduct.stock) {
+          stockIssues.push(
+            `${dbProduct.name}: requested ${item.quantity}, only ${dbProduct.stock} in stock`
+          );
+        }
+        return { ...item, price: dbProduct.price };
+      });
+
+      if (stockIssues.length > 0) {
+        throw new Error(`INSUFFICIENT_STOCK:${JSON.stringify(stockIssues)}`);
+      }
+
+      // 3. Deduct stock atomically for each item
+      for (const item of validatedItems) {
+        const updated = await tx.product.updateMany({
+          where: { id: item.productId, stock: { gte: item.quantity } },
+          data: { stock: { decrement: item.quantity } },
+        });
+        if (updated.count === 0) {
+          throw new Error(`STOCK_RACE_CONDITION:${item.productId}`);
+        }
+      }
+
+      // 4. Create or update customer
+      let customerId: number | undefined;
+      const total = validatedItems.reduce(
+        (sum, item) => sum + item.quantity * item.price, 0
+      );
+
+      const existingCustomer = await tx.customer.findUnique({ where: { phone } });
+      if (existingCustomer) {
+        await tx.customer.update({
+          where: { id: existingCustomer.id },
+          data: {
+            totalOrders: existingCustomer.totalOrders + 1,
+            totalSpent: existingCustomer.totalSpent + total,
+            lastOrderAt: new Date(),
+            address: address || existingCustomer.address,
+          },
+        });
+        customerId = existingCustomer.id;
+      } else {
+        const newCustomer = await tx.customer.create({
+          data: {
+            name: customer,
+            phone,
+            address: address || null,
+            totalOrders: 1,
+            totalSpent: total,
+            lastOrderAt: new Date(),
+          },
+        });
+        customerId = newCustomer.id;
+      }
+
+      // 5. Create order with items and status history
+      const orderAddress = deliveryMethod === "pickup"
+        ? (address || "Store Pickup - Bhayander")
+        : (address || null);
+
+      const order = await tx.order.create({
+        data: {
+          customer,
+          phone,
+          address: orderAddress,
+          publicId,
+          deliveryMethod: deliveryMethod || "delivery",
+          paymentMethod: paymentMethod || "cod",
+          paymentStatus: "unpaid",
+          notes: notes || null,
+          total,
+          trackingToken,
+          customerId: customerId || null,
+          items: {
+            create: validatedItems.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+          },
+          statusHistory: {
+            create: { status: "Order Placed" },
+          },
         },
-        statusHistory: {
-          create: { status: "Order Placed" },
+        include: {
+          items: { include: { product: true } },
         },
-      },
-      include: {
-        items: {
-          include: { product: true },
-        },
-      },
+      });
+
+      return order;
     });
 
-    // Create notification for admin
+    // 6. Create notification (outside transaction — non-critical)
     const itemSummary = order.items
       .map((i: any) => `${i.product.name} x${i.quantity}`)
       .join(", ");
@@ -157,13 +166,28 @@ export async function POST(request: NextRequest) {
       data: {
         type: "order",
         title: `New Order #${order.publicId}`,
-        message: `${customer} (${phone}) placed an order: ${itemSummary}. Total: ₹${total.toLocaleString("en-IN")}`,
+        message: `${customer} (${phone}) placed an order: ${itemSummary}. Total: ₹${order.total.toLocaleString("en-IN")}`,
         orderId: order.id,
       },
     });
 
     return NextResponse.json({ order }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    // Handle specific transaction errors
+    if (error?.message?.startsWith("INSUFFICIENT_STOCK:")) {
+      const issues = JSON.parse(error.message.replace("INSUFFICIENT_STOCK:", ""));
+      return NextResponse.json(
+        { error: "Insufficient stock", stockIssues: issues },
+        { status: 400 }
+      );
+    }
+    if (error?.message?.startsWith("STOCK_RACE_CONDITION:")) {
+      return NextResponse.json(
+        { error: "Sorry, an item just went out of stock. Please refresh and try again." },
+        { status: 409 }
+      );
+    }
+    console.error("[Order Creation]", error);
     return NextResponse.json(
       { error: "Failed to create order" },
       { status: 500 }
