@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
-
-const SITE_URL = "https://shreegurudevplastics.com";
+import { SITE_URL } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [

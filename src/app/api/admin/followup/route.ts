@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { SITE_URL } from "@/lib/seo";
 
 const WHATSAPP_NUMBER = "918552084251";
 
@@ -15,7 +16,7 @@ const TEMPLATES = {
     `Hi ${customerName}! ⭐\n\nWe hope you're enjoying your recent purchase (Order #${orderId})!\n\nWe'd love your feedback — it helps other customers and helps us improve.\n\nCould you take a moment to leave a review?\n\nThank you for choosing Shree Gurudev Plastics! 🙏`,
   
   restock_alert: (customerName: string, productName: string) =>
-    `Hi ${customerName}! 📢\n\nGreat news — ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: https://shreegurudevplastics.com/products\n\n— SGP Team`,
+    `Hi ${customerName}! 📢\n\nGreat news — ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: ${SITE_URL}/products\n\n— SGP Team`,
 
   arrival_notification: (customerName: string, orderId: number, items: { name: string; quantity: number; price: number }[], total: number) => {
     const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} — ₹${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");

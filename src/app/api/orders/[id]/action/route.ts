@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { SITE_URL } from "@/lib/seo";
 
 export async function POST(
   request: NextRequest,
@@ -56,7 +57,7 @@ export async function POST(
         }, { status: 400 });
       }
 
-      const trackingUrl = `https://shreegurudevplastics.com/track/${order.trackingToken}`;
+      const trackingUrl = `${SITE_URL}/track/${order.trackingToken}`;
 
       await db.order.update({
         where: { id: orderId },
@@ -88,7 +89,7 @@ export async function POST(
     if (action === "cancel") {
       const cancelReason = reason || "Item unavailable";
 
-      const trackingUrl = `https://shreegurudevplastics.com/track/${order.trackingToken}`;
+      const trackingUrl = `${SITE_URL}/track/${order.trackingToken}`;
 
       await db.order.update({
         where: { id: orderId },

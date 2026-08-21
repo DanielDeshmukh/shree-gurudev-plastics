@@ -4,7 +4,7 @@ import { securityLogger } from "@/lib/security-logger";
 import { createClient } from "@libsql/client";
 
 const ALLOWED_ORIGINS = [
-  "https://shreegurudevplastics.com",
+  process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com",
   "https://shree-gurudev-plastics.vercel.app",
   "http://localhost:3000",
 ];
