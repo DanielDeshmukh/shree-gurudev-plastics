@@ -8,6 +8,7 @@ import WishlistButton from "@/components/WishlistButton";
 import PincodeCheck from "@/components/PincodeCheck";
 import ProductTags from "@/components/ProductTags";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
+import { getColorNames } from "@/lib/product-helpers";
 import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import { db } from "@/lib/db";
@@ -150,25 +151,22 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-2 mb-6">
-                {product.color && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm w-20">Color</span>
-                    <span className="text-gray-900 text-sm font-medium">{product.color}</span>
-                  </div>
-                )}
-                {product.size && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm w-20">Size</span>
-                    <span className="text-gray-900 text-sm font-medium">{product.size}</span>
-                  </div>
-                )}
-
-                {product.category && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm w-20">Category</span>
-                    <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
-                  </div>
-                )}
+                {(() => {
+                  const colorNames = getColorNames(product.images, product.name);
+                  if (colorNames.length === 0) return null;
+                  return (
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500 text-sm w-20">Colors</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {colorNames.map(color => (
+                          <span key={color} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full capitalize">
+                            {color}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {(product.height || product.width || product.depth || product.weight) && (
                   <div className="flex items-center gap-2">
@@ -177,6 +175,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                       {[product.height && `H: ${product.height} cm`, product.width && `W: ${product.width} cm`, product.depth && `D: ${product.depth} cm`].filter(Boolean).join(' × ')}
                       {product.weight ? ` | Weight: ${product.weight} kg` : ''}
                     </span>
+                  </div>
+                )}
+
+                {product.category && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 text-sm w-20">Category</span>
+                    <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
                   </div>
                 )}
               </div>
