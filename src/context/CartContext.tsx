@@ -60,6 +60,8 @@ function saveCart(items: CartItem[]) {
   }
 }
 
+const MAX_QUANTITY = 999;
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -82,8 +84,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
+        const newQty = Math.min(existing.quantity + 1, MAX_QUANTITY);
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: newQty } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -99,7 +102,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (quantity <= 0) {
         return prev.filter((i) => i.id !== id);
       }
-      return prev.map((i) => (i.id === id ? { ...i, quantity } : i));
+      const clamped = Math.min(quantity, MAX_QUANTITY);
+      return prev.map((i) => (i.id === id ? { ...i, quantity: clamped } : i));
     });
   }, []);
 
