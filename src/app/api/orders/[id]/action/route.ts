@@ -26,37 +26,15 @@ export async function POST(
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
     if (action === "process") {
-      // Atomic stock check + deduction using transaction
-      const result = await db.$transaction(async (tx) => {
-        const stockIssues: string[] = [];
-        for (const item of order.items) {
-          const product = await tx.product.findUnique({ where: { id: item.productId } });
-          if (product && product.stock < item.quantity) {
-            stockIssues.push(`${product.name}: need ${item.quantity}, have ${product.stock}`);
-          }
-        }
-
-        if (stockIssues.length > 0) {
-          return { error: true, stockIssues };
-        }
-
-        for (const item of order.items) {
-          await tx.product.update({
-            where: { id: item.productId },
-            data: { stock: { decrement: item.quantity } },
-          });
-        }
-
-        return { error: false };
-      });
-
-      if (result.error) {
+      // Idempotency: skip if already confirmed or later
+      if (["confirmed", "shipped", "delivered"].includes(order.status)) {
         return NextResponse.json({
-          error: "Insufficient stock",
-          stockIssues: result.stockIssues,
-        }, { status: 400 });
+          success: true,
+          message: `Order already ${order.status}`,
+        });
       }
 
+      // Stock already deducted at order creation — just update status
       const trackingUrl = `${SITE_URL}/track/${order.trackingToken}`;
 
       await db.order.update({
@@ -72,14 +50,14 @@ export async function POST(
         data: {
           type: "success",
           title: `Order #${order.publicId} Confirmed`,
-          message: `Order from ${order.customer} (${order.phone}) confirmed. Stock deducted. Total: ₹${order.total.toLocaleString("en-IN")}`,
+          message: `Order from ${order.customer} (${order.phone}) confirmed. Total: ₹${order.total.toLocaleString("en-IN")}`,
           orderId,
         },
       });
 
       return NextResponse.json({
         success: true,
-        message: "Order confirmed and stock deducted",
+        message: "Order confirmed",
         whatsappUrl: `https://wa.me/91${order.phone}?text=${encodeURIComponent(
           `Hi ${order.customer}, your order #${order.publicId} has been confirmed! Total: ₹${order.total.toLocaleString("en-IN")}. Track your order here: ${trackingUrl} — Shree Gurudev Plastics`
         )}`,
@@ -87,9 +65,24 @@ export async function POST(
     }
 
     if (action === "cancel") {
-      const cancelReason = reason || "Item unavailable";
+      // Idempotency: skip if already cancelled
+      if (order.status === "cancelled") {
+        return NextResponse.json({
+          success: true,
+          message: "Order already cancelled",
+        });
+      }
 
+      const cancelReason = reason || "Item unavailable";
       const trackingUrl = `${SITE_URL}/track/${order.trackingToken}`;
+
+      // Restore stock for each item
+      for (const item of order.items) {
+        await db.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } },
+        });
+      }
 
       await db.order.update({
         where: { id: orderId },
