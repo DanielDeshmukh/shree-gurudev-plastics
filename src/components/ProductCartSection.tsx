@@ -11,13 +11,16 @@ type ProductCartSectionProps = {
   price: number;
   imageUrl: string;
   brand?: string;
+  stock?: number;
 };
 
-export default function ProductCartSection({ id, name, color, size, price, imageUrl, brand }: ProductCartSectionProps) {
+export default function ProductCartSection({ id, name, color, size, price, imageUrl, brand, stock }: ProductCartSectionProps) {
   const { addItem, openCart } = useCart();
   const [enquiryQty, setEnquiryQty] = useState(10);
+  const outOfStock = stock !== undefined && stock <= 0;
 
   const handleAdd = () => {
+    if (outOfStock) return;
     addItem({ id, name, color, size, price, imageUrl, brand });
     openCart();
   };
@@ -39,12 +42,17 @@ export default function ProductCartSection({ id, name, color, size, price, image
     <div className="space-y-3">
       <button
         onClick={handleAdd}
-        className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors text-lg w-full"
+        disabled={outOfStock}
+        className={`inline-flex items-center justify-center gap-2 font-semibold px-8 py-3 rounded-lg transition-colors text-lg w-full ${
+          outOfStock
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-primary-500 text-white hover:bg-primary-600"
+        }`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
         </svg>
-        Add to Cart
+        {outOfStock ? "Out of Stock" : "Add to Cart"}
       </button>
       <div className="flex items-center gap-2">
         <label className="text-sm text-gray-500 shrink-0">Qty:</label>
