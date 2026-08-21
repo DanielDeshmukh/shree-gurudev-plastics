@@ -37,25 +37,34 @@ export async function POST(request: NextRequest) {
     }
     const { customer, phone, deliveryMethod, address, notes, items, paymentMethod } = validation.data;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: "No items provided" }, { status: 400 });
-    }
-
-    // Server-side price validation: verify prices against database
+    // Server-side price + stock validation: verify against database
     const productIds = items.map((item) => item.productId);
     const dbProducts = await db.product.findMany({
       where: { id: { in: productIds } },
-      select: { id: true, price: true },
+      select: { id: true, price: true, stock: true, name: true },
     });
-    const priceMap = new Map(dbProducts.map((p) => [p.id, p.price]));
+    const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
+    const stockIssues: string[] = [];
     const validatedItems = items.map((item) => {
-      const dbPrice = priceMap.get(item.productId);
-      if (dbPrice === undefined) {
+      const dbProduct = productMap.get(item.productId);
+      if (!dbProduct) {
         throw new Error(`Product ${item.productId} not found`);
       }
-      return { ...item, price: dbPrice };
+      if (item.quantity > dbProduct.stock) {
+        stockIssues.push(
+          `${dbProduct.name}: requested ${item.quantity}, only ${dbProduct.stock} in stock`
+        );
+      }
+      return { ...item, price: dbProduct.price };
     });
+
+    if (stockIssues.length > 0) {
+      return NextResponse.json(
+        { error: "Insufficient stock", stockIssues },
+        { status: 400 }
+      );
+    }
 
     const total = validatedItems.reduce(
       (sum: number, item: { quantity: number; price: number }) =>
