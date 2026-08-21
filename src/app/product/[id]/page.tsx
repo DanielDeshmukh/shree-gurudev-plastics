@@ -215,6 +215,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 price={product.price}
                 imageUrl={product.imageUrl || ""}
                 brand={brand?.name}
+                stock={product.stock}
               />
               <CompareButton
                 product={{
