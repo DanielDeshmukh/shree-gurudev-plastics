@@ -28,6 +28,10 @@ function renderCart() {
 }
 
 describe("CartContext", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it("starts with empty cart", () => {
     renderCart();
     expect(screen.getByTestId("count").textContent).toBe("0");
