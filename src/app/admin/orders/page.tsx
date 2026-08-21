@@ -12,6 +12,7 @@ interface OrderItem {
 
 interface Order {
   id: number;
+  publicId: string;
   customer: string;
   phone: string;
   address: string | null;
@@ -202,7 +203,7 @@ export default function OrdersPage() {
                     className="text-gray-300 hover:bg-gray-800/50 cursor-pointer"
                     onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
                   >
-                    <td className="px-4 py-3">#{order.id}</td>
+                    <td className="px-4 py-3">#{order.publicId}</td>
                     <td className="px-4 py-3 font-medium">{order.customer}</td>
                     <td className="px-4 py-3">{order.phone}</td>
                     <td className="px-4 py-3">

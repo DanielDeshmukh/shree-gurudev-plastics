@@ -71,7 +71,7 @@ export async function POST(
       await db.notification.create({
         data: {
           type: "success",
-          title: `Order #${orderId} Confirmed`,
+          title: `Order #${order.publicId} Confirmed`,
           message: `Order from ${order.customer} (${order.phone}) confirmed. Stock deducted. Total: ₹${order.total.toLocaleString("en-IN")}`,
           orderId,
         },
@@ -81,7 +81,7 @@ export async function POST(
         success: true,
         message: "Order confirmed and stock deducted",
         whatsappUrl: `https://wa.me/91${order.phone}?text=${encodeURIComponent(
-          `Hi ${order.customer}, your order #${orderId} has been confirmed! Total: ₹${order.total.toLocaleString("en-IN")}. Track your order here: ${trackingUrl} — Shree Gurudev Plastics`
+          `Hi ${order.customer}, your order #${order.publicId} has been confirmed! Total: ₹${order.total.toLocaleString("en-IN")}. Track your order here: ${trackingUrl} — Shree Gurudev Plastics`
         )}`,
       });
     }
@@ -103,7 +103,7 @@ export async function POST(
       await db.notification.create({
         data: {
           type: "warning",
-          title: `Order #${orderId} Cancelled`,
+          title: `Order #${order.publicId} Cancelled`,
           message: `Order from ${order.customer} (${order.phone}) cancelled. Reason: ${cancelReason}`,
           orderId,
         },
@@ -113,7 +113,7 @@ export async function POST(
         success: true,
         message: "Order cancelled",
         whatsappUrl: `https://wa.me/91${order.phone}?text=${encodeURIComponent(
-          `Hi ${order.customer}, we regret to inform you that your order #${orderId} has been cancelled by the store due to: ${cancelReason}. Track your order status here: ${trackingUrl} — Shree Gurudev Plastics`
+          `Hi ${order.customer}, we regret to inform you that your order #${order.publicId} has been cancelled by the store due to: ${cancelReason}. Track your order status here: ${trackingUrl} — Shree Gurudev Plastics`
         )}`,
       });
     }

@@ -5,6 +5,7 @@ import { MdCelebration, MdInventory, MdStar, MdCampaign } from "react-icons/md";
 
 interface Order {
   id: number;
+  publicId: string;
   customer: string;
   phone: string;
   total: number;
@@ -109,7 +110,7 @@ export default function FollowupPage() {
                     <p className="text-xs text-gray-400">{order.phone}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold">#{order.id}</p>
+                    <p className="text-sm font-bold">#{order.publicId}</p>
                     <p className="text-xs text-gray-400">₹{order.total.toLocaleString("en-IN")}</p>
                   </div>
                 </div>

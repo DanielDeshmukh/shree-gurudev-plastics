@@ -183,7 +183,7 @@ async function generateDailyReport(from: Date, to: Date) {
   for (const order of orders) {
     const dateObj = order.createdAt;
     detailSheet.getRow(rowNum).values = [
-      `#${order.id}`,
+      `#${order.publicId}`,
       dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
       dateObj.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
       order.customer,
@@ -370,7 +370,7 @@ async function generateMonthlyReport(year: number, month: number) {
   for (const order of orders) {
     const dateObj = order.createdAt;
     detailSheet.getRow(rowNum).values = [
-      `#${order.id}`,
+      `#${order.publicId}`,
       dateObj.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
       dateObj.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
       order.customer,

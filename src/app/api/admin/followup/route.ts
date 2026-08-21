@@ -6,21 +6,21 @@ import { SITE_URL } from "@/lib/seo";
 const WHATSAPP_NUMBER = "918552084251";
 
 const TEMPLATES = {
-  order_confirmation: (customerName: string, orderId: number, total: number) =>
-    `Hello ${customerName}! 🎉\n\nYour order #${orderId} has been confirmed.\nTotal: ₹${total.toLocaleString("en-IN")}\n\nThank you for shopping with Shree Gurudev Plastics!\nWe'll notify you when your order ships.\n\n— SGP Team`,
+  order_confirmation: (customerName: string, publicId: string, total: number) =>
+    `Hello ${customerName}! 🎉\n\nYour order #${publicId} has been confirmed.\nTotal: ₹${total.toLocaleString("en-IN")}\n\nThank you for shopping with Shree Gurudev Plastics!\nWe'll notify you when your order ships.\n\n— SGP Team`,
   
-  delivery_followup: (customerName: string, orderId: number) =>
-    `Hi ${customerName}! 📦\n\nJust checking in — has your order #${orderId} been delivered?\nPlease reply with:\n✅ Delivered\n❌ Not yet\n⚠️ Issue\n\nYour feedback helps us serve you better!\n\n— SGP Team`,
+  delivery_followup: (customerName: string, publicId: string) =>
+    `Hi ${customerName}! 📦\n\nJust checking in — has your order #${publicId} been delivered?\nPlease reply with:\n✅ Delivered\n❌ Not yet\n⚠️ Issue\n\nYour feedback helps us serve you better!\n\n— SGP Team`,
   
-  review_request: (customerName: string, orderId: number) =>
-    `Hi ${customerName}! ⭐\n\nWe hope you're enjoying your recent purchase (Order #${orderId})!\n\nWe'd love your feedback — it helps other customers and helps us improve.\n\nCould you take a moment to leave a review?\n\nThank you for choosing Shree Gurudev Plastics! 🙏`,
+  review_request: (customerName: string, publicId: string) =>
+    `Hi ${customerName}! ⭐\n\nWe hope you're enjoying your recent purchase (Order #${publicId})!\n\nWe'd love your feedback — it helps other customers and helps us improve.\n\nCould you take a moment to leave a review?\n\nThank you for choosing Shree Gurudev Plastics! 🙏`,
   
   restock_alert: (customerName: string, productName: string) =>
     `Hi ${customerName}! 📢\n\nGreat news — ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: ${SITE_URL}/products\n\n— SGP Team`,
 
-  arrival_notification: (customerName: string, orderId: number, items: { name: string; quantity: number; price: number }[], total: number) => {
+  arrival_notification: (customerName: string, publicId: string, items: { name: string; quantity: number; price: number }[], total: number) => {
     const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} — ₹${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");
-    return `Hi ${customerName}! 📦✨\n\nGreat news! Your order #${orderId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\n📍 Visit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\n📞 918552084251\n\nPlease collect at your earliest convenience.\n\n— SGP Team`;
+    return `Hi ${customerName}! 📦✨\n\nGreat news! Your order #${publicId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\n📍 Visit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\n📞 918552084251\n\nPlease collect at your earliest convenience.\n\n— SGP Team`;
   },
 };
 
@@ -72,11 +72,11 @@ export async function POST(request: NextRequest) {
 
     let message: string;
     if (template === "order_confirmation") {
-      message = TEMPLATES.order_confirmation(order.customer, order.id, order.total);
+      message = TEMPLATES.order_confirmation(order.customer, order.publicId, order.total);
     } else if (template === "delivery_followup") {
-      message = TEMPLATES.delivery_followup(order.customer, order.id);
+      message = TEMPLATES.delivery_followup(order.customer, order.publicId);
     } else if (template === "review_request") {
-      message = TEMPLATES.review_request(order.customer, order.id);
+      message = TEMPLATES.review_request(order.customer, order.publicId);
     } else if (template === "restock_alert") {
       message = TEMPLATES.restock_alert(order.customer, order.items[0]?.product?.name || "your product");
     } else if (template === "arrival_notification") {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity,
         price: item.price,
       }));
-      message = TEMPLATES.arrival_notification(order.customer, order.id, items, order.total);
+      message = TEMPLATES.arrival_notification(order.customer, order.publicId, items, order.total);
     } else if (customMessage) {
       message = customMessage;
     } else {

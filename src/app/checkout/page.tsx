@@ -26,7 +26,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [orderId, setOrderId] = useState<number | null>(null);
+  const [publicId, setPublicId] = useState<string | null>(null);
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
@@ -88,7 +88,7 @@ export default function CheckoutPage() {
       }
 
       const data = await res.json();
-      setOrderId(data.order.id);
+      setPublicId(data.order.publicId);
       setTrackingToken(data.order.trackingToken);
       setSuccess(true);
       clearCart();
@@ -108,7 +108,7 @@ export default function CheckoutPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Placed!</h1>
           <p className="text-gray-600 mb-2">
-            Your order <span className="font-semibold text-primary-500">#{orderId}</span> has been received.
+            Your order <span className="font-semibold text-primary-500">#{publicId}</span> has been received.
           </p>
           <p className="text-gray-500 text-sm mb-4">
             {isDelivery
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <a
-              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I just placed order #${orderId}. Please confirm.${trackingToken ? `\n\nTrack your order: https://shreegurudevplastics.com/track/${trackingToken}` : ""}`)}`}
+              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I just placed order #${publicId}. Please confirm.${trackingToken ? `\n\nTrack your order: ${process.env.NEXT_PUBLIC_SITE_URL || "https://shree-gurudevplastics.com"}/track/${trackingToken}` : ""}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"

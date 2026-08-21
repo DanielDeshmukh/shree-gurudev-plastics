@@ -106,6 +106,7 @@ model Customer {
 
 model Order {
   id              Int               @id @default(autoincrement())
+  publicId        String            @unique
   customer        String
   phone           String
   address         String?

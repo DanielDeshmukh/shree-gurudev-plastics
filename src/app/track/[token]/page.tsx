@@ -30,7 +30,7 @@ type TimelineEntry = {
 };
 
 type OrderData = {
-  orderId: number;
+  orderId: string;
   customer: string;
   phone: string;
   status: string;

@@ -15,6 +15,7 @@ export async function GET(
     where: { trackingToken: token },
     select: {
       id: true,
+      publicId: true,
       customer: true,
       phone: true,
       status: true,
@@ -43,7 +44,7 @@ export async function GET(
   }
 
   return NextResponse.json({
-    orderId: order.id,
+    orderId: order.publicId,
     customer: order.customer,
     phone: order.phone,
     status: order.status,

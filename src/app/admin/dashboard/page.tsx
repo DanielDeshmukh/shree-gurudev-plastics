@@ -17,7 +17,7 @@ interface DashboardData {
   totalCustomers: number;
   lowStockCount: number;
   recentOrders: {
-    id: number; customer: string; phone: string; total: number;
+    id: number; publicId: string; customer: string; phone: string; total: number;
     status: string; createdAt: string;
     items: { product: { name: string }; quantity: number; price: number }[];
   }[];
@@ -282,7 +282,7 @@ export default function DashboardPage() {
             <tbody className="divide-y divide-gray-800">
               {data.recentOrders.map((order) => (
                 <tr key={order.id} className="text-gray-300">
-                  <td className="py-3 pr-4">#{order.id}</td>
+                  <td className="py-3 pr-4">#{order.publicId}</td>
                   <td className="py-3 pr-4 font-medium">{order.customer}</td>
                   <td className="py-3 pr-4 hidden sm:table-cell">{order.phone}</td>
                   <td className="py-3 pr-4">₹{order.total.toLocaleString("en-IN")}</td>

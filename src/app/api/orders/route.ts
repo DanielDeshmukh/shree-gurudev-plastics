@@ -95,6 +95,16 @@ export async function POST(request: NextRequest) {
 
     const trackingToken = crypto.randomBytes(16).toString("hex");
 
+    // Generate unique 10-digit public ID
+    let publicId: string;
+    let attempts = 0;
+    do {
+      publicId = String(Math.floor(1000000000 + Math.random() * 9000000000));
+      const existing = await db.order.findUnique({ where: { publicId } }).catch(() => null);
+      if (!existing) break;
+      attempts++;
+    } while (attempts < 10);
+
     const orderAddress = deliveryMethod === "pickup"
       ? (address || "Store Pickup - Bhayander")
       : (address || null);
@@ -104,6 +114,7 @@ export async function POST(request: NextRequest) {
         customer,
         phone,
         address: orderAddress,
+        publicId,
         deliveryMethod: deliveryMethod || "delivery",
         paymentMethod: paymentMethod || "cod",
         paymentStatus: paymentMethod === "cod" ? "unpaid" : "unpaid",
@@ -136,7 +147,7 @@ export async function POST(request: NextRequest) {
     await db.notification.create({
       data: {
         type: "order",
-        title: `New Order #${order.id}`,
+        title: `New Order #${order.publicId}`,
         message: `${customer} (${phone}) placed an order: ${itemSummary}. Total: ₹${total.toLocaleString("en-IN")}`,
         orderId: order.id,
       },
