@@ -45,7 +45,7 @@ export async function PUT(
   }
 const VALID_STATUSES = [
   "pending", "confirmed", "processing", "shipped",
-  "out_for_delivery", "delivered", "cancelled",
+  "arrived", "out_for_delivery", "delivered", "cancelled",
   "Order Placed", "Confirmed", "Processing", "Shipped",
   "Out for Delivery", "Delivered",
 ];
