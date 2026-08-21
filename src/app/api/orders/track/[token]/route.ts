@@ -1,28 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// Rate limiting: in-memory map of IP -> request count with TTL
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 20;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  entry.count++;
+  return entry.count <= RATE_LIMIT_MAX;
+}
+
 export async function GET(
-  _req: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   const { token } = await params;
 
-  if (!token || token.length < 16) {
+  // Strict token format: must be exactly 32 hex characters
+  if (!token || !/^[a-f0-9]{32}$/.test(token)) {
     return NextResponse.json({ error: "Invalid tracking link" }, { status: 400 });
   }
 
   const order = await db.order.findUnique({
     where: { trackingToken: token },
     select: {
-      id: true,
       publicId: true,
       customer: true,
-      phone: true,
       status: true,
       deliveryMethod: true,
       paymentMethod: true,
       paymentStatus: true,
-      address: true,
       total: true,
       createdAt: true,
       items: {
@@ -46,18 +69,16 @@ export async function GET(
   return NextResponse.json({
     orderId: order.publicId,
     customer: order.customer,
-    phone: order.phone,
     status: order.status,
     deliveryMethod: order.deliveryMethod,
     paymentMethod: order.paymentMethod,
     paymentStatus: order.paymentStatus,
-    address: order.address,
     total: order.total,
     createdAt: order.createdAt,
     items: order.items.map((item: any) => ({
       name: item.product.name,
       color: item.product.color,
-      brand: item.product.brand.name,
+      brand: item.product.brand?.name || "Unknown",
       quantity: item.quantity,
       price: item.price,
     })),
