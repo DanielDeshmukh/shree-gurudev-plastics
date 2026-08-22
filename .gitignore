@@ -9,6 +9,10 @@ mango-images/
 aristo-images/
 reego-images/
 catalog-output/
+mango/
+reego/
+cloudinary-manifest.json
+failed-uploads.json
 
 # Secrets
 .env*
