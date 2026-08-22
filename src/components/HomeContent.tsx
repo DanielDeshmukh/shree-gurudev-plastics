@@ -141,7 +141,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {brands.map((brand: any) => {
-              const isComingSoon = brand.slug !== "mango-chairs";
+              const isComingSoon = brand.slug !== "mango-chairs" && brand.slug !== "reego" && brand.slug !== "aristo";
               return (
                 <Link
                   key={brand.id}

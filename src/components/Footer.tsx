@@ -86,7 +86,7 @@ export default function Footer() {
           <h3 className="text-white text-lg font-bold mb-3">{t(translations.footer.ourBrands.en, translations.footer.ourBrands.hi)}</h3>
           <ul className="space-y-2 text-sm">
             {brands.map((brand) => {
-              const isComingSoon = brand.href !== "/brand/mango-chairs" && brand.href !== "/brand/reego";
+              const isComingSoon = brand.href !== "/brand/mango-chairs" && brand.href !== "/brand/reego" && brand.href !== "/brand/aristo";
               return (
                 <li key={brand.name}>
                   <Link href={brand.href} className="hover:text-primary-400 transition-colors">
