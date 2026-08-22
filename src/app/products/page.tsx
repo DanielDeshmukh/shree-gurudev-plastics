@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Fuse from "fuse.js";
 import BlurImage from "@/components/BlurImage";
 import { useCart } from "@/context/CartContext";
@@ -236,19 +237,20 @@ function FilterSidebar({
   );
 }
 
-export default function ProductsPage() {
+function ProductsPageInner() {
+  const searchParams = useSearchParams();
   const { addItem, openCart } = useCart();
   const { t } = useLanguage();
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get("brand") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
   const [sort, setSort] = useState("name-asc");
   const [page, setPage] = useState(1);
   const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
-  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState(searchParams.get("subCategory") || "");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
@@ -385,6 +387,17 @@ export default function ProductsPage() {
   useEffect(() => {
     setPage(1);
   }, [search, selectedBrand, selectedCategory, selectedSubCategory, sort]);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedBrand) params.set("brand", selectedBrand);
+    if (selectedCategory) params.set("category", selectedCategory);
+    if (selectedSubCategory) params.set("subCategory", selectedSubCategory);
+    const qs = params.toString();
+    const newUrl = qs ? `/products?${qs}` : "/products";
+    window.history.replaceState(null, "", newUrl);
+  }, [selectedBrand, selectedCategory, selectedSubCategory]);
 
   const applyPrice = (min: number, max: number) => {
     setUserMin(min);
@@ -711,5 +724,13 @@ export default function ProductsPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-500">Loading products...</p></div>}>
+      <ProductsPageInner />
+    </Suspense>
   );
 }
