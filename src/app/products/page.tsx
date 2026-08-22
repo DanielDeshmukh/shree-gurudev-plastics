@@ -250,6 +250,14 @@ function ProductsPageInner() {
   const [page, setPage] = useState(1);
   const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(searchParams.get("subCategory") || "");
+
+  // Sync filter state from URL params on every navigation
+  useEffect(() => {
+    setSelectedBrand(searchParams.get("brand") || "");
+    setSelectedCategory(searchParams.get("category") || "");
+    setSelectedSubCategory(searchParams.get("subCategory") || "");
+    setPage(1);
+  }, [searchParams]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);

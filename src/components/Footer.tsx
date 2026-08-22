@@ -18,6 +18,7 @@ const brands = [
   { name: "Aristo", href: "/brand/aristo" },
   { name: "KG Plast", href: "/brand/kg-plast" },
   { name: "Mango Chairs", href: "/brand/mango-chairs" },
+  { name: "Reego", href: "/brand/reego" },
   { name: "Rajdhani", href: "/brand/rajdhani" },
   { name: "Milton", href: "/brand/milton" },
   { name: "Borosil", href: "/brand/borosil" },
@@ -84,7 +85,7 @@ export default function Footer() {
           <h3 className="text-white text-lg font-bold mb-3">{t(translations.footer.ourBrands.en, translations.footer.ourBrands.hi)}</h3>
           <ul className="space-y-2 text-sm">
             {brands.map((brand) => {
-              const isComingSoon = brand.href !== "/brand/mango-chairs";
+              const isComingSoon = brand.href !== "/brand/mango-chairs" && brand.href !== "/brand/reego";
               return (
                 <li key={brand.name}>
                   <Link href={brand.href} className="hover:text-primary-400 transition-colors">

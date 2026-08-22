@@ -45,7 +45,7 @@ async function getProductsByBrand(slug: string) {
   }
 }
 
-const ACTIVE_BRAND_SLUGS = ["mango-chairs"];
+const ACTIVE_BRAND_SLUGS = ["mango-chairs", "reego"];
 
 const KNOWN_BRANDS: Record<string, { name: string }> = {
   "aristo": { name: "Aristo" },
@@ -54,6 +54,7 @@ const KNOWN_BRANDS: Record<string, { name: string }> = {
   "milton": { name: "Milton" },
   "borosil": { name: "Borosil" },
   "mango-chairs": { name: "Mango Chairs" },
+  "reego": { name: "Reego" },
 };
 
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
