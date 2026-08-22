@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BUSINESS_NAME, PHONE_DISPLAY, PHONE, ADDRESS, SITE_URL } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
@@ -53,7 +54,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
-          <h3 className="text-white text-lg font-bold mb-3">{BUSINESS_NAME}</h3>
+          <Image src="/logo.png" alt="Shree Gurudev Plastics" width={220} height={220} className="rounded-lg mb-4" />
           <p className="text-sm leading-relaxed mb-4">
             {BUSINESS_NAME} is a leading plastic products distributor and bulk seller in Bhayander, Mumbai.
             We offer premium quality plastic chairs, tables, buckets, containers, and more from top brands

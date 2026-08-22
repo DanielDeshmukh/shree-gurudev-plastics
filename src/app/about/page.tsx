@@ -52,23 +52,30 @@ export default function AboutPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-6">About {BUSINESS_NAME}</h1>
 
         <section className="bg-white rounded-xl border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>
-          <p className="text-gray-600 leading-relaxed mb-4">
-            {BUSINESS_NAME} is a trusted plastic products distributor and bulk seller based in {CITY}, Mumbai.
-            We have been serving customers with high-quality plastic products including chairs, tables, stools,
-            buckets, containers, storage solutions, kitchenware, and household accessories from leading brands.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-4">
-            As a wholesale distributor, we cater to a wide range of customers — from individual buyers looking
-            for durable plastic furniture to retailers, event organizers, canteens, hostels, and businesses
-            seeking bulk quantities at competitive prices. Our commitment to quality and customer satisfaction
-            has made us a preferred name in the plastic products industry.
-          </p>
-          <p className="text-gray-600 leading-relaxed">
-            We stock products from top brands like Aristo, KG Plast, Mango Chairs, Rajdhani, Milton, Borosil,
-            Signoraware, and more. Whether you need a single plastic chair or thousands of containers for your
-            business, {BUSINESS_NAME} is your one-stop destination for all plastic products in the Mumbai region.
-          </p>
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="shrink-0">
+              <img src="/logo.png" alt="Shree Gurudev Plastics" className="w-48 h-auto rounded-lg" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                {BUSINESS_NAME} is a trusted plastic products distributor and bulk seller based in {CITY}, Mumbai.
+                We have been serving customers with high-quality plastic products including chairs, tables, stools,
+                buckets, containers, storage solutions, kitchenware, and household accessories from leading brands.
+              </p>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                As a wholesale distributor, we cater to a wide range of customers — from individual buyers looking
+                for durable plastic furniture to retailers, event organizers, canteens, hostels, and businesses
+                seeking bulk quantities at competitive prices. Our commitment to quality and customer satisfaction
+                has made us a preferred name in the plastic products industry.
+              </p>
+              <p className="text-gray-600 leading-relaxed">
+                We stock products from top brands like Aristo, KG Plast, Mango Chairs, Rajdhani, Milton, Borosil,
+                Signoraware, and more. Whether you need a single plastic chair or thousands of containers for your
+                business, {BUSINESS_NAME} is your one-stop destination for all plastic products in the Mumbai region.
+              </p>
+            </div>
+          </div>
         </section>
 
         <section className="bg-white rounded-xl border border-gray-200 p-8 mb-8">
