@@ -26,7 +26,7 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `Hi, I'm ${name}. ${message} Contact: ${phone}`;
+    const text = `Namaste!\n\nI am ${name}.\n\n${message}\n\nContact: ${phone}\n\nLooking forward to hearing from you.`;
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`, "_blank");
     setSubmitted(true);
   };

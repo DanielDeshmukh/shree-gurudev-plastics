@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney } from "react-icons/md";
+import { PHONE } from "@/lib/seo";
 
 const DELIVERY_AREAS = [
   "Bhayander",
@@ -131,7 +132,7 @@ export default function CheckoutPage() {
           )}
           <p className="text-gray-500 text-sm mb-6">
             Or call us at{" "}
-            <a href="tel:+918552084251" className="text-primary-500 font-medium">
+            <a href={`tel:+${PHONE}`} className="text-primary-500 font-medium">
               +91 85520 84251
             </a>
           </p>
@@ -143,7 +144,7 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <a
-              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I just placed order #${publicId}. Please confirm.${trackingToken ? `\n\nTrack your order: ${process.env.NEXT_PUBLIC_SITE_URL || "https://shree-gurudevplastics.com"}/track/${trackingToken}` : ""}`)}`}
+              href={`https://wa.me/${PHONE}?text=${encodeURIComponent("Namaste!\n\nI have just placed order #" + publicId + ". Kindly confirm the order and share the expected delivery date." + (trackingToken ? "\n\nYou can track your order here: " + (process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com") + "/track/" + trackingToken : "") + "\n\nThank you!")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"

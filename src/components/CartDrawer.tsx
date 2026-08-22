@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import BlurImage from "@/components/BlurImage";
 import { useCart } from "@/context/CartContext";
+import { PHONE } from "@/lib/seo";
 
 export default function CartDrawer() {
   const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice, isCartOpen, closeCart } = useCart();
@@ -14,13 +15,13 @@ export default function CartDrawer() {
     const productList = items
       .map(
         (item, index) =>
-          `${index + 1}. ${item.name} ${item.color ? `(${item.color}` : ""}${item.color && item.size ? ", " : ""}${item.size ? `${item.size}` : ""})${item.brand ? ` — ${item.brand}` : ""} — ₹${item.price} × ${item.quantity} = ₹${(item.price * item.quantity).toLocaleString("en-IN")}`
+          `${index + 1}. ${item.name}${item.color ? ` (${item.color}` : ""}${item.color && item.size ? ", " : ""}${item.size ? `${item.size}` : ""}${item.color ? ")" : ""}${item.brand ? ` - ${item.brand}` : ""}\n   Qty: ${item.quantity} x ₹${item.price} = ₹${(item.price * item.quantity).toLocaleString("en-IN")}`
       )
-      .join("\n");
+      .join("\n\n");
 
-    const message = `Hi, I'm interested in the following products:\n\n${productList}\n\nTotal: ₹${totalPrice.toLocaleString("en-IN")}\n\nPlease provide pricing and availability.`;
+    const message = `Namaste!\n\nI am interested in the following products:\n\n${productList}\n\n------------------------------\nTotal: ₹${totalPrice.toLocaleString("en-IN")}\n\nKindly share the best prices and confirm availability.\n\nThank you!`;
 
-    window.open(`https://wa.me/918552084251?text=${encodeURIComponent(message)}`, "_blank");
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const handleCheckout = () => {

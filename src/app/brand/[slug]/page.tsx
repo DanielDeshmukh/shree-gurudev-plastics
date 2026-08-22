@@ -6,6 +6,7 @@ import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { apiFetch } from "@/lib/api-fetch";
+import { PHONE } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -111,7 +112,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 Browse Mango Products
               </Link>
               <a
-                href="https://wa.me/918552084251"
+                href={`https://wa.me/${PHONE}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"

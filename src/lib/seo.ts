@@ -1,6 +1,6 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com";
 export const BUSINESS_NAME = "Shree Gurudev Plastics";
-export const PHONE = "918552084251";
+export const PHONE = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918552084251";
 export const PHONE_DISPLAY = "+91 85520 84251";
 export const ADDRESS = "Naigaon, Bhayander, Maharashtra, India";
 export const CITY = "Bhayander";

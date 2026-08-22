@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, PHONE } from "@/lib/seo";
 
-const WHATSAPP_NUMBER = "918552084251";
+const WHATSAPP_NUMBER = PHONE;
 
 const FESTIVAL_TEMPLATES: Record<string, (name: string) => string> = {
   diwali: (name) =>

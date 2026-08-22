@@ -25,7 +25,7 @@ export default function WishlistPage() {
 
   const handleEnquireAll = () => {
     const names = wishlist.map((item) => item.name).join(", ");
-    const text = `Hi, I'm interested in the following products from your wishlist:\n\n${wishlist.map((item, i) => `${i + 1}. ${item.name} — ₹${item.price}`).join("\n")}\n\nPlease share the best prices and availability.`;
+    const text = `Namaste!\n\nI am interested in the following products:\n\n${wishlist.map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`).join("\n")}\n\nKindly share the best prices and availability.\n\nThank you!`;
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`, "_blank");
   };
 

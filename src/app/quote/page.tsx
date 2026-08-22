@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BUSINESS_NAME, CITY } from "@/lib/seo";
+import { BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
 
 const CATEGORIES = [
@@ -104,7 +104,7 @@ export default function QuotePage() {
     ];
 
     const message = lines.join("\n");
-    window.open(`https://wa.me/918552084251?text=${encodeURIComponent(message)}`, "_blank");
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
     setSubmitted(true);
   };
 
@@ -135,22 +135,22 @@ export default function QuotePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("Quote Request Sent!", "कोटेशन अनुरोध भेजा गया!")}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("Quote Request Sent!", "à¤•à¥‹à¤Ÿà¥‡à¤¶à¤¨ à¤…à¤¨à¥à¤°à¥‹à¤§ à¤­à¥‡à¤œà¤¾ à¤—à¤¯à¤¾!")}</h1>
             <p className="text-gray-600 mb-6">
-              {t("Thank you! Your quote request has been sent via WhatsApp. We'll get back to you with pricing and availability shortly.", "धन्यवाद! आपका कोटेशन अनुरोध WhatsApp पर भेज दिया गया है। हम जल्द ही मूल्य और उपलब्धता के साथ आपसे संपर्क करेंगे।")}
+              {t("Thank you! Your quote request has been sent via WhatsApp. We'll get back to you with pricing and availability shortly.", "à¤§à¤¨à¥à¤¯à¤µà¤¾à¤¦! à¤†à¤ªà¤•à¤¾ à¤•à¥‹à¤Ÿà¥‡à¤¶à¤¨ à¤…à¤¨à¥à¤°à¥‹à¤§ WhatsApp à¤ªà¤° à¤­à¥‡à¤œ à¤¦à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾ à¤¹à¥ˆà¥¤ à¤¹à¤® à¤œà¤²à¥à¤¦ à¤¹à¥€ à¤®à¥‚à¤²à¥à¤¯ à¤”à¤° à¤‰à¤ªà¤²à¤¬à¥à¤§à¤¤à¤¾ à¤•à¥‡ à¤¸à¤¾à¤¥ à¤†à¤ªà¤¸à¥‡ à¤¸à¤‚à¤ªà¤°à¥à¤• à¤•à¤°à¥‡à¤‚à¤—à¥‡à¥¤")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={resetForm}
                 className="bg-primary-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
               >
-                {t("Send Another Request", "एक और अनुरोध भेजें")}
+                {t("Send Another Request", "à¤à¤• à¤”à¤° à¤…à¤¨à¥à¤°à¥‹à¤§ à¤­à¥‡à¤œà¥‡à¤‚")}
               </button>
               <Link
                 href="/products"
                 className="bg-gray-100 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                {t("Browse Products", "उत्पादन देखें")}
+                {t("Browse Products", "à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤¦à¥‡à¤–à¥‡à¤‚")}
               </Link>
             </div>
           </div>
@@ -163,16 +163,16 @@ export default function QuotePage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">{t("Request a Quote", "कोटेशन अनुरोध")}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">{t("Request a Quote", "à¤•à¥‹à¤Ÿà¥‡à¤¶à¤¨ à¤…à¤¨à¥à¤°à¥‹à¤§")}</h1>
           <p className="text-gray-600 max-w-2xl">
-            {t("Need bulk pricing or custom orders? Fill out the form below and we'll send your quote request directly via WhatsApp.", "थोक मूल्य या कस्टम ऑर्डर चाहिए? नीचे फ़ॉर्म भरें और हम आपका कोटेशन अनुरोध सीधे WhatsApp पर भेज देंगे।")}
+            {t("Need bulk pricing or custom orders? Fill out the form below and we'll send your quote request directly via WhatsApp.", "à¤¥à¥‹à¤• à¤®à¥‚à¤²à¥à¤¯ à¤¯à¤¾ à¤•à¤¸à¥à¤Ÿà¤® à¤‘à¤°à¥à¤¡à¤° à¤šà¤¾à¤¹à¤¿à¤? à¤¨à¥€à¤šà¥‡ à¤«à¤¼à¥‰à¤°à¥à¤® à¤­à¤°à¥‡à¤‚ à¤”à¤° à¤¹à¤® à¤†à¤ªà¤•à¤¾ à¤•à¥‹à¤Ÿà¥‡à¤¶à¤¨ à¤…à¤¨à¥à¤°à¥‹à¤§ à¤¸à¥€à¤§à¥‡ WhatsApp à¤ªà¤° à¤­à¥‡à¤œ à¤¦à¥‡à¤‚à¤—à¥‡à¥¤")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">{t("Full Name *", "पूरा नाम *")}</label>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">{t("Full Name *", "à¤ªà¥‚à¤°à¤¾ à¤¨à¤¾à¤® *")}</label>
               <input
                 type="text"
                 id="fullName"
@@ -186,7 +186,7 @@ export default function QuotePage() {
               {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{t("Phone Number *", "फ़ोन नंबर *")}</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{t("Phone Number *", "à¤«à¤¼à¥‹à¤¨ à¤¨à¤‚à¤¬à¤° *")}</label>
               <input
                 type="tel"
                 id="phone"
@@ -203,7 +203,7 @@ export default function QuotePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t("Email", "ईमेल")}</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t("Email", "à¤ˆà¤®à¥‡à¤²")}</label>
               <input
                 type="email"
                 id="email"
@@ -215,7 +215,7 @@ export default function QuotePage() {
               />
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">{t("Company Name", "कंपनी का नाम")}</label>
+              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">{t("Company Name", "à¤•à¤‚à¤ªà¤¨à¥€ à¤•à¤¾ à¤¨à¤¾à¤®")}</label>
               <input
                 type="text"
                 id="company"
@@ -230,7 +230,7 @@ export default function QuotePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">{t("Product Category", "उत्पादन श्रेणी")}</label>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">{t("Product Category", "à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤¶à¥à¤°à¥‡à¤£à¥€")}</label>
               <select
                 id="category"
                 name="category"
@@ -238,14 +238,14 @@ export default function QuotePage() {
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
-                <option value="">{t("Select a category", "श्रेणी चुनें")}</option>
+                <option value="">{t("Select a category", "à¤¶à¥à¤°à¥‡à¤£à¥€ à¤šà¥à¤¨à¥‡à¤‚")}</option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">{t("Quantity Required *", "आवश्यक मात्रा *")}</label>
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">{t("Quantity Required *", "à¤†à¤µà¤¶à¥à¤¯à¤• à¤®à¤¾à¤¤à¥à¤°à¤¾ *")}</label>
               <input
                 type="number"
                 id="quantity"
@@ -255,14 +255,14 @@ export default function QuotePage() {
                 value={form.quantity}
                 onChange={handleChange}
                 className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.quantity ? "border-red-400" : "border-gray-300"}`}
-                placeholder={t("Minimum 10 units", "कम से कम 10 यूनिट")}
+                placeholder={t("Minimum 10 units", "à¤•à¤® à¤¸à¥‡ à¤•à¤® 10 à¤¯à¥‚à¤¨à¤¿à¤Ÿ")}
               />
               {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
             </div>
           </div>
 
           <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t("Product Description / Requirements *", "उत्पादन विवरण / आवश्यकताएं *")}</label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t("Product Description / Requirements *", "à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤µà¤¿à¤µà¤°à¤£ / à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾à¤à¤‚ *")}</label>
             <textarea
               id="description"
               name="description"
@@ -271,13 +271,13 @@ export default function QuotePage() {
               value={form.description}
               onChange={handleChange}
               className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.description ? "border-red-400" : "border-gray-300"}`}
-              placeholder={t("Describe the products you need — colors, sizes, specifications, or any other requirements", "आपको कौन से उत्पादन चाहिए — रंग, आकार, विनिर्देश, या अन्य आवश्यकताएं लिखें")}
+              placeholder={t("Describe the products you need â€” colors, sizes, specifications, or any other requirements", "à¤†à¤ªà¤•à¥‹ à¤•à¥Œà¤¨ à¤¸à¥‡ à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤šà¤¾à¤¹à¤¿à¤ â€” à¤°à¤‚à¤—, à¤†à¤•à¤¾à¤°, à¤µà¤¿à¤¨à¤¿à¤°à¥à¤¦à¥‡à¤¶, à¤¯à¤¾ à¤…à¤¨à¥à¤¯ à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾à¤à¤‚ à¤²à¤¿à¤–à¥‡à¤‚")}
             />
             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
           </div>
 
           <div>
-              <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-1">{t("Preferred Brand", "पसंदीदा ब्रांड")}</label>
+              <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-1">{t("Preferred Brand", "à¤ªà¤¸à¤‚à¤¦à¥€à¤¦à¤¾ à¤¬à¥à¤°à¤¾à¤‚à¤¡")}</label>
             <input
               type="text"
               id="brand"
@@ -285,13 +285,13 @@ export default function QuotePage() {
               value={form.brand}
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder={t("e.g. Aristo, Milton, KG Plast", "जैसे Aristo, Milton, KG Plast")}
+              placeholder={t("e.g. Aristo, Milton, KG Plast", "à¤œà¥ˆà¤¸à¥‡ Aristo, Milton, KG Plast")}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">{t("Delivery Location", "डिलीवरी स्थान")}</label>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">{t("Delivery Location", "à¤¡à¤¿à¤²à¥€à¤µà¤°à¥€ à¤¸à¥à¤¥à¤¾à¤¨")}</label>
               <input
                 type="text"
                 id="location"
@@ -299,11 +299,11 @@ export default function QuotePage() {
                 value={form.location}
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder={t("City or area for delivery", "डिलीवरी के लिए शहर या क्षेत्र")}
+                placeholder={t("City or area for delivery", "à¤¡à¤¿à¤²à¥€à¤µà¤°à¥€ à¤•à¥‡ à¤²à¤¿à¤ à¤¶à¤¹à¤° à¤¯à¤¾ à¤•à¥à¤·à¥‡à¤¤à¥à¤°")}
               />
             </div>
             <div>
-              <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-700 mb-1">{t("Expected Delivery Date", "अपेक्षित डिलीवरी तिथि")}</label>
+              <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-700 mb-1">{t("Expected Delivery Date", "à¤…à¤ªà¥‡à¤•à¥à¤·à¤¿à¤¤ à¤¡à¤¿à¤²à¥€à¤µà¤°à¥€ à¤¤à¤¿à¤¥à¤¿")}</label>
               <input
                 type="date"
                 id="deliveryDate"
@@ -319,20 +319,20 @@ export default function QuotePage() {
             type="submit"
             className="w-full bg-primary-500 text-white font-semibold py-3 rounded-lg hover:bg-primary-600 transition-colors"
           >
-            {t("Submit Quote Request", "कोटेशन अनुरोध भेजें")}
+            {t("Submit Quote Request", "à¤•à¥‹à¤Ÿà¥‡à¤¶à¤¨ à¤…à¤¨à¥à¤°à¥‹à¤§ à¤­à¥‡à¤œà¥‡à¤‚")}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-gray-500 text-sm">
-            {t("Prefer to chat directly?", "सीधे चैट करना चाहते हैं?")}{" "}
+            {t("Prefer to chat directly?", "à¤¸à¥€à¤§à¥‡ à¤šà¥ˆà¤Ÿ à¤•à¤°à¤¨à¤¾ à¤šà¤¾à¤¹à¤¤à¥‡ à¤¹à¥ˆà¤‚?")}{" "}
             <a
-              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi ${BUSINESS_NAME}, I need a quote for bulk plastic products.`)}`}
+              href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI need a quote for bulk plastic products from ${BUSINESS_NAME}.\n\nKindly share pricing and availability.\n\nThank you!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-green-500 hover:underline font-medium"
             >
-              {t("Message us on WhatsApp", "WhatsApp पर संदेश भेजें")}
+              {t("Message us on WhatsApp", "WhatsApp à¤ªà¤° à¤¸à¤‚à¤¦à¥‡à¤¶ à¤­à¥‡à¤œà¥‡à¤‚")}
             </a>
           </p>
         </div>

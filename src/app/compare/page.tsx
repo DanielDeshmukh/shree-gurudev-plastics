@@ -104,7 +104,7 @@ export default function ComparePage() {
                       )}
                       {attr.key === "enquiry" && (
                         <a
-                          href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Hi, I'm interested in ${item.name}. Please share details.`)}`}
+                          href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI am interested in ${item.name}. Kindly share the price, availability, and delivery details.\n\nThank you!`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 hover:text-green-700 transition-colors bg-green-50 px-3 py-1.5 rounded-full"

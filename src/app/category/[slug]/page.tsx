@@ -4,6 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY } from "@/lib/seo";
 import { apiFetch } from "@/lib/api-fetch";
+import { PHONE } from "@/lib/seo";
 
 const categoryMeta: Record<string, { title: string; description: string; keywords: string[]; about: string; faqs: { question: string; answer: string }[] }> = {
   chairs: {
@@ -217,7 +218,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                     <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
                     {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
                     <a
-                      href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I'm interested in ${product.name}`)}`}
+                      href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI am interested in ${product.name}. Kindly share the price and availability.\n\nThank you!`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-3 block text-center bg-green-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
@@ -253,7 +254,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <p className="text-gray-300 mb-6">Contact {BUSINESS_NAME} for wholesale pricing on {meta.title.split("|")[0].trim().toLowerCase()} in {CITY}.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={`https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I need bulk ${meta.title.split("|")[0].trim().toLowerCase()}`)}`}
+              href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI need bulk ${meta.title.split("|")[0].trim().toLowerCase()} for my business.\n\nKindly share the wholesale pricing and minimum order quantities.\n\nThank you!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-600 transition-colors"

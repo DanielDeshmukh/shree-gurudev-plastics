@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { PHONE } from "@/lib/seo";
 
 type ProductCartSectionProps = {
   id: number;
@@ -27,15 +28,16 @@ export default function ProductCartSection({ id, name, color, size, price, image
 
   const handleWhatsApp = () => {
     const details = [
-      `Chair: ${name}`,
+      `Product: ${name}`,
       brand && `Brand: ${brand}`,
       color && `Color: ${color}`,
+      size && `Size: ${size}`,
       `Price: ₹${price}`,
       `Quantity: ${enquiryQty} pcs`,
     ].filter(Boolean).join("\n");
 
-    const message = `Hi, I'm interested in the following product:\n\n${details}\n\nKindly share more details and availability.`;
-    window.open(`https://wa.me/918552084251?text=${encodeURIComponent(message)}`, "_blank");
+    const message = `Namaste!\n\nI am interested in the following product:\n\n${details}\n\nKindly share the best price, availability, and delivery details.\n\nThank you!`;
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   return (

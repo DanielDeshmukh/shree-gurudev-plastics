@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL, BUSINESS_NAME, CITY, PHONE, ADDRESS, getFAQSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Service Areas & Locations | Plastic Products Dealer in Bhayander, Mumbai",
-  description: `${BUSINESS_NAME} delivers plastic products across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane & Palghar. Same-day delivery in Bhayander & Naigaon. Free delivery above ₹5,000. Wholesale plastic chairs, tables, buckets, containers.`,
+  description: `${BUSINESS_NAME} delivers plastic products across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane & Palghar. Same-day delivery in Bhayander & Naigaon. Free delivery above â‚¹5,000. Wholesale plastic chairs, tables, buckets, containers.`,
   keywords: [
     "plastic products dealer Bhayander", "plastic distributor Bhayander", "plastic products Naigaon",
     "plastic wholesale Vasai", "plastic supplier Virar", "plastic products Mumbai",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/locations` },
   openGraph: {
     title: `${BUSINESS_NAME} | Service Areas - Bhayander, Naigaon, Vasai, Virar, Mumbai`,
-    description: "Delivering premium plastic products across Mumbai region. Same-day delivery in Bhayander & Naigaon. Free delivery above ₹5,000.",
+    description: "Delivering premium plastic products across Mumbai region. Same-day delivery in Bhayander & Naigaon. Free delivery above â‚¹5,000.",
     url: `${SITE_URL}/locations`,
     siteName: BUSINESS_NAME,
     locale: "en_IN",
@@ -33,7 +33,7 @@ const areas = [
   {
     name: "Naigaon",
     isHQ: false,
-    description: "Same-day delivery available. Full product range delivered to your doorstep. No shipping charges on orders above ₹5,000.",
+    description: "Same-day delivery available. Full product range delivered to your doorstep. No shipping charges on orders above â‚¹5,000.",
   },
   {
     name: "Vasai",
@@ -65,7 +65,7 @@ const areas = [
 const benefits = [
   {
     title: "Same-Day Delivery for Bhayander & Naigaon",
-    description: "Order before 2 PM and get same-day delivery in Bhayander and Naigaon. No waiting for days — your plastic products arrive the same day.",
+    description: "Order before 2 PM and get same-day delivery in Bhayander and Naigaon. No waiting for days â€” your plastic products arrive the same day.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -74,7 +74,7 @@ const benefits = [
   },
   {
     title: "No Shipping Charges for Local Orders",
-    description: "Free delivery for orders above ₹5,000 in Bhayander and Naigaon. Save money when you buy locally instead of ordering online.",
+    description: "Free delivery for orders above â‚¹5,000 in Bhayander and Naigaon. Save money when you buy locally instead of ordering online.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -83,7 +83,7 @@ const benefits = [
   },
   {
     title: "Direct Wholesale Prices",
-    description: "Buy directly from the distributor — no middleman, no markup. Get the lowest wholesale prices on all plastic products from top brands.",
+    description: "Buy directly from the distributor â€” no middleman, no markup. Get the lowest wholesale prices on all plastic products from top brands.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -112,7 +112,7 @@ const faqs = [
   },
   {
     question: "Is there free delivery?",
-    answer: "Free delivery for orders above ₹5,000 in Bhayander and Naigaon. Contact us for delivery charges and free delivery thresholds in other areas.",
+    answer: "Free delivery for orders above â‚¹5,000 in Bhayander and Naigaon. Contact us for delivery charges and free delivery thresholds in other areas.",
   },
   {
     question: "Can I visit your warehouse?",
@@ -122,7 +122,7 @@ const faqs = [
 const faqSchema = getFAQSchema(faqs);
 
 const whatsappUrl = (area: string) =>
-  `https://wa.me/918552084251?text=${encodeURIComponent(`Hi, I'm interested in ordering from ${area}. Do you deliver here?`)}`;
+  `https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI am interested in ordering from ${area}. Do you deliver here?\n\nThank you!`)}`;
 
 export default function LocationsPage() {
   return (
@@ -233,7 +233,7 @@ export default function LocationsPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Business Hours</p>
-                  <p className="text-gray-700">Mon – Sat: 9:00 AM – 8:00 PM</p>
+                  <p className="text-gray-700">Mon â€“ Sat: 9:00 AM â€“ 8:00 PM</p>
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Service Areas</p>

@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MdRefresh } from "react-icons/md";
+import { PHONE } from "@/lib/seo";
 
 function useCountdown(eta: string | null) {
   const [remaining, setRemaining] = useState<{ h: number; m: number; s: number; expired: boolean }>({
@@ -57,7 +58,7 @@ export default function MaintenancePage() {
           if (!d.enabled) {
             window.location.href = "/";
           }
-          // else: still ON, don't reload — show expired state
+          // else: still ON, don't reload â€” show expired state
         })
         .catch(() => {});
     }
@@ -130,7 +131,7 @@ export default function MaintenancePage() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
                   </span>
                   <p className="text-base font-semibold text-gray-700">
-                    Maintenance complete — please refresh
+                    Maintenance complete â€” please refresh
                   </p>
                 </div>
               </>
@@ -185,7 +186,7 @@ export default function MaintenancePage() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
                   </span>
                   <p className="text-base font-semibold text-gray-700">
-                    We&apos;re working on it — back soon
+                    We&apos;re working on it â€” back soon
                   </p>
                 </div>
               </>
@@ -204,7 +205,7 @@ export default function MaintenancePage() {
 
         <div className="border-t border-gray-100 px-8 py-4 flex items-center justify-between text-xs text-gray-400">
           <a
-            href="https://wa.me/918552084251"
+            href={`https://wa.me/${PHONE}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-primary-500 transition-colors"

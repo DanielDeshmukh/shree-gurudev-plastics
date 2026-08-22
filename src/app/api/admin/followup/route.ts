@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, PHONE } from "@/lib/seo";
 
-const WHATSAPP_NUMBER = "918552084251";
+const WHATSAPP_NUMBER = PHONE;
 
 const TEMPLATES = {
   order_confirmation: (customerName: string, publicId: string, total: number) =>
@@ -20,7 +20,7 @@ const TEMPLATES = {
 
   arrival_notification: (customerName: string, publicId: string, items: { name: string; quantity: number; price: number }[], total: number) => {
     const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} — ₹${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");
-    return `Hi ${customerName}! 📦✨\n\nGreat news! Your order #${publicId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\n📍 Visit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\n📞 918552084251\n\nPlease collect at your earliest convenience.\n\n— SGP Team`;
+    return `Hi ${customerName}!\n\nGreat news! Your order #${publicId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\nVisit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\nPhone: ${PHONE}\n\nPlease collect at your earliest convenience.\n\n- SGP Team`;
   },
 };
 

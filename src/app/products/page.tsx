@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { useLanguage } from "@/context/LanguageContext";
 import { MdStore, MdLocalShipping } from "react-icons/md";
+import { PHONE } from "@/lib/seo";
 
 type CategoryHierarchy = { name: string; subCategories: string[] };
 
@@ -42,7 +43,7 @@ function FilterSidebar({
   return (
     <div className="space-y-6 overflow-y-auto">
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">{t("Brands", "ब्रांड")}</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Brands", "à¤¬à¥à¤°à¤¾à¤‚à¤¡")}</h3>
         <ul className="space-y-1">
           <li>
             <button
@@ -52,7 +53,7 @@ function FilterSidebar({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              {t("All Brands", "सभी ब्रांड")}
+              {t("All Brands", "à¤¸à¤­à¥€ à¤¬à¥à¤°à¤¾à¤‚à¤¡")}
             </button>
           </li>
           {brands.map((brand: any) => (
@@ -72,7 +73,7 @@ function FilterSidebar({
       </div>
 
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">{t("Category", "श्रेणी")}</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Category", "à¤¶à¥à¤°à¥‡à¤£à¥€")}</h3>
         <ul className="space-y-1">
           <li>
             <button
@@ -82,7 +83,7 @@ function FilterSidebar({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              {t("All Categories", "सभी श्रेणियां")}
+              {t("All Categories", "à¤¸à¤­à¥€ à¤¶à¥à¤°à¥‡à¤£à¤¿à¤¯à¤¾à¤‚")}
             </button>
           </li>
           {categories.map((cat: CategoryHierarchy) => {
@@ -131,7 +132,7 @@ function FilterSidebar({
                             : "text-gray-500 hover:bg-gray-50"
                           }`}
                       >
-                        {t("All", "सभी")} {cat.name}
+                        {t("All", "à¤¸à¤­à¥€")} {cat.name}
                       </button>
                     </li>
                     {cat.subCategories.map((sub: string) => (
@@ -156,12 +157,12 @@ function FilterSidebar({
       </div>
 
       <div>
-        <h3 className="font-bold text-gray-900 mb-3">{t("Price Range", "मूल्य सीमा")}</h3>
+        <h3 className="font-bold text-gray-900 mb-3">{t("Price Range", "à¤®à¥‚à¤²à¥à¤¯ à¤¸à¥€à¤®à¤¾")}</h3>
         <div className="space-y-3">
           {sliderMin < sliderMax && (
             <div className="relative pt-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-gray-500">₹{Math.round(sliderMin)}</span>
+                <span className="text-xs text-gray-500">â‚¹{Math.round(sliderMin)}</span>
                 <div className="flex-1 h-1 bg-gray-200 rounded relative">
                   <div
                     className="absolute h-1 bg-primary-400 rounded"
@@ -171,7 +172,7 @@ function FilterSidebar({
                     }}
                   />
                 </div>
-                <span className="text-xs text-gray-500">₹{Math.round(sliderMax)}</span>
+                <span className="text-xs text-gray-500">â‚¹{Math.round(sliderMax)}</span>
               </div>
               <input
                 type="range"
@@ -205,14 +206,14 @@ function FilterSidebar({
             <input
               ref={minRef}
               type="number"
-              placeholder={`Min ₹${Math.round(sliderMin)}`}
+              placeholder={`Min â‚¹${Math.round(sliderMin)}`}
               defaultValue={sliderMin}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
             <input
               ref={maxRef}
               type="number"
-              placeholder={`Max ₹${Math.round(sliderMax)}`}
+              placeholder={`Max â‚¹${Math.round(sliderMax)}`}
               defaultValue={sliderMax}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
@@ -221,16 +222,16 @@ function FilterSidebar({
             onClick={handlePriceApply}
             className="w-full text-sm bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium"
           >
-            {t("Apply Price", "मूल्य लागू करें")}
+            {t("Apply Price", "à¤®à¥‚à¤²à¥à¤¯ à¤²à¤¾à¤—à¥‚ à¤•à¤°à¥‡à¤‚")}
           </button>
           <button onClick={resetPrice} className="w-full text-xs text-gray-500 hover:text-gray-700">
-            {t("Reset Price", "मूल्य रीसेट करें")}
+            {t("Reset Price", "à¤®à¥‚à¤²à¥à¤¯ à¤°à¥€à¤¸à¥‡à¤Ÿ à¤•à¤°à¥‡à¤‚")}
           </button>
         </div>
       </div>
 
       <button onClick={resetAll} className="w-full text-xs text-gray-500 hover:text-red-500 transition-colors">
-        {t("Reset All Filters", "सभी फ़िल्टर रीसेट करें")}
+        {t("Reset All Filters", "à¤¸à¤­à¥€ à¤«à¤¼à¤¿à¤²à¥à¤Ÿà¤° à¤°à¥€à¤¸à¥‡à¤Ÿ à¤•à¤°à¥‡à¤‚")}
       </button>
     </div>
   );
@@ -263,10 +264,10 @@ function ProductsPageInner() {
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const sortOptions = [
-    { value: "newest", label: t("Newest", "नवीनतम") },
-    { value: "oldest", label: t("Oldest", "पुराने") },
-    { value: "price-asc", label: "Price ↑" },
-    { value: "price-desc", label: "Price ↓" },
+    { value: "newest", label: t("Newest", "à¤¨à¤µà¥€à¤¨à¤¤à¤®") },
+    { value: "oldest", label: t("Oldest", "à¤ªà¥à¤°à¤¾à¤¨à¥‡") },
+    { value: "price-asc", label: "Price â†‘" },
+    { value: "price-desc", label: "Price â†“" },
     { value: "name-asc", label: "Name A-Z" },
     { value: "name-desc", label: "Name Z-A" },
   ];
@@ -317,7 +318,7 @@ function ProductsPageInner() {
       .catch(() => {});
   }, []);
 
-  // Server-side filtered fetch — re-fetches when filters change
+  // Server-side filtered fetch â€” re-fetches when filters change
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -451,7 +452,7 @@ function ProductsPageInner() {
   }
   if (priceApplied && (userMin > sliderMin || userMax < sliderMax)) {
     activeFilters.push({
-      label: `₹${Math.round(userMin)} - ₹${Math.round(userMax)}`,
+      label: `â‚¹${Math.round(userMin)} - â‚¹${Math.round(userMax)}`,
       onRemove: resetPrice,
     });
   }
@@ -466,14 +467,14 @@ function ProductsPageInner() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         <div className="flex items-center justify-between mb-4 md:mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t("All Products", "सभी उत्पादन")}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t("All Products", "à¤¸à¤­à¥€ à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨")}</h1>
           <p className="text-xs md:text-sm text-gray-500">{filteredProducts.length} products</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mb-4 md:mb-6">
           <input
             type="text"
-            placeholder={t("Search products...", "उत्पादन खोजें...")}
+            placeholder={t("Search products...", "à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤–à¥‹à¤œà¥‡à¤‚...")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
@@ -512,7 +513,7 @@ function ProductsPageInner() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            {t("Filter", "फ़िल्टर")}
+            {t("Filter", "à¤«à¤¼à¤¿à¤²à¥à¤Ÿà¤°")}
             {activeFilters.length > 0 && (
               <span className="bg-primary-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{activeFilters.length}</span>
             )}
@@ -531,7 +532,7 @@ function ProductsPageInner() {
                 </button>
               </span>
             ))}
-            <button onClick={resetAll} className="text-xs text-gray-500 hover:text-red-500 ml-1">{t("Clear all", "सभी हटाएं")}</button>
+            <button onClick={resetAll} className="text-xs text-gray-500 hover:text-red-500 ml-1">{t("Clear all", "à¤¸à¤­à¥€ à¤¹à¤Ÿà¤¾à¤à¤‚")}</button>
           </div>
         )}
 
@@ -575,7 +576,7 @@ function ProductsPageInner() {
                     Browse Mango Products
                   </Link>
                   <a
-                    href="https://wa.me/918552084251"
+                    href={`https://wa.me/${PHONE}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
@@ -586,8 +587,8 @@ function ProductsPageInner() {
               </div>
             ) : paginatedProducts.length === 0 ? (
               <div className="text-center py-16 md:py-20 text-gray-500">
-                <p className="text-lg">{t("No products found.", "कोई उत्पादन नहीं मिला।")}</p>
-                <p className="text-sm mt-1">{t("Try adjusting your search or filters.", "अपनी खोज या फ़िल्टर बदलकर देखें।")}</p>
+                <p className="text-lg">{t("No products found.", "à¤•à¥‹à¤ˆ à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤¨à¤¹à¥€à¤‚ à¤®à¤¿à¤²à¤¾à¥¤")}</p>
+                <p className="text-sm mt-1">{t("Try adjusting your search or filters.", "à¤…à¤ªà¤¨à¥€ à¤–à¥‹à¤œ à¤¯à¤¾ à¤«à¤¼à¤¿à¤²à¥à¤Ÿà¤° à¤¬à¤¦à¤²à¤•à¤° à¤¦à¥‡à¤–à¥‡à¤‚à¥¤")}</p>
               </div>
             ) : (
               <>
@@ -599,7 +600,7 @@ function ProductsPageInner() {
                           {product.imageUrl ? (
                             <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">{t("No Image", "कोई फ़ोटो नहीं")}</div>
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">{t("No Image", "à¤•à¥‹à¤ˆ à¤«à¤¼à¥‹à¤Ÿà¥‹ à¤¨à¤¹à¥€à¤‚")}</div>
                           )}
                         </div>
                       </Link>
@@ -613,9 +614,9 @@ function ProductsPageInner() {
                         </div>
                         <div className="flex gap-1 md:gap-2 mt-1 text-xs md:text-sm text-gray-500">
                           {product.color && <span className="truncate">{product.color}</span>}
-                          {product.size && <span>• {product.size}</span>}
+                          {product.size && <span>â€¢ {product.size}</span>}
                         </div>
-                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">₹{product.price}</p>
+                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">â‚¹{product.price}</p>
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
                         <button
                           onClick={() => {
@@ -624,7 +625,7 @@ function ProductsPageInner() {
                           }}
                           className="mt-2 md:mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
                         >
-                          {t("Add to Cart", "कार्ट में जोड़ें")}
+                          {t("Add to Cart", "à¤•à¤¾à¤°à¥à¤Ÿ à¤®à¥‡à¤‚ à¤œà¥‹à¤¡à¤¼à¥‡à¤‚")}
                         </button>
                         <div className="hidden sm:block">
                           <CompareButton product={{ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name, stock: product.stock ?? 0, category: product.category || "" }} />
@@ -641,7 +642,7 @@ function ProductsPageInner() {
                       disabled={page === 1}
                       className="px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      {t("Prev", "पिछला")}
+                      {t("Prev", "à¤ªà¤¿à¤›à¤²à¤¾")}
                     </button>
 
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -671,7 +672,7 @@ function ProductsPageInner() {
                       disabled={page === totalPages}
                       className="px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      {t("Next", "अगला")}
+                      {t("Next", "à¤…à¤—à¤²à¤¾")}
                     </button>
                   </div>
                 )}
@@ -686,7 +687,7 @@ function ProductsPageInner() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-xl overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="font-bold text-gray-900">{t("Filter", "फ़िल्टर")}</h2>
+              <h2 className="font-bold text-gray-900">{t("Filter", "à¤«à¤¼à¤¿à¤²à¥à¤Ÿà¤°")}</h2>
               <button onClick={() => setMobileFiltersOpen(false)} className="p-2 -mr-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -701,7 +702,7 @@ function ProductsPageInner() {
                 onClick={() => setMobileFiltersOpen(false)}
                 className="w-full bg-primary-500 text-white py-2.5 rounded-lg font-medium hover:bg-primary-600 transition-colors"
               >
-                {t("Show", "दिखाएं")} {filteredProducts.length} {t("results", "परिणाम")}
+                {t("Show", "à¤¦à¤¿à¤–à¤¾à¤à¤‚")} {filteredProducts.length} {t("results", "à¤ªà¤°à¤¿à¤£à¤¾à¤®")}
               </button>
             </div>
           </div>
