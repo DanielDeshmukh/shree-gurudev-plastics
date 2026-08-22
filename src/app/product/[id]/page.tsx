@@ -11,6 +11,7 @@ import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import { getColorNames } from "@/lib/product-helpers";
 import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
+import ProductHeroSection from "@/components/ProductHeroSection";
 import { db } from "@/lib/db";
 import ColorVariantPicker from "@/components/ColorVariantPicker";
 
@@ -119,124 +120,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <Breadcrumbs items={breadcrumbItems} />
 
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-4 md:p-8">
-              <ColorVariantPicker
-                images={product.images || []}
-                mainImage={product.imageUrl || ""}
-                productName={product.name}
-              />
-            </div>
-
-            <div className="p-4 md:p-8 flex flex-col justify-center">
-              {brand && (
-                <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
-                  {brand.name}
-                </Link>
-              )}
-              <ProductTags tags={product.tags || ""} />
-              <div className="flex items-start justify-between gap-2 mb-4">
-                <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                <WishlistButton
-                  product={{
-                    id: product.id,
-                    name: product.name,
-                    imageUrl: product.imageUrl || "",
-                    price: product.price,
-                    color: product.color || "",
-                    size: product.size || "",
-                    brand: brand?.name,
-                  }}
-                />
-              </div>
-
-              <div className="space-y-2 mb-6">
-                {(() => {
-                  const colorNames = getColorNames(product.images, product.name);
-                  if (colorNames.length === 0) return null;
-                  return (
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500 text-sm w-20">Colors</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {colorNames.map(color => (
-                          <span key={color} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full capitalize">
-                            {color}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {(product.height || product.width || product.depth || product.weight) && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm w-20">Dimensions</span>
-                    <span className="text-gray-900 text-sm font-medium">
-                      {[product.height && `H: ${product.height} cm`, product.width && `W: ${product.width} cm`, product.depth && `D: ${product.depth} cm`].filter(Boolean).join(' × ')}
-                      {product.weight ? ` | Weight: ${product.weight} kg` : ''}
-                    </span>
-                  </div>
-                )}
-
-                {product.category && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm w-20">Category</span>
-                    <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
-                  </div>
-                )}
-              </div>
-
-              {product.description && (
-                <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
-              )}
-
-              <p className="text-3xl font-bold text-primary-500 mb-2">₹{product.price}</p>
-              <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
-
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Check Delivery Availability</p>
-                <PincodeCheck />
-              </div>
-
-              <div className="mb-6">
-                {product.stock > 0 ? (
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                    <span className="w-2 h-2 bg-green-500 rounded-full" />
-                    In Stock — Ready to Ship
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700 bg-red-100 px-3 py-1 rounded-full">
-                    <span className="w-2 h-2 bg-red-500 rounded-full" />
-                    Out of Stock
-                  </span>
-                )}
-              </div>
-
-              <ProductCartSection
-                id={product.id}
-                name={product.name}
-                color={product.color || ""}
-                size={product.size || ""}
-                price={product.price}
-                imageUrl={product.imageUrl || ""}
-                brand={brand?.name}
-                stock={product.stock}
-              />
-              <CompareButton
-                product={{
-                  id: product.id,
-                  name: product.name,
-                  color: product.color || "",
-                  size: product.size || "",
-                  price: product.price,
-                  imageUrl: product.imageUrl || "",
-                  brand: brand?.name,
-                  stock: product.stock ?? 0,
-                  category: product.category || "",
-                }}
-              />
-            </div>
-          </div>
+          <ProductHeroSection
+            product={product}
+            brand={brand}
+            colorCount={getColorNames(product.images, product.name).length}
+          />
         </div>
 
         <section className="mt-8 bg-white rounded-xl border border-gray-200 p-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import BlurImage from "@/components/BlurImage";
 import { parseColor, matchesProduct } from "@/lib/product-helpers";
 
@@ -19,10 +19,12 @@ export default function ColorVariantPicker({
   images,
   mainImage,
   productName,
+  onColorChange,
 }: {
   images: ProductImage[];
   mainImage: string;
   productName: string;
+  onColorChange?: (color: string | null) => void;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [angleIdx, setAngleIdx] = useState(0);
@@ -50,6 +52,10 @@ export default function ColorVariantPicker({
   const angles = activeColor ? colorGroups[activeColor] || [] : [];
   const currentImage = angles[angleIdx] || null;
   const displaySrc = currentImage?.imageUrl || mainImage;
+
+  useEffect(() => {
+    onColorChange?.(activeColor);
+  }, [activeColor]);
 
   return (
     <div className="flex flex-col-reverse lg:flex-row gap-4">
@@ -93,7 +99,7 @@ export default function ColorVariantPicker({
             return (
               <button
                 key={color}
-                onClick={() => { setSelectedColor(color); setAngleIdx(0); }}
+                onClick={() => { setSelectedColor(color); setAngleIdx(0); onColorChange?.(color); }}
                 className={`relative w-11 h-11 lg:w-12 lg:h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
                   isSelected
                     ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
