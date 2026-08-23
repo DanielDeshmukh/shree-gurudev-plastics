@@ -220,10 +220,8 @@ export function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> {
   doc.rect(totalsX, y, totalsW, 1).fill(COLORS.primary);
   y += 6;
   doc.fontSize(12).fillColor(COLORS.text);
-  doc.font("Helvetica-Bold");
   doc.text("TOTAL", totalsX, y, { width: totalsW - 90 });
   doc.text(fmt(invoice.total), totalsX, y, { width: totalsW, align: "right" });
-  doc.font("Helvetica");
   y += 24;
 
   // ── NOTES ──
