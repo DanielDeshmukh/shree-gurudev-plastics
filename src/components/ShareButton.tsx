@@ -16,6 +16,39 @@ type ShareButtonProps = {
   };
 };
 
+async function imageUrlToBlob(url: string): Promise<Blob | null> {
+  try {
+    // Cloudinary images — append a small transformation for faster fetch
+    const fetchUrl = url.includes("res.cloudinary.com")
+      ? url.replace("/upload/", "/upload/w_400,f_jpg,q_80/")
+      : url;
+    const res = await fetch(fetchUrl, { mode: "cors" });
+    if (!res.ok) return null;
+    return await res.blob();
+  } catch {
+    // CORS blocked — try via canvas proxy
+    try {
+      const img = new window.Image();
+      img.crossOrigin = "anonymous";
+      img.src = url;
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject();
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0);
+      return await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.85)
+      );
+    } catch {
+      return null;
+    }
+  }
+}
+
 export default function ShareButton({ product }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -28,18 +61,31 @@ export default function ShareButton({ product }: ShareButtonProps) {
       try {
         const shareData: ShareData = { title: product.name, text: shareText, url: productUrl };
         if (product.imageUrl) {
-          try {
-            const res = await fetch(product.imageUrl);
-            const blob = await res.blob();
-            const file = new File([blob], "product.jpg", { type: blob.type });
-            shareData.files = [file];
-          } catch {}
+          const blob = await imageUrlToBlob(product.imageUrl);
+          if (blob && blob.size > 0) {
+            shareData.files = [new File([blob], "product.jpg", { type: "image/jpeg" })];
+          }
         }
         await navigator.share(shareData);
       } catch {}
     } else {
       setOpen(true);
     }
+  };
+
+  const shareToWhatsApp = async () => {
+    if (navigator.share && product.imageUrl) {
+      try {
+        const blob = await imageUrlToBlob(product.imageUrl);
+        if (blob && blob.size > 0) {
+          const file = new File([blob], "product.jpg", { type: "image/jpeg" });
+          await navigator.share({ title: product.name, text: shareText, files: [file] });
+          return;
+        }
+      } catch {}
+    }
+    // Fallback: text only
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + productUrl)}`, "_blank");
   };
 
   const copyLink = async () => {
@@ -62,7 +108,7 @@ export default function ShareButton({ product }: ShareButtonProps) {
   const shareLinks = [
     {
       name: "WhatsApp",
-      url: `https://wa.me/?text=${encodeURIComponent(shareText + "\n" + productUrl)}`,
+      action: shareToWhatsApp,
       color: "bg-green-500 hover:bg-green-600",
     },
     {
@@ -148,17 +194,27 @@ export default function ShareButton({ product }: ShareButtonProps) {
             </button>
 
             <div className="grid grid-cols-2 gap-2">
-              {shareLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${link.color} text-white text-sm font-medium py-2.5 px-4 rounded-lg text-center transition-colors`}
-                >
-                  {link.name}
-                </a>
-              ))}
+              {shareLinks.map((link) =>
+                link.action ? (
+                  <button
+                    key={link.name}
+                    onClick={link.action}
+                    className={`${link.color} text-white text-sm font-medium py-2.5 px-4 rounded-lg text-center transition-colors`}
+                  >
+                    {link.name}
+                  </button>
+                ) : (
+                  <a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${link.color} text-white text-sm font-medium py-2.5 px-4 rounded-lg text-center transition-colors`}
+                  >
+                    {link.name}
+                  </a>
+                )
+              )}
             </div>
           </div>
         </div>
