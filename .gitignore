@@ -53,3 +53,12 @@ image-verification-decisions.json
 image-verification-decisions copy.json
 
 .vercel
+
+# Generated invoices
+invoice/
+
+# Local scripts with secrets
+download-invoices.js
+
+# Reference images
+*.png
