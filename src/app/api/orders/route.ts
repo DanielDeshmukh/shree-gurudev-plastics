@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { validate, createOrderSchema } from "@/lib/validation";
 import crypto from "crypto";
-
-function sqliteNow(): string {
-  const d = new Date();
-  const y = d.getUTCFullYear();
-  const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  const h = String(d.getUTCHours()).padStart(2, "0");
-  const mi = String(d.getUTCMinutes()).padStart(2, "0");
-  const s = String(d.getUTCSeconds()).padStart(2, "0");
-  return `${y}-${mo}-${day} ${h}:${mi}:${s}`;
-}
 
 export async function GET() {
   const admin = await getAuthUser();
