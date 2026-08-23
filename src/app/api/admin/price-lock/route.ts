@@ -35,13 +35,7 @@ export async function POST(request: NextRequest) {
 
     const expiresDate = new Date();
     expiresDate.setHours(expiresDate.getHours() + (durationHours || 48));
-    const ey = expiresDate.getUTCFullYear();
-    const emo = String(expiresDate.getUTCMonth() + 1).padStart(2, "0");
-    const eday = String(expiresDate.getUTCDate()).padStart(2, "0");
-    const eh = String(expiresDate.getUTCHours()).padStart(2, "0");
-    const emi = String(expiresDate.getUTCMinutes()).padStart(2, "0");
-    const es = String(expiresDate.getUTCSeconds()).padStart(2, "0");
-    const expiresAt = `${ey}-${emo}-${eday} ${eh}:${emi}:${es}`;
+    const expiresAt = expiresDate.toISOString();
 
     const lock = await db.priceLock.create({
       data: {

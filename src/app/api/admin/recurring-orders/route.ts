@@ -37,13 +37,7 @@ export async function POST(request: NextRequest) {
       case "biweekly": nextOrderDate.setDate(nextOrderDate.getDate() + 14); break;
       case "monthly": nextOrderDate.setMonth(nextOrderDate.getMonth() + 1); break;
     }
-    const nY = nextOrderDate.getUTCFullYear();
-    const nMo = String(nextOrderDate.getUTCMonth() + 1).padStart(2, "0");
-    const nDay = String(nextOrderDate.getUTCDate()).padStart(2, "0");
-    const nH = String(nextOrderDate.getUTCHours()).padStart(2, "0");
-    const nMi = String(nextOrderDate.getUTCMinutes()).padStart(2, "0");
-    const nS = String(nextOrderDate.getUTCSeconds()).padStart(2, "0");
-    const nextOrderDateStr = `${nY}-${nMo}-${nDay} ${nH}:${nMi}:${nS}`;
+    const nextOrderDateStr = nextOrderDate.toISOString();
 
     const order = await db.recurringOrder.create({
       data: {

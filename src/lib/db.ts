@@ -41,12 +41,5 @@ export const db = basePrisma.$extends({
 }) as unknown as PrismaClient;
 
 export function sqliteNow(): string {
-  const d = new Date();
-  const y = d.getUTCFullYear();
-  const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  const h = String(d.getUTCHours()).padStart(2, "0");
-  const mi = String(d.getUTCMinutes()).padStart(2, "0");
-  const s = String(d.getUTCSeconds()).padStart(2, "0");
-  return `${y}-${mo}-${day} ${h}:${mi}:${s}`;
+  return new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z");
 }
