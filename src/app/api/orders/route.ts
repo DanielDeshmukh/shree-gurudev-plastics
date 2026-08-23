@@ -4,6 +4,17 @@ import { getAuthUser } from "@/lib/auth";
 import { validate, createOrderSchema } from "@/lib/validation";
 import crypto from "crypto";
 
+function sqliteNow(): string {
+  const d = new Date();
+  const y = d.getUTCFullYear();
+  const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const h = String(d.getUTCHours()).padStart(2, "0");
+  const mi = String(d.getUTCMinutes()).padStart(2, "0");
+  const s = String(d.getUTCSeconds()).padStart(2, "0");
+  return `${y}-${mo}-${day} ${h}:${mi}:${s}`;
+}
+
 export async function GET() {
   const admin = await getAuthUser();
   if (!admin) {
@@ -102,7 +113,7 @@ export async function POST(request: NextRequest) {
           data: {
             totalOrders: existingCustomer.totalOrders + 1,
             totalSpent: existingCustomer.totalSpent + total,
-            lastOrderAt: new Date(),
+            lastOrderAt: sqliteNow(),
             address: address || existingCustomer.address,
           },
         });
@@ -115,7 +126,7 @@ export async function POST(request: NextRequest) {
             address: address || null,
             totalOrders: 1,
             totalSpent: total,
-            lastOrderAt: new Date(),
+            lastOrderAt: sqliteNow(),
           },
         });
         customerId = newCustomer.id;
