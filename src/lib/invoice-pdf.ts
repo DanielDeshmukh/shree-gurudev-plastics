@@ -276,4 +276,5 @@ export function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> {
   );
 
   doc.end();
+  });
 }
