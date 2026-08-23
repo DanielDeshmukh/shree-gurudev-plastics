@@ -8,6 +8,7 @@ import ProductTags from "@/components/ProductTags";
 import PincodeCheck from "@/components/PincodeCheck";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
+import ShareButton from "@/components/ShareButton";
 import ReviewList from "@/components/ReviewList";
 import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import { parseColor, matchesProduct } from "@/lib/product-helpers";
@@ -48,18 +49,30 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
         <ProductTags tags={product.tags || ""} />
         <div className="flex items-start justify-between gap-2 mb-4">
           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-          <WishlistButton
-            product={{
-              id: product.id,
-              slug: product.slug,
-              name: product.name,
-              imageUrl: product.imageUrl || "",
-              price: product.price,
-              color: product.color || "",
-              size: product.size || "",
-              brand: brand?.name,
-            }}
-          />
+          <div className="flex items-center gap-3 shrink-0">
+            <ShareButton
+              product={{
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
+                color: product.color || undefined,
+                brand: brand?.name,
+                imageUrl: product.imageUrl || undefined,
+              }}
+            />
+            <WishlistButton
+              product={{
+                id: product.id,
+                slug: product.slug,
+                name: product.name,
+                imageUrl: product.imageUrl || "",
+                price: product.price,
+                color: product.color || "",
+                size: product.size || "",
+                brand: brand?.name,
+              }}
+            />
+          </div>
         </div>
 
         <div className="space-y-2 mb-6">

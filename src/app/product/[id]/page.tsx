@@ -13,8 +13,6 @@ import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import ProductHeroSection from "@/components/ProductHeroSection";
 import { db } from "@/lib/db";
-import ColorVariantPicker from "@/components/ColorVariantPicker";
-import ShareButton from "@/components/ShareButton";
 
 async function getProduct(slugOrId: string) {
   try {
@@ -137,19 +135,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             product={product}
             brand={brand}
             colorCount={getColorNames(product.images, product.name).length}
-          />
-        </div>
-
-        <div className="mt-4 flex items-center gap-6">
-          <ShareButton
-            product={{
-              name: product.name,
-              slug: product.slug,
-              price: product.price,
-              color: product.color || undefined,
-              brand: brand?.name,
-              imageUrl: product.imageUrl || undefined,
-            }}
           />
         </div>
 

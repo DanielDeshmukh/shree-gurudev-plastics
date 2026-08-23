@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MdShare, MdLink, MdClose, MdContentCopy, MdCheck } from "react-icons/md";
+import Image from "next/image";
+import { MdShare, MdClose, MdContentCopy, MdCheck } from "react-icons/md";
 import { SITE_URL } from "@/lib/seo";
 
 type ShareButtonProps = {
@@ -25,14 +26,17 @@ export default function ShareButton({ product }: ShareButtonProps) {
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: product.name,
-          text: shareText,
-          url: productUrl,
-        });
-      } catch {
-        // user cancelled or error
-      }
+        const shareData: ShareData = { title: product.name, text: shareText, url: productUrl };
+        if (product.imageUrl) {
+          try {
+            const res = await fetch(product.imageUrl);
+            const blob = await res.blob();
+            const file = new File([blob], "product.jpg", { type: blob.type });
+            shareData.files = [file];
+          } catch {}
+        }
+        await navigator.share(shareData);
+      } catch {}
     } else {
       setOpen(true);
     }
@@ -44,7 +48,6 @@ export default function ShareButton({ product }: ShareButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback
       const input = document.createElement("input");
       input.value = productUrl;
       document.body.appendChild(input);
@@ -98,11 +101,10 @@ export default function ShareButton({ product }: ShareButtonProps) {
     <>
       <button
         onClick={handleNativeShare}
-        className="flex items-center gap-2 text-gray-600 hover:text-primary-500 transition-colors"
+        className="text-gray-400 hover:text-primary-500 transition-colors"
         title="Share product"
       >
         <MdShare className="w-5 h-5" />
-        <span className="text-sm font-medium">Share</span>
       </button>
 
       {open && (
@@ -115,9 +117,17 @@ export default function ShareButton({ product }: ShareButtonProps) {
               </button>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-3 mb-4">
-              <p className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</p>
-              <p className="text-sm text-primary-500 font-bold mt-1">₹{product.price}</p>
+            <div className="flex gap-3 bg-gray-50 rounded-lg p-3 mb-4">
+              {product.imageUrl && (
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
+                  <Image src={product.imageUrl} alt={product.name} fill className="object-cover" sizes="64px" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</p>
+                <p className="text-sm text-primary-500 font-bold mt-1">₹{product.price}</p>
+                {product.color && <p className="text-xs text-gray-500 mt-0.5">{product.color}</p>}
+              </div>
             </div>
 
             <button
