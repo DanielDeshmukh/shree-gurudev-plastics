@@ -23,6 +23,7 @@
     "exceljs": "^4.4.0",
     "fuse.js": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^4.2.1",
     "next": "15.5.13",
     "next-auth": "^4.24.15",
     "pdfkit": "^0.20.0",
