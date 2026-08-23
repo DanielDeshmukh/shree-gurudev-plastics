@@ -61,8 +61,18 @@ export default function ReviewForm({ productId, onSubmitted }: ReviewFormProps) 
 
   if (success) {
     return (
-      <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-center">
-        <p className="text-green-700 font-medium">Thank you! Your review has been submitted and will appear after approval.</p>
+      <div className="rounded-lg bg-green-50 border border-green-200 p-6 text-center">
+        <div className="flex justify-center mb-3">
+          <svg viewBox="0 0 120 120" className="w-16 h-16" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="60,5 73,42 115,42 80,65 93,105 60,80 27,105 40,65 5,42 47,42" fill="#FACC15" stroke="#EAB308" strokeWidth="2"/>
+            <ellipse cx="42" cy="50" rx="5" ry="6" fill="#44322E"/>
+            <ellipse cx="72" cy="50" rx="5" ry="6" fill="#44322E"/>
+            <path d="M38 62 Q60 82 82 62" stroke="#44322E" strokeWidth="3" fill="none" strokeLinecap="round"/>
+            <ellipse cx="60" cy="70" rx="10" ry="6" fill="#F97316"/>
+          </svg>
+        </div>
+        <p className="text-green-700 font-semibold text-lg">Thank you for your review!</p>
+        <p className="text-green-600 text-sm mt-1">It helps us improve your experience. Your review will appear after approval.</p>
       </div>
     );
   }
