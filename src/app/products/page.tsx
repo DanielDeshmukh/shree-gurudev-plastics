@@ -162,7 +162,7 @@ function FilterSidebar({
           {sliderMin < sliderMax && (
             <div className="relative pt-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-gray-500">â‚¹{Math.round(sliderMin)}</span>
+                <span className="text-xs text-gray-500">₹{Math.round(sliderMin)}</span>
                 <div className="flex-1 h-1 bg-gray-200 rounded relative">
                   <div
                     className="absolute h-1 bg-primary-400 rounded"
@@ -172,7 +172,7 @@ function FilterSidebar({
                     }}
                   />
                 </div>
-                <span className="text-xs text-gray-500">â‚¹{Math.round(sliderMax)}</span>
+                <span className="text-xs text-gray-500">₹{Math.round(sliderMax)}</span>
               </div>
               <input
                 type="range"
@@ -206,14 +206,14 @@ function FilterSidebar({
             <input
               ref={minRef}
               type="number"
-              placeholder={`Min â‚¹${Math.round(sliderMin)}`}
+              placeholder={`Min ₹${Math.round(sliderMin)}`}
               defaultValue={sliderMin}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
             <input
               ref={maxRef}
               type="number"
-              placeholder={`Max â‚¹${Math.round(sliderMax)}`}
+              placeholder={`Max ₹${Math.round(sliderMax)}`}
               defaultValue={sliderMax}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
@@ -452,7 +452,7 @@ function ProductsPageInner() {
   }
   if (priceApplied && (userMin > sliderMin || userMax < sliderMax)) {
     activeFilters.push({
-      label: `â‚¹${Math.round(userMin)} - â‚¹${Math.round(userMax)}`,
+      label: `₹${Math.round(userMin)} - ₹${Math.round(userMax)}`,
       onRemove: resetPrice,
     });
   }
@@ -614,9 +614,9 @@ function ProductsPageInner() {
                         </div>
                         <div className="flex gap-1 md:gap-2 mt-1 text-xs md:text-sm text-gray-500">
                           {product.color && <span className="truncate">{product.color}</span>}
-                          {product.size && <span>â€¢ {product.size}</span>}
+                          {product.size && <span>• {product.size}</span>}
                         </div>
-                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">â‚¹{product.price}</p>
+                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">₹{product.price}</p>
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
                         <button
                           onClick={() => {
