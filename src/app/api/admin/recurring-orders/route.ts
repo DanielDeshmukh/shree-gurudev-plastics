@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       case "biweekly": nextOrderDate.setDate(nextOrderDate.getDate() + 14); break;
       case "monthly": nextOrderDate.setMonth(nextOrderDate.getMonth() + 1); break;
     }
+    const nY = nextOrderDate.getUTCFullYear();
+    const nMo = String(nextOrderDate.getUTCMonth() + 1).padStart(2, "0");
+    const nDay = String(nextOrderDate.getUTCDate()).padStart(2, "0");
+    const nH = String(nextOrderDate.getUTCHours()).padStart(2, "0");
+    const nMi = String(nextOrderDate.getUTCMinutes()).padStart(2, "0");
+    const nS = String(nextOrderDate.getUTCSeconds()).padStart(2, "0");
+    const nextOrderDateStr = `${nY}-${nMo}-${nDay} ${nH}:${nMi}:${nS}`;
 
     const order = await db.recurringOrder.create({
       data: {
@@ -45,7 +52,7 @@ export async function POST(request: NextRequest) {
         productName,
         quantity: parseInt(quantity),
         frequency: frequency || "weekly",
-        nextOrderDate,
+        nextOrderDate: nextOrderDateStr,
         pricePerUnit: parseFloat(pricePerUnit),
         notes: notes || null,
       },

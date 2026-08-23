@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -50,7 +50,7 @@ export async function PATCH(request: NextRequest) {
     const data: Record<string, unknown> = {};
     if (status !== undefined) {
       data.status = status;
-      if (status === "delivered") data.deliveredAt = new Date();
+      if (status === "delivered") data.deliveredAt = sqliteNow();
     }
     if (driverName !== undefined) data.driverName = driverName;
     if (driverPhone !== undefined) data.driverPhone = driverPhone;

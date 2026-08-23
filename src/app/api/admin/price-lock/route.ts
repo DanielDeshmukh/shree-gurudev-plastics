@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -33,8 +33,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + (durationHours || 48));
+    const expiresDate = new Date();
+    expiresDate.setHours(expiresDate.getHours() + (durationHours || 48));
+    const ey = expiresDate.getUTCFullYear();
+    const emo = String(expiresDate.getUTCMonth() + 1).padStart(2, "0");
+    const eday = String(expiresDate.getUTCDate()).padStart(2, "0");
+    const eh = String(expiresDate.getUTCHours()).padStart(2, "0");
+    const emi = String(expiresDate.getUTCMinutes()).padStart(2, "0");
+    const es = String(expiresDate.getUTCSeconds()).padStart(2, "0");
+    const expiresAt = `${ey}-${emo}-${eday} ${eh}:${emi}:${es}`;
 
     const lock = await db.priceLock.create({
       data: {
