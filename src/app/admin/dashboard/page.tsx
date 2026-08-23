@@ -90,7 +90,7 @@ export default function DashboardPage() {
     { label: "Low Stock", value: data.lowStockCount, icon: MdWarning, color: data.lowStockCount > 0 ? "text-red-400" : "text-green-400", bg: data.lowStockCount > 0 ? "bg-red-500/10" : "bg-green-500/10" },
   ];
 
-  const chartData = data.topProducts.map((p) => ({
+  const chartData = (data.topProducts || []).filter((p: any) => p?.name).map((p: any) => ({
     name: p.name.length > 12 ? p.name.slice(0, 12) + "..." : p.name,
     Orders: p.orderCount,
   }));

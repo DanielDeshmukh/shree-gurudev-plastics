@@ -48,10 +48,13 @@ export async function GET() {
     const topProductDetails = topProductIds.length > 0
       ? await db.product.findMany({ where: { id: { in: topProductIds } } }).catch(() => [])
       : [];
-    const topProductsWithCount = topProducts.map((tp) => ({
-      ...topProductDetails.find((p) => p.id === tp.productId),
-      orderCount: tp._count.id,
-    }));
+    const topProductsWithCount = topProducts
+      .map((tp) => {
+        const detail = topProductDetails.find((p) => p.id === tp.productId);
+        if (!detail) return null;
+        return { ...detail, orderCount: tp._count.id };
+      })
+      .filter(Boolean);
 
     // Optional enhanced data — wrapped in catches so dashboard always loads
     const [revenueThisYearResult, ordersThisMonth, ordersLastMonth, ordersByStatus, brandRevenueRaw, ordersByDay30, orders12Months] = await Promise.all([
