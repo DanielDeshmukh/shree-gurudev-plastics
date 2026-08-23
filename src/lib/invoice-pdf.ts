@@ -53,19 +53,22 @@ const formatDate = (d: Date | string) =>
     year: "numeric",
   });
 
-export function generateInvoicePDF(invoice: InvoiceData): Buffer {
-  const doc = new PDFDocument({
-    size: "A4",
-    margins: { top: 40, bottom: 50, left: 50, right: 50 },
-    info: {
-      Title: `Invoice ${invoice.invoiceNumber}`,
-      Author: "Shree Gurudev Plastics",
-      Subject: `Tax Invoice ${invoice.invoiceNumber}`,
-    },
-  });
+export function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A4",
+      margins: { top: 40, bottom: 50, left: 50, right: 50 },
+      info: {
+        Title: `Invoice ${invoice.invoiceNumber}`,
+        Author: "Shree Gurudev Plastics",
+        Subject: `Tax Invoice ${invoice.invoiceNumber}`,
+      },
+    });
 
-  const chunks: Buffer[] = [];
-  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", (err) => reject(err));
 
   const pageW = doc.page.width - 100; // left+right margins
   const col = {
@@ -273,7 +276,4 @@ export function generateInvoicePDF(invoice: InvoiceData): Buffer {
   );
 
   doc.end();
-
-  // Synchronously collect buffer (pdfkit fires 'end' synchronously in Node)
-  return Buffer.concat(chunks);
 }
