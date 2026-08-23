@@ -6,6 +6,7 @@ import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
 type TrackProps = {
   product: {
     id: number;
+    slug: string;
     name: string;
     imageUrl: string;
     price: number;

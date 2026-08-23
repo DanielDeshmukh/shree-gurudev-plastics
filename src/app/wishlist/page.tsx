@@ -60,7 +60,7 @@ export default function WishlistPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {wishlist.map((item) => (
                 <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link href={`/product/${item.id}`}>
+                  <Link href={`/product/${item.slug}`}>
                     <div className="relative aspect-square bg-gray-100">
                       {item.imageUrl ? (
                         <BlurImage src={item.imageUrl} alt={item.name} fill className="object-cover" />
@@ -70,7 +70,7 @@ export default function WishlistPage() {
                     </div>
                   </Link>
                   <div className="p-4">
-                    <Link href={`/product/${item.id}`}>
+                    <Link href={`/product/${item.slug}`}>
                       <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{item.name}</h3>
                     </Link>
                     <div className="flex gap-2 mt-1 text-sm text-gray-500">

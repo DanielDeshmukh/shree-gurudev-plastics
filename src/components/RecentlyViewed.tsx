@@ -21,7 +21,7 @@ export default function RecentlyViewed() {
             key={product.id}
             className="flex-shrink-0 w-56 bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
           >
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/product/${product.slug}`}>
               <div className="relative aspect-square bg-gray-100">
                 {product.imageUrl ? (
                   <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
@@ -33,7 +33,7 @@ export default function RecentlyViewed() {
               </div>
             </Link>
             <div className="p-3">
-              <Link href={`/product/${product.id}`}>
+              <Link href={`/product/${product.slug}`}>
                 <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1 text-sm">
                   {product.name}
                 </h3>

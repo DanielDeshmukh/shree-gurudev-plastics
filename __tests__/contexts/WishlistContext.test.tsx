@@ -4,8 +4,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { WishlistProvider, useWishlist } from "@/context/WishlistContext";
 
-const product1 = { id: 1, name: "Chair", imageUrl: "/img.jpg", price: 500, color: "Blue", size: "L" };
-const product2 = { id: 2, name: "Table", imageUrl: "/table.jpg", price: 800, color: "Red", size: "M" };
+const product1 = { id: 1, slug: "test-chair", name: "Chair", imageUrl: "/img.jpg", price: 500, color: "Blue", size: "L" };
+const product2 = { id: 2, slug: "test-table", name: "Table", imageUrl: "/table.jpg", price: 800, color: "Red", size: "M" };
 
 function TestWishlist() {
   const { wishlist, addToWishlist, removeFromWishlist, isInWishlist, toggleWishlist, clearWishlist } = useWishlist();

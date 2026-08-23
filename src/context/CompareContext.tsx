@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback, useMemo, ReactNode } 
 
 export type CompareItem = {
   id: number;
+  slug: string;
   name: string;
   color: string;
   size: string;

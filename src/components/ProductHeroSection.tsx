@@ -51,6 +51,7 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
           <WishlistButton
             product={{
               id: product.id,
+              slug: product.slug,
               name: product.name,
               imageUrl: product.imageUrl || "",
               price: product.price,
@@ -128,6 +129,7 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
         <CompareButton
           product={{
             id: product.id,
+            slug: product.slug,
             name: product.name,
             imageUrl: product.imageUrl || "",
             price: product.price,

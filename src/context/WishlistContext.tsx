@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback, useMemo, useEffect, R
 
 export type WishlistItem = {
   id: number;
+  slug: string;
   name: string;
   imageUrl: string;
   price: number;

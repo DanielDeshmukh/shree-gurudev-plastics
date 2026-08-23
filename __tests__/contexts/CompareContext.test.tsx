@@ -4,11 +4,11 @@ import { render, screen, renderHook, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CompareProvider, useCompare } from "@/context/CompareContext";
 
-const mockItem1 = { id: 1, name: "Chair", color: "Blue", size: "L", price: 500, imageUrl: "/img.jpg", stock: 10, category: "chairs" };
-const mockItem2 = { id: 2, name: "Table", color: "Red", size: "M", price: 800, imageUrl: "/table.jpg", stock: 5, category: "tables" };
-const mockItem3 = { id: 3, name: "Stool", color: "Green", size: "S", price: 300, imageUrl: "/stool.jpg", stock: 8, category: "stools" };
-const mockItem4 = { id: 4, name: "Cabinet", color: "White", size: "XL", price: 1500, imageUrl: "/cab.jpg", stock: 3, category: "storage" };
-const mockItem5 = { id: 5, name: "Shelf", color: "Brown", size: "M", price: 900, imageUrl: "/shelf.jpg", stock: 2, category: "storage" };
+const mockItem1 = { id: 1, slug: "test-chair", name: "Chair", color: "Blue", size: "L", price: 500, imageUrl: "/img.jpg", stock: 10, category: "chairs" };
+const mockItem2 = { id: 2, slug: "test-table", name: "Table", color: "Red", size: "M", price: 800, imageUrl: "/table.jpg", stock: 5, category: "tables" };
+const mockItem3 = { id: 3, slug: "test-stool", name: "Stool", color: "Green", size: "S", price: 300, imageUrl: "/stool.jpg", stock: 8, category: "stools" };
+const mockItem4 = { id: 4, slug: "test-cabinet", name: "Cabinet", color: "White", size: "XL", price: 1500, imageUrl: "/cab.jpg", stock: 3, category: "storage" };
+const mockItem5 = { id: 5, slug: "test-shelf", name: "Shelf", color: "Brown", size: "M", price: 900, imageUrl: "/shelf.jpg", stock: 2, category: "storage" };
 
 let addCount = 0;
 const allItems = [mockItem1, mockItem2, mockItem3, mockItem4, mockItem5];

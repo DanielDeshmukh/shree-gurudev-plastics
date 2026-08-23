@@ -148,7 +148,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product: any) => (
               <div key={product.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/product/${product.slug}`}>
                   <div className="relative aspect-square bg-gray-100">
                     {product.imageUrl ? (
                       <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
@@ -160,12 +160,13 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 <div className="p-4">
                   <ProductTags tags={product.tags || ""} />
                   <div className="flex items-start justify-between gap-2">
-                    <Link href={`/product/${product.id}`}>
+                    <Link href={`/product/${product.slug}`}>
                       <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1">{product.name}</h3>
                     </Link>
                     <WishlistButton
                       product={{
                         id: product.id,
+                        slug: product.slug,
                         name: product.name,
                         imageUrl: product.imageUrl || "",
                         price: product.price,
@@ -192,6 +193,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                   <CompareButton
                     product={{
                       id: product.id,
+                      slug: product.slug,
                       name: product.name,
                       color: product.color || "",
                       size: product.size || "",

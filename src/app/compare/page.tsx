@@ -86,7 +86,7 @@ export default function ComparePage() {
                               <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             )}
                           </div>
-                          <Link href={`/product/${item.id}`} className="font-semibold text-gray-900 hover:text-primary-500 transition-colors text-sm text-center">
+                          <Link href={`/product/${item.slug}`} className="font-semibold text-gray-900 hover:text-primary-500 transition-colors text-sm text-center">
                             {item.name}
                           </Link>
                         </div>
@@ -135,7 +135,7 @@ export default function ComparePage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/product/${item.id}`} className="font-semibold text-gray-900 hover:text-primary-500 text-sm line-clamp-1">{item.name}</Link>
+                  <Link href={`/product/${item.slug}`} className="font-semibold text-gray-900 hover:text-primary-500 text-sm line-clamp-1">{item.name}</Link>
                   <p className="text-xs text-gray-500 mt-0.5">{item.brand}</p>
                   <p className="text-base font-bold text-primary-500 mt-1">₹{item.price}</p>
                 </div>

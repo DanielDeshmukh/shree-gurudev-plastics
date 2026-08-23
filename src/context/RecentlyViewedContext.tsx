@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 
 export type ProductItem = {
   id: number;
+  slug: string;
   name: string;
   imageUrl: string;
   price: number;

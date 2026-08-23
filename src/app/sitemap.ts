@@ -29,9 +29,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-    const products = await db.product.findMany({ select: { id: true, updatedAt: true } });
+    const products = await db.product.findMany({ select: { slug: true, updatedAt: true } });
     productPages = products.map((p) => ({
-      url: `${SITE_URL}/product/${p.id}`,
+      url: `${SITE_URL}/product/${p.slug}`,
       lastModified: p.updatedAt,
       changeFrequency: "daily" as const,
       priority: 0.7,
