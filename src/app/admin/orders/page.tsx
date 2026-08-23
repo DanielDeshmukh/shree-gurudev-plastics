@@ -115,7 +115,11 @@ export default function OrdersPage() {
         }),
       });
       if (res.ok) {
-        alert("Invoice generated!");
+        const data = await res.json();
+        const invoiceId = data.invoice?.id;
+        if (invoiceId) {
+          window.open(`/api/admin/invoices/${invoiceId}/pdf`, "_blank");
+        }
       }
     } catch {}
   };

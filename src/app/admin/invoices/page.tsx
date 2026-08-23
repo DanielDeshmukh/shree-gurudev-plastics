@@ -250,6 +250,13 @@ export default function InvoicesPage() {
                 >
                   Print
                 </a>
+                <a
+                  href={`/api/admin/invoices/${selectedInvoice.id}/pdf`}
+                  download={`${selectedInvoice.invoiceNumber}.pdf`}
+                  className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20"
+                >
+                  Download PDF
+                </a>
               </div>
             </div>
 

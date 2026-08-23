@@ -80,6 +80,7 @@ export default async function PrintInvoicePage({ params }: { params: Promise<{ i
       <body>
         <div className="invoice-container">
           <button className="print-btn no-print" onClick={() => window.print()}>Print Invoice</button>
+          <a href={`/api/admin/invoices/${id}/pdf`} download className="no-print" style={{ position: "fixed", bottom: 24, right: 160, background: "#2563EB", color: "white", border: "none", padding: "12px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(37,99,235,0.3)", zIndex: 100, textDecoration: "none" }}>Download PDF</a>
 
           <div className="header">
             <div>
