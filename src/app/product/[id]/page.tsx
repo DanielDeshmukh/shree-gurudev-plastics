@@ -12,7 +12,9 @@ import { getColorNames } from "@/lib/product-helpers";
 import ReviewList from "@/components/ReviewList";
 import { getProductSchema, getBreadcrumbSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import ProductHeroSection from "@/components/ProductHeroSection";
+import DynamicColor from "@/components/DynamicColor";
 import { db } from "@/lib/db";
+import { Suspense } from "react";
 
 async function getProduct(slugOrId: string) {
   try {
@@ -148,10 +150,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
             {product.color && (
-              <div className="flex gap-2">
-                <span className="text-gray-500 w-24">Color:</span>
-                <span className="text-gray-900">{product.color}</span>
-              </div>
+              <Suspense>
+                <DynamicColor fallback={product.color} />
+              </Suspense>
             )}
             {product.size && (
               <div className="flex gap-2">
