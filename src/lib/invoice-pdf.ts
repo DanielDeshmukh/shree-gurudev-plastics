@@ -56,19 +56,29 @@ const formatTime = (d: Date | string) => {
   return `${h}:${m} ${ampm}`;
 };
 
-function loadImage(filename: string): string | null {
+async function loadImage(filename: string): Promise<string | null> {
+  // Try filesystem first (works locally)
   try {
     const publicDir = path.join(process.cwd(), "public");
     const filePath = path.join(publicDir, filename);
-    if (!fs.existsSync(filePath)) return null;
-    const data = fs.readFileSync(filePath);
-    return `data:image/png;base64,${data.toString("base64")}`;
-  } catch {
-    return null;
-  }
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath);
+      return `data:image/png;base64,${data.toString("base64")}`;
+    }
+  } catch {}
+  // Fallback: fetch from the live site (works on Vercel)
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shree-gurudev-plastics.vercel.app";
+    const res = await fetch(`${siteUrl}/${filename}`);
+    if (res.ok) {
+      const buf = Buffer.from(await res.arrayBuffer());
+      return `data:image/png;base64,${buf.toString("base64")}`;
+    }
+  } catch {}
+  return null;
 }
 
-export function generateInvoicePDF(invoice: InvoiceData): Buffer {
+export async function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> {
   const pageW = 860;
   const margin = 50;
   const contentW = pageW - margin * 2;
@@ -83,7 +93,7 @@ export function generateInvoicePDF(invoice: InvoiceData): Buffer {
   let y = 20;
 
   // ── HEADER IMAGE ──
-  const headerImg = loadImage("sgp-header.png");
+  const headerImg = await loadImage("sgp-header.png");
   if (headerImg) {
     const headerW = contentW;
     const headerH = (headerW * 200) / 860;
@@ -309,7 +319,7 @@ export function generateInvoicePDF(invoice: InvoiceData): Buffer {
   y += 20;
 
   // ── FOOTER IMAGE ──
-  const footerImg = loadImage("sgp-footer.png");
+  const footerImg = await loadImage("sgp-footer.png");
   if (footerImg) {
     const footerW = 200;
     const footerH = (footerW * 40) / 200;
