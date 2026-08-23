@@ -20,11 +20,15 @@ export default function ColorVariantPicker({
   mainImage,
   productName,
   onColorChange,
+  onImageChange,
+  initialColor,
 }: {
   images: ProductImage[];
   mainImage: string;
   productName: string;
   onColorChange?: (color: string | null) => void;
+  onImageChange?: (imageUrl: string) => void;
+  initialColor?: string | null;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [angleIdx, setAngleIdx] = useState(0);
@@ -48,6 +52,18 @@ export default function ColorVariantPicker({
   const colorNames = Object.keys(colorGroups);
   const hasVariants = colorNames.length > 1;
 
+  // Auto-select color from URL param (e.g., ?color=citrus-green)
+  useEffect(() => {
+    if (initialColor && colorNames.length > 0) {
+      const normalized = initialColor.toLowerCase().replace(/-/g, " ");
+      const match = colorNames.find(c => c.toLowerCase() === normalized);
+      if (match) {
+        setSelectedColor(match);
+        setAngleIdx(0);
+      }
+    }
+  }, [initialColor, colorNames.join(",")]);
+
   const activeColor = selectedColor || colorNames[0] || null;
   const angles = activeColor ? colorGroups[activeColor] || [] : [];
   const currentImage = angles[angleIdx] || null;
@@ -56,6 +72,10 @@ export default function ColorVariantPicker({
   useEffect(() => {
     onColorChange?.(activeColor);
   }, [activeColor]);
+
+  useEffect(() => {
+    if (displaySrc) onImageChange?.(displaySrc);
+  }, [displaySrc]);
 
   return (
     <div className="flex flex-col-reverse lg:flex-row gap-4">

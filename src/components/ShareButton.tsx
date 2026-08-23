@@ -53,7 +53,8 @@ export default function ShareButton({ product }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const productUrl = `${SITE_URL}/product/${product.slug}`;
+  const colorParam = product.color ? `?color=${encodeURIComponent(product.color.toLowerCase().replace(/\s+/g, "-"))}` : "";
+  const productUrl = `${SITE_URL}/product/${product.slug}${colorParam}`;
   const shareText = `Check out ${product.name}${product.brand ? ` by ${product.brand}` : ""} — ₹${product.price}${product.color ? ` (${product.color})` : ""} on Shree Gurudev Plastics!`;
 
   const handleNativeShare = async () => {

@@ -25,6 +25,7 @@ type ProductHeroProps = {
 
 export default function ProductHeroSection({ product, brand, colorCount }: ProductHeroProps) {
   const [activeColor, setActiveColor] = useState<string | null>(null);
+  const [activeImageUrl, setActiveImageUrl] = useState<string>(product.imageUrl || "");
 
   const categorySlug = encodeURIComponent(product.category || "");
   const displayColor = activeColor ? capitalize(activeColor) : null;
@@ -37,6 +38,8 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
           mainImage={product.imageUrl || ""}
           productName={product.name}
           onColorChange={setActiveColor}
+          onImageChange={setActiveImageUrl}
+          initialColor={typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("color") : null}
         />
       </div>
 
@@ -55,9 +58,9 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
                 name: product.name,
                 slug: product.slug,
                 price: product.price,
-                color: product.color || undefined,
+                color: displayColor || product.color || undefined,
                 brand: brand?.name,
-                imageUrl: product.imageUrl || undefined,
+                imageUrl: activeImageUrl || product.imageUrl || undefined,
               }}
             />
             <WishlistButton
