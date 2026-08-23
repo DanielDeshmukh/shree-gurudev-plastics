@@ -34,251 +34,258 @@ export interface InvoiceData {
 const fmt = (n: number) =>
   `Rs. ${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const formatDate = (d: Date | string) =>
-  new Date(d).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+const fmtPlain = (n: number) =>
+  n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.replace("#", "");
-  return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
-}
+const formatDate = (d: Date | string) => {
+  const dt = new Date(d);
+  const dd = String(dt.getDate()).padStart(2, "0");
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const yyyy = dt.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+};
+
+const formatTime = (d: Date | string) => {
+  const dt = new Date(d);
+  let h = dt.getHours();
+  const m = String(dt.getMinutes()).padStart(2, "0");
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
+};
 
 export function generateInvoicePDF(invoice: InvoiceData): Buffer {
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const doc = new jsPDF({ unit: "pt", format: "a4", compress: false });
   const pageW = 595.28;
   const margin = 50;
   const contentW = pageW - margin * 2;
+  const right = pageW - margin;
 
-  const orange: [number, number, number] = hexToRgb("#F97316");
-  const text: [number, number, number] = hexToRgb("#1A1A1A");
-  const muted: [number, number, number] = hexToRgb("#666666");
-  const light: [number, number, number] = hexToRgb("#999999");
-  const border: [number, number, number] = hexToRgb("#E5E5E5");
-  const headerBg: [number, number, number] = hexToRgb("#FFF7ED");
-  const rowAlt: [number, number, number] = hexToRgb("#FAFAFA");
-  const white: [number, number, number] = hexToRgb("#FFFFFF");
+  let y = 30;
 
-  let y = 50;
+  // ── SGP LOGO TEXT ──
+  doc.setFont("times", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text(".o.", pageW / 2, y, { align: "center" });
+  y += 8;
+  doc.setFontSize(50);
+  doc.text("SGP", pageW / 2, y + 40, { align: "center" });
+  y += 55;
 
-  // ── HEADER ──
-  doc.setFillColor(...orange);
-  doc.rect(margin, 40, contentW, 2, "F");
+  // ── COMPANY NAME ──
+  doc.setFontSize(24);
+  doc.setFont("times", "bolditalic");
+  doc.text("Shree Gurudev Plastics", pageW / 2, y, { align: "center" });
+  y += 16;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.setTextColor(...orange);
-  doc.text("SHREE GURUDEV PLASTICS", margin, y);
-
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.setFont("helvetica", "normal");
-  doc.text("Wholesale Plastic Products", margin, 76);
-  doc.text("Naigaon, Bhayander (West) - 401101, Maharashtra", margin, 88);
-  doc.text("GSTIN: 27AABFS1234E1Z5  |  Phone: +91 85520 84251", margin, 100);
-
-  doc.setFontSize(20);
-  doc.setTextColor(...text);
-  doc.setFont("helvetica", "bold");
-  doc.text("TAX INVOICE", pageW - margin, 50, { align: "right" });
-
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.setFont("helvetica", "normal");
-  doc.text(invoice.invoiceNumber, pageW - margin, 76, { align: "right" });
-  doc.text(`Date: ${formatDate(invoice.createdAt)}`, pageW - margin, 88, { align: "right" });
-  doc.text(`Status: ${invoice.status.toUpperCase()}`, pageW - margin, 100, { align: "right" });
-
-  y = 120;
-
-  // ── BILL TO / SUPPLY ──
-  const boxW = (contentW - 20) / 2;
-
-  doc.setFillColor(...headerBg);
-  doc.roundedRect(margin, y, boxW, 70, 4, 4, "F");
-  doc.setFontSize(8);
-  doc.setTextColor(...light);
-  doc.text("BILL TO", margin + 10, y + 8);
-  doc.setFontSize(10);
-  doc.setTextColor(...text);
-  doc.text(invoice.customerName, margin + 10, y + 20);
-  let billY = y + 34;
-  if (invoice.customerPhone) {
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text(`Phone: ${invoice.customerPhone}`, margin + 10, billY);
-    billY += 12;
-  }
-  if (invoice.customerAddress) {
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text(invoice.customerAddress, margin + 10, billY);
-    billY += 12;
-  }
-  if (invoice.customerGstin) {
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text(`GSTIN: ${invoice.customerGstin}`, margin + 10, billY);
-  }
-
-  const supplyX = margin + boxW + 20;
-  doc.setFillColor(...headerBg);
-  doc.roundedRect(supplyX, y, boxW, 70, 4, 4, "F");
-  doc.setFontSize(8);
-  doc.setTextColor(...light);
-  doc.text("PLACE OF SUPPLY", supplyX + 10, y + 8);
+  // ── TAGLINE ──
+  doc.setFont("times", "italic");
   doc.setFontSize(11);
-  doc.setTextColor(...text);
-  doc.text(invoice.placeOfSupply, supplyX + 10, y + 24);
-  if (invoice.orderId) {
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text(`Order Ref: #${invoice.orderId}`, supplyX + 10, y + 42);
-  }
+  doc.text("- All Kind of plastic -", pageW / 2, y, { align: "center" });
+  y += 14;
 
-  y += 84;
-
-  // ── ITEMS TABLE ──
-  const col = { sno: 30, product: 170, hsn: 60, qty: 40, rate: 70, gst: 45, amount: 85 };
-
-  doc.setFillColor(...orange);
-  doc.roundedRect(margin, y, contentW, 22, 2, 2, "F");
+  // ── PRODUCT CATEGORIES ──
+  doc.setFont("times", "normal");
   doc.setFontSize(8);
-  doc.setTextColor(...white);
+  const cats = "plastic moulded armless chair \u2022 table \u2022 crate \u2022 mug \u2022 tub \u2022";
+  const cats2 = "dustbin \u2022 stool \u2022 storage container \u2022 shoe rack \u2022 baby chair";
+  doc.text(cats, pageW / 2, y, { align: "center" });
+  y += 11;
+  doc.text(cats2, pageW / 2, y, { align: "center" });
+  y += 16;
+
+  // ── DASHED LINE ──
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 18;
+
+  // ── BILL INFO ──
   doc.setFont("helvetica", "bold");
-  let x = margin + 6;
-  doc.text("#", x, y + 14); x += col.sno;
-  doc.text("PRODUCT", x, y + 14); x += col.product;
-  doc.text("HSN", x, y + 14); x += col.hsn;
-  doc.text("QTY", x, y + 14); x += col.qty;
-  doc.text("RATE", x, y + 14); x += col.rate;
-  doc.text("GST %", x, y + 14); x += col.gst;
-  doc.text("AMOUNT", x, y + 14);
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Bill No.", margin, y);
   doc.setFont("helvetica", "normal");
+  doc.text(":", margin + 50, y);
+  doc.text(invoice.invoiceNumber, margin + 60, y);
 
-  y += 24;
+  doc.setFont("helvetica", "bold");
+  doc.text("Date", margin + 250, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(":", margin + 290, y);
+  doc.text(formatDate(invoice.createdAt), margin + 300, y);
+  y += 18;
 
-  // Table rows
+  doc.setFont("helvetica", "bold");
+  doc.text("Time", margin, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(":", margin + 50, y);
+  doc.text(formatTime(invoice.createdAt), margin + 60, y);
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Cashier", margin + 250, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(":", margin + 290, y);
+  doc.text("Admin", margin + 300, y);
+  y += 18;
+
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 16;
+
+  // ── TABLE HEADER ──
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text("S.No.", margin, y);
+  doc.text("Item Description", margin + 40, y);
+  doc.text("HSN", margin + 280, y);
+  doc.text("Qty.", margin + 330, y);
+  doc.text("Rate", margin + 380, y);
+  doc.text("GST %", margin + 430, y);
+  doc.text("Amount", margin + 490, y);
+  y += 14;
+
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 16;
+
+  // ── ITEMS ──
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
   invoice.items.forEach((item, i) => {
-    if (y > 720) {
+    if (y > 700) {
       doc.addPage();
       y = 50;
     }
-
-    const rowH = 20;
-    if (i % 2 === 0) {
-      doc.setFillColor(...rowAlt);
-      doc.rect(margin, y, contentW, rowH, "F");
-    }
-
-    doc.setFontSize(9);
-    doc.setTextColor(...text);
-    x = margin + 6;
-    doc.text(String(i + 1), x, y + 12); x += col.sno;
-    doc.text(item.productName.substring(0, 30), x, y + 12); x += col.product;
-    doc.text(item.hsnCode, x, y + 12); x += col.hsn;
-    doc.text(String(item.quantity), x, y + 12); x += col.qty;
-    doc.text(fmt(item.unitPrice), x, y + 12); x += col.rate;
-    doc.text(`${item.gstRate}%`, x, y + 12); x += col.gst;
-    doc.text(fmt(item.total), x, y + 12);
-
-    y += rowH;
+    doc.text(String(i + 1), margin, y);
+    doc.text(item.productName.substring(0, 35), margin + 40, y);
+    doc.text(item.hsnCode || "-", margin + 280, y);
+    doc.text(String(item.quantity), margin + 330, y);
+    doc.text(fmtPlain(item.unitPrice), margin + 380, y);
+    doc.text(`${item.gstRate}`, margin + 430, y);
+    doc.text(fmtPlain(item.total), margin + 490, y);
+    y += 18;
   });
 
-  doc.setFillColor(...border);
-  doc.rect(margin, y, contentW, 1, "F");
-  y += 14;
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 18;
 
   // ── TOTALS ──
-  const totalsX = 380;
-  const totalsW = pageW - totalsX - margin;
+  const totalsLabelX = margin + 300;
+  const totalsValX = margin + 490;
 
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.text("Subtotal", totalsX, y);
-  doc.text(fmt(invoice.subtotal), pageW - margin, y, { align: "right" });
-  y += 16;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text("Subtotal", totalsLabelX, y);
+  doc.text(fmtPlain(invoice.subtotal), totalsValX, y, { align: "right" });
+  y += 18;
 
   if (invoice.igst > 0) {
-    doc.text(`IGST (${invoice.items[0]?.gstRate || 18}%)`, totalsX, y);
-    doc.text(fmt(invoice.igst), pageW - margin, y, { align: "right" });
-    y += 16;
+    doc.text(`IGST (${invoice.items[0]?.gstRate || 18}%)`, totalsLabelX, y);
+    doc.text(fmtPlain(invoice.igst), totalsValX, y, { align: "right" });
+    y += 18;
   } else {
-    doc.text("CGST", totalsX, y);
-    doc.text(fmt(invoice.cgst), pageW - margin, y, { align: "right" });
-    y += 16;
-    doc.text("SGST", totalsX, y);
-    doc.text(fmt(invoice.sgst), pageW - margin, y, { align: "right" });
-    y += 16;
+    doc.text(`CGST (${invoice.items[0]?.gstRate ? invoice.items[0].gstRate / 2 : 9}%)`, totalsLabelX, y);
+    doc.text(fmtPlain(invoice.cgst), totalsValX, y, { align: "right" });
+    y += 18;
+    doc.text(`SGST (${invoice.items[0]?.gstRate ? invoice.items[0].gstRate / 2 : 9}%)`, totalsLabelX, y);
+    doc.text(fmtPlain(invoice.sgst), totalsValX, y, { align: "right" });
+    y += 18;
   }
 
-  doc.setFillColor(...orange);
-  doc.rect(totalsX, y, totalsW, 1, "F");
-  y += 6;
-  doc.setFontSize(12);
-  doc.setTextColor(...text);
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(totalsLabelX - 10, y, right + 5, y);
+  doc.setLineDashPattern([], 0);
+  y += 14;
+
+  // ── TOTAL ──
   doc.setFont("helvetica", "bold");
-  doc.text("TOTAL", totalsX, y);
-  doc.text(fmt(invoice.total), pageW - margin, y, { align: "right" });
+  doc.setFontSize(13);
+  doc.text("TOTAL", totalsLabelX, y);
+  doc.text(fmt(invoice.total), totalsValX, y, { align: "right" });
+  y += 20;
+
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 18;
+
+  // ── PAYMENT ──
   doc.setFont("helvetica", "normal");
-  y += 24;
+  doc.setFontSize(10);
+  doc.text("Payment Method", margin, y);
+  doc.text(":", margin + 110, y);
+  doc.text("Cash", margin + 120, y);
+  y += 16;
 
-  // ── NOTES ──
-  if (invoice.notes) {
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text(`Notes: ${invoice.notes}`, margin, y);
-    y += 20;
+  doc.text("Amount Paid", margin, y);
+  doc.text(":", margin + 110, y);
+  doc.text(fmt(invoice.total), margin + 120, y);
+  y += 16;
+
+  doc.text("Change", margin, y);
+  doc.text(":", margin + 110, y);
+  doc.text(fmt(0), margin + 120, y);
+  y += 18;
+
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 22;
+
+  // ── BANK DETAILS ──
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("BANK DETAILS", margin, y);
+  y += 14;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("Bank: State Bank of India", margin, y);
+  y += 12;
+  doc.text("A/C No: 12345678901234", margin, y);
+  y += 12;
+  doc.text("IFSC: SBIN0001234", margin, y);
+  y += 12;
+  doc.text("Branch: Bhayander", margin, y);
+  y += 12;
+
+  // ── TERMS ──
+  if (invoice.customerGstin) {
+    doc.text(`GSTIN: ${invoice.customerGstin}`, margin, y);
+    y += 12;
   }
-
-  // ── BANK DETAILS + TERMS ──
-  if (y > 680) {
-    doc.addPage();
-    y = 50;
+  if (invoice.placeOfSupply) {
+    doc.text(`Place of Supply: ${invoice.placeOfSupply}`, margin, y);
+    y += 12;
   }
+  y += 8;
 
-  doc.setFillColor(...border);
-  doc.rect(margin, y, contentW, 1, "F");
-  y += 10;
+  // ── DASHED LINE ──
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(margin, y, right, y);
+  doc.setLineDashPattern([], 0);
+  y += 16;
 
-  doc.setFontSize(8);
-  doc.setTextColor(...light);
-  doc.text("BANK DETAILS", margin + 10, y);
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.text("Bank: State Bank of India", margin + 10, y + 14);
-  doc.text("A/C No: 12345678901234", margin + 10, y + 26);
-  doc.text("IFSC: SBIN0001234", margin + 10, y + 38);
-  doc.text("Branch: Bhayander", margin + 10, y + 50);
-
-  doc.setFontSize(8);
-  doc.setTextColor(...light);
-  doc.text("TERMS & CONDITIONS", margin + boxW + 30, y);
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.text("1. Payment due within 30 days", margin + boxW + 30, y + 14);
-  doc.text("2. Subject to Bhayander jurisdiction", margin + boxW + 30, y + 26);
-  doc.text("3. Goods once sold will not be returned", margin + boxW + 30, y + 38);
-
-  // ── SIGNATURE ──
-  y += 70;
-  doc.setFontSize(9);
-  doc.setTextColor(...muted);
-  doc.text("For Shree Gurudev Plastics", pageW - margin, y, { align: "right" });
-  y += 30;
-  doc.text("Authorized Signatory", pageW - margin, y, { align: "right" });
-
-  // ── WATERMARK ──
-  doc.setFontSize(7);
-  doc.setTextColor(...light);
-  doc.text(
-    "This is a computer-generated invoice. For queries, contact +91 85520 84251",
-    pageW / 2,
-    815,
-    { align: "center" }
-  );
+  // ── FOOTER ──
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text("Thank you for shopping with us!", pageW / 2, y, { align: "center" });
+  y += 14;
+  doc.text("Goods once sold will not be taken back or exchanged.", pageW / 2, y, { align: "center" });
+  y += 14;
+  doc.text("Visit Again!", pageW / 2, y, { align: "center" });
 
   const arrayBuffer = doc.output("arraybuffer");
   return Buffer.from(arrayBuffer);
