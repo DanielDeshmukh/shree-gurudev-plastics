@@ -7,6 +7,7 @@ Group*.png
 # Scraped images (too large for git, will upload to Cloudinary)
 mango-images/
 aristo-images/
+aristo/
 reego-images/
 catalog-output/
 mango/
