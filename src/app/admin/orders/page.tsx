@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MdStore, MdLocalShipping } from "react-icons/md";
+import { MdStore, MdLocalShipping, MdContentCopy, MdChat } from "react-icons/md";
+import { SITE_URL } from "@/lib/seo";
 
 interface OrderItem {
   id: number;
@@ -23,6 +24,7 @@ interface Order {
   notes: string | null;
   total: number;
   status: string;
+  trackingToken: string | null;
   createdAt: string;
   items: OrderItem[];
 }
@@ -153,6 +155,26 @@ export default function OrdersPage() {
     } catch {}
   };
 
+  const getTrackingUrl = (token: string) => `${SITE_URL}/track/${token}`;
+
+  const handleCopyLink = async (order: Order) => {
+    if (!order.trackingToken) return;
+    const url = getTrackingUrl(order.trackingToken);
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("Tracking link copied!");
+    } catch {
+      prompt("Copy this tracking link:", url);
+    }
+  };
+
+  const handleShareWhatsApp = (order: Order) => {
+    if (!order.trackingToken) return;
+    const url = getTrackingUrl(order.trackingToken);
+    const msg = `Hi ${order.customer}!\n\nYour order #${order.publicId} has been confirmed.\nTotal: \u20B9${order.total.toLocaleString("en-IN")}\n\nTrack your order here: ${url}\n\nThank you for shopping with Shree Gurudev Plastics!`;
+    window.open(`https://wa.me/91${order.phone}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
   const filtered = statusFilter
     ? orders.filter((o) => o.status === statusFilter)
     : orders;
@@ -271,6 +293,24 @@ export default function OrdersPage() {
                         >
                           Invoice
                         </button>
+                        {order.trackingToken && (
+                          <>
+                            <button
+                              onClick={() => handleCopyLink(order)}
+                              className="rounded-lg bg-gray-500/10 px-3 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-500/20 transition-colors"
+                              title="Copy tracking link"
+                            >
+                              <MdContentCopy className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={() => handleShareWhatsApp(order)}
+                              className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-colors"
+                              title="Share via WhatsApp"
+                            >
+                              <MdChat className="w-3 h-3" />
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => handleDelete(order.id)}
                           className="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors"

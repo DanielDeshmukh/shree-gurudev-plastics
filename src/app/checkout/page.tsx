@@ -6,7 +6,6 @@ import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney } from "react-icons/md";
-import { PHONE } from "@/lib/seo";
 
 const DELIVERY_AREAS = [
   "Bhayander",
@@ -117,7 +116,7 @@ export default function CheckoutPage() {
               : "Your order is ready for pickup at our Bhayander store."}
           </p>
           <p className="text-gray-500 text-sm mb-4">
-            We&apos;ll confirm your order via WhatsApp shortly.
+            We&apos;ll confirm your order shortly.
           </p>
           {trackingToken && (
             <a
@@ -143,14 +142,6 @@ export default function CheckoutPage() {
             >
               Continue Shopping
             </Link>
-            <a
-              href={`https://wa.me/${PHONE}?text=${encodeURIComponent("Namaste!\n\nI have just placed order #" + publicId + ". Kindly confirm the order and share the expected delivery date." + (trackingToken ? "\n\nYou can track your order here: " + (process.env.NEXT_PUBLIC_SITE_URL || "https://shreegurudevplastics.com") + "/track/" + trackingToken : "") + "\n\nThank you!")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-2.5 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
-            >
-              Confirm on WhatsApp
-            </a>
           </div>
         </div>
       </main>
