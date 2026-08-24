@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney } from "react-icons/md";
+import { PHONE } from "@/lib/seo";
 
 const DELIVERY_AREAS = [
   "Bhayander",
