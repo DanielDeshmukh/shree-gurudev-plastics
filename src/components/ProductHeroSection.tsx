@@ -73,7 +73,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           )}
 
           {/* Main image (center) */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0 h-full min-h-[300px] max-h-[420px]">
             {displaySrc ? (
               <BlurImage
                 src={displaySrc}
@@ -83,7 +83,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
                 priority
               />
             ) : (
-              <div className="w-full aspect-square flex items-center justify-center text-gray-400 text-sm">No Image</div>
+              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
             )}
             {product.color && (
               <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
@@ -139,7 +139,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           )}
 
           {/* Main image (full width, large) */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden">
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden aspect-square">
             {displaySrc ? (
               <BlurImage
                 src={displaySrc}
@@ -149,7 +149,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
                 priority
               />
             ) : (
-              <div className="w-full aspect-square flex items-center justify-center text-gray-400 text-sm">No Image</div>
+              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
             )}
             {product.color && (
               <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
