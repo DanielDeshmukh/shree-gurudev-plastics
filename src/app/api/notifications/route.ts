@@ -3,24 +3,29 @@ import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
-  const admin = await getAuthUser();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(request.url);
-  const filter = searchParams.get("filter") || "all";
+    const { searchParams } = new URL(request.url);
+    const filter = searchParams.get("filter") || "all";
 
-  const where: Record<string, unknown> = {};
-  if (filter === "unread") where.read = false;
-  if (filter === "read") where.read = true;
+    const where: Record<string, unknown> = {};
+    if (filter === "unread") where.read = false;
+    if (filter === "read") where.read = true;
 
-  const notifications = await db.notification.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-  });
+    const notifications = await db.notification.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
 
-  const unreadCount = await db.notification.count({ where: { read: false } });
+    const unreadCount = await db.notification.count({ where: { read: false } });
 
-  return NextResponse.json({ notifications, unreadCount });
+    return NextResponse.json({ notifications, unreadCount });
+  } catch (error) {
+    console.error("[Notifications GET]", error);
+    return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
