@@ -60,5 +60,5 @@ invoice/
 # Local scripts with secrets
 download-invoices.js
 
-# Reference images
-*.png
+# Reference images (root only, not public/)
+/*.png
