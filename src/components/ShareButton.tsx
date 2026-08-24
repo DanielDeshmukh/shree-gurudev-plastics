@@ -53,8 +53,7 @@ export default function ShareButton({ product }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const colorParam = product.color ? `?color=${encodeURIComponent(product.color.toLowerCase().replace(/\s+/g, "-"))}` : "";
-  const productUrl = `${SITE_URL}/product/${product.slug}${colorParam}`;
+  const productUrl = `${SITE_URL}/product/${product.slug}`;
   const shareText = `Check out ${product.name}${product.brand ? ` by ${product.brand}` : ""} — ₹${product.price}${product.color ? ` (${product.color})` : ""} on Shree Gurudev Plastics!`;
 
   const handleNativeShare = async () => {
@@ -85,7 +84,6 @@ export default function ShareButton({ product }: ShareButtonProps) {
         }
       } catch {}
     }
-    // Fallback: text only
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + productUrl)}`, "_blank");
   };
 
