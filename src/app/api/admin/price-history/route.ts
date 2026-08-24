@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -17,9 +17,8 @@ export async function GET(request: NextRequest) {
 
     const history = await db.priceHistory.findMany({
       where,
-      orderBy: { createdAt: "desc" },
       take: 100,
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ history });
   } catch (error) {

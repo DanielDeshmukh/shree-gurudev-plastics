@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { validate, createReviewSchema } from "@/lib/validation";
 
 function sanitizeInput(input: string): string {
@@ -23,8 +23,7 @@ export async function GET(request: NextRequest) {
         productId: parseInt(productId),
         approved: true,
       },
-      orderBy: { createdAt: "desc" },
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ reviews });
   } catch (error) {

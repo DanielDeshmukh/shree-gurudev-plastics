@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -7,9 +7,8 @@ export async function GET() {
     const username = await getAuthUser();
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const bundles = await db.bundle.findMany({
-      orderBy: { createdAt: "desc" },
       include: { items: true },
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
     return NextResponse.json({ bundles });
   } catch {
     return NextResponse.json({ error: "Failed to fetch bundles" }, { status: 500 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { calculateInvoiceGST, generateInvoiceNumber } from "@/lib/gst";
 
@@ -12,8 +12,7 @@ export async function GET() {
 
     const invoices = await db.invoice.findMany({
       include: { items: true },
-      orderBy: { createdAt: "desc" },
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ invoices });
   } catch (error) {

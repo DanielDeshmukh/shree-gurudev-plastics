@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import ExcelJS from "exceljs";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 const BRAND_COLOR = "F97316";
@@ -89,8 +89,7 @@ async function generateDailyReport(from: Date, to: Date) {
       items: { include: { product: { include: { brand: true } } } },
       customerRef: true,
     },
-    orderBy: { createdAt: "asc" },
-  });
+  }).then(r => r.sort((a, b) => new Date(normalizeDate(a.createdAt)).getTime() - new Date(normalizeDate(b.createdAt)).getTime()));
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Shree Gurudev Plastics";
@@ -282,8 +281,7 @@ async function generateMonthlyReport(year: number, month: number) {
       items: { include: { product: { include: { brand: true } } } },
       customerRef: true,
     },
-    orderBy: { createdAt: "asc" },
-  });
+  }).then(r => r.sort((a, b) => new Date(normalizeDate(a.createdAt)).getTime() - new Date(normalizeDate(b.createdAt)).getTime()));
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Shree Gurudev Plastics";

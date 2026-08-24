@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sqliteNow } from "@/lib/db";
+import { db, sqliteNow, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -9,9 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const locks = await db.priceLock.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    const locks = await db.priceLock.findMany({}).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ locks });
   } catch (error) {

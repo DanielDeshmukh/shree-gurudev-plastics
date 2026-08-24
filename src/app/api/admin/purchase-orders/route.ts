@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
   try {
     const username = await getAuthUser();
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const orders = await db.purchaseOrder.findMany({ orderBy: { createdAt: "desc" } });
+    const orders = await db.purchaseOrder.findMany({}).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
     return NextResponse.json({ orders });
   } catch {
     return NextResponse.json({ error: "Failed to fetch purchase orders" }, { status: 500 });

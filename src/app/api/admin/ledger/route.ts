@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -15,9 +15,8 @@ export async function GET(request: NextRequest) {
 
     const entries = await db.ledgerEntry.findMany({
       where,
-      orderBy: { createdAt: "desc" },
       take: 200,
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ entries });
   } catch {
@@ -37,11 +36,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const lastEntry = await db.ledgerEntry.findFirst({
+    const lastEntryCandidates = await db.ledgerEntry.findMany({
       where: { customerId: parseInt(customerId) },
-      orderBy: { createdAt: "desc" },
-      select: { balance: true },
+      select: { balance: true, createdAt: true },
     });
+    const lastEntry = lastEntryCandidates.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime())[0] || null;
 
     const prevBalance = lastEntry?.balance || 0;
     let newBalance = prevBalance;

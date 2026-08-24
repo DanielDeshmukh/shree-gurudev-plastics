@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
@@ -29,9 +29,8 @@ export async function GET() {
       db.order.aggregate({ _sum: { total: true } }).catch(() => ({ _sum: { total: 0 } })),
       db.order.findMany({
         take: 5,
-        orderBy: { createdAt: "desc" },
         include: { items: { include: { product: true } } },
-      }).catch(() => []),
+      }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime())).catch(() => []),
       db.orderItem.groupBy({
         by: ["productId"],
         _count: { id: true },
@@ -63,8 +62,8 @@ export async function GET() {
       db.order.findMany({ where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } }, select: { total: true } }).catch(() => []),
       db.order.groupBy({ by: ["status"], _count: { id: true } }).catch(() => []),
       db.orderItem.findMany({ include: { product: { select: { brand: { select: { name: true } } } } } }).catch(() => []),
-      db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true, createdAt: true }, orderBy: { createdAt: "asc" } }).catch(() => []),
-      db.order.findMany({ where: { createdAt: { gte: twelveMonthsAgo } }, select: { total: true, createdAt: true }, orderBy: { createdAt: "asc" } }).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: thirtyDaysAgo } }, select: { total: true, createdAt: true } }).then(r => r.sort((a, b) => new Date(normalizeDate(a.createdAt)).getTime() - new Date(normalizeDate(b.createdAt)).getTime())).catch(() => []),
+      db.order.findMany({ where: { createdAt: { gte: twelveMonthsAgo } }, select: { total: true, createdAt: true } }).then(r => r.sort((a, b) => new Date(normalizeDate(a.createdAt)).getTime() - new Date(normalizeDate(b.createdAt)).getTime())).catch(() => []),
     ]);
 
     const revenueThisYear = (revenueThisYearResult as any[]).reduce((sum: number, o: any) => sum + o.total, 0);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { SITE_URL, PHONE } from "@/lib/seo";
 
@@ -33,12 +33,11 @@ export async function GET() {
 
     const recentOrders = await db.order.findMany({
       take: 50,
-      orderBy: { createdAt: "desc" },
       include: {
         items: { include: { product: { select: { name: true } } } },
         customerRef: true,
       },
-    });
+    }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
     return NextResponse.json({ orders: recentOrders, templates: Object.keys(TEMPLATES) });
   } catch (error) {
