@@ -46,74 +46,146 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px]">
-      {/* Left: Image gallery */}
-      <div className="flex gap-3 p-4 md:p-6">
-        {/* Angle thumbnails (left column) */}
-        {hasMultipleAngles && (
-          <div className="flex flex-col gap-2 overflow-y-auto max-h-[420px] shrink-0">
-            {images.map((img: any, idx: number) => (
-              <button
-                key={img.id}
-                onClick={() => setActiveIdx(idx)}
-                className={`relative w-16 h-16 lg:w-[72px] lg:h-[72px] shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                  activeIdx === idx
-                    ? "border-primary-500 ring-2 ring-primary-200"
-                    : "border-gray-200 hover:border-gray-400"
-                }`}
-              >
-                <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Image gallery section */}
+      <div className="p-4 md:p-6">
+        {/* Mobile: vertical stack (main image top, thumbnails below) */}
+        {/* Desktop: 3-column layout (angles | main | color variants) */}
 
-        {/* Main image (center) */}
-        <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
-          {displaySrc ? (
-            <BlurImage
-              src={displaySrc}
-              alt={`${product.name} - ${product.color || ""}`}
-              fill
-              className="object-contain p-4 transition-all duration-300"
-              priority
-            />
-          ) : (
-            <div className="w-full aspect-square flex items-center justify-center text-gray-400 text-sm">No Image</div>
+        {/* Desktop layout */}
+        <div className="hidden lg:flex gap-3">
+          {/* Angle thumbnails (left column) */}
+          {hasMultipleAngles && (
+            <div className="flex flex-col gap-2 overflow-y-auto max-h-[420px] shrink-0">
+              {images.map((img: any, idx: number) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveIdx(idx)}
+                  className={`relative w-[72px] h-[72px] shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeIdx === idx
+                      ? "border-primary-500 ring-2 ring-primary-200"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
+                </button>
+              ))}
+            </div>
           )}
-          {product.color && (
-            <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-              {capitalize(product.color)}
-            </span>
+
+          {/* Main image (center) */}
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
+            {displaySrc ? (
+              <BlurImage
+                src={displaySrc}
+                alt={`${product.name} - ${product.color || ""}`}
+                fill
+                className="object-contain p-4 transition-all duration-300"
+                priority
+              />
+            ) : (
+              <div className="w-full aspect-square flex items-center justify-center text-gray-400 text-sm">No Image</div>
+            )}
+            {product.color && (
+              <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
+                {capitalize(product.color)}
+              </span>
+            )}
+          </div>
+
+          {/* Color variant thumbnails (right column) */}
+          {hasMultipleColors && (
+            <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[420px] shrink-0 pb-1">
+              {allColors.map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/product/${c.slug}`}
+                  className={`relative w-12 h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                    c.isCurrent
+                      ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                  title={c.color || "View"}
+                >
+                  {c.imageUrl ? (
+                    <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300" />
+                  )}
+                </Link>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* Color variant thumbnails (right column of image area) */}
-        {hasMultipleColors && (
-          <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[420px] shrink-0 pb-1">
-            {allColors.map((c) => (
-              <Link
-                key={c.id}
-                href={`/product/${c.slug}`}
-                className={`relative w-11 h-11 lg:w-12 lg:h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
-                  c.isCurrent
-                    ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
-                    : "border-gray-200 hover:border-gray-400"
-                }`}
-                title={c.color || "View"}
-              >
-                {c.imageUrl ? (
-                  <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
-                ) : (
-                  <div className="w-full h-full bg-gray-300" />
-                )}
-              </Link>
-            ))}
+        {/* Mobile layout: stacked */}
+        <div className="lg:hidden">
+          {/* Main image */}
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-3">
+            {displaySrc ? (
+              <BlurImage
+                src={displaySrc}
+                alt={`${product.name} - ${product.color || ""}`}
+                fill
+                className="object-contain p-4 transition-all duration-300"
+                priority
+              />
+            ) : (
+              <div className="w-full aspect-square flex items-center justify-center text-gray-400 text-sm">No Image</div>
+            )}
+            {product.color && (
+              <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
+                {capitalize(product.color)}
+              </span>
+            )}
           </div>
-        )}
+
+          {/* Angle thumbnails (horizontal scroll) */}
+          {hasMultipleAngles && (
+            <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
+              {images.map((img: any, idx: number) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveIdx(idx)}
+                  className={`relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeIdx === idx
+                      ? "border-primary-500 ring-2 ring-primary-200"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Color variant thumbnails (horizontal scroll) */}
+          {hasMultipleColors && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {allColors.map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/product/${c.slug}`}
+                  className={`relative w-11 h-11 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                    c.isCurrent
+                      ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                  title={c.color || "View"}
+                >
+                  {c.imageUrl ? (
+                    <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300" />
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Right: Product info */}
-      <div className="p-4 md:p-8 flex flex-col justify-center border-l border-gray-100">
+      {/* Product info section */}
+      <div className="p-4 md:p-8 flex flex-col justify-center lg:border-l border-gray-100">
         {brand && (
           <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
             {brand.name}
@@ -121,7 +193,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
         )}
         <ProductTags tags={product.tags || ""} />
         <div className="flex items-start justify-between gap-2 mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{product.name}</h1>
           <div className="flex items-center gap-3 shrink-0">
             <ShareButton
               product={{
