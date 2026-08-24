@@ -1,4 +1,15 @@
 import type { NextConfig } from "next";
+import { readFileSync } from "fs";
+import { resolve } from "path";
+
+// Load slug redirects at build time
+const redirectsPath = resolve(__dirname, "public/slug-redirects.json");
+let slugRedirects: Record<string, string> = {};
+try {
+  slugRedirects = JSON.parse(readFileSync(redirectsPath, "utf-8"));
+} catch {
+  // File may not exist yet during initial build
+}
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -18,6 +29,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  redirects: async () =>
+    Object.entries(slugRedirects).map(([source, destination]) => ({
+      source: `/product/${source}`,
+      destination: `/product/${destination}`,
+      permanent: true,
+    })),
   headers: async () => [
     {
       source: "/(.*)",
