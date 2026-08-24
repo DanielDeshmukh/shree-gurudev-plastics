@@ -18,8 +18,8 @@ export type CartItem = {
 type CartContextType = {
   items: CartItem[];
   addItem: (product: Omit<CartItem, "quantity">) => void;
-  removeItem: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeItem: (id: number, color?: string) => void;
+  updateQuantity: (id: number, quantity: number, color?: string) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -62,6 +62,10 @@ function saveCart(items: CartItem[]) {
 
 const MAX_QUANTITY = 999;
 
+function cartKey(id: number, color: string) {
+  return `${id}__${color || ""}`;
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -82,27 +86,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((product: Omit<CartItem, "quantity">) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+      const key = cartKey(product.id, product.color);
+      const existing = prev.find((item) => cartKey(item.id, item.color) === key);
       if (existing) {
         const newQty = Math.min(existing.quantity + 1, MAX_QUANTITY);
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: newQty } : item
+          cartKey(item.id, item.color) === key ? { ...item, quantity: newQty } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
     });
   }, []);
 
-  const removeItem = useCallback((id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const removeItem = useCallback((id: number, color?: string) => {
+    setItems((prev) => {
+      if (color) return prev.filter((item) => cartKey(item.id, item.color) !== cartKey(id, color));
+      return prev.filter((item) => item.id !== id);
+    });
   }, []);
 
-  const updateQuantity = useCallback((id: number, quantity: number) => {
+  const updateQuantity = useCallback((id: number, quantity: number, color?: string) => {
     setItems((prev) => {
       if (quantity <= 0) {
+        if (color) return prev.filter((i) => cartKey(i.id, i.color) !== cartKey(id, color));
         return prev.filter((i) => i.id !== id);
       }
       const clamped = Math.min(quantity, MAX_QUANTITY);
+      if (color) {
+        const key = cartKey(id, color);
+        return prev.map((i) => (cartKey(i.id, i.color) === key ? { ...i, quantity: clamped } : i));
+      }
       return prev.map((i) => (i.id === id ? { ...i, quantity: clamped } : i));
     });
   }, []);

@@ -373,7 +373,7 @@ export default function CheckoutPage() {
               <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-3">
+                  <div key={`${item.id}__${item.color || ""}`} className="flex gap-3">
                     <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                       {item.imageUrl ? (
                         <BlurImage src={item.imageUrl} alt={item.name} width={48} height={48} className="w-full h-full object-cover" />

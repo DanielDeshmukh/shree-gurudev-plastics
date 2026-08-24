@@ -67,7 +67,7 @@ export default function CartDrawer() {
             ) : (
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-3 bg-gray-50 rounded-xl p-3">
+                  <div key={`${item.id}__${item.color || ""}`} className="flex gap-3 bg-gray-50 rounded-xl p-3">
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
                       {item.imageUrl ? (
                         <BlurImage src={item.imageUrl} alt={item.name} fill className="object-cover" />
@@ -86,7 +86,7 @@ export default function CartDrawer() {
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.color)}
                             className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary-500 transition-colors rounded-l-lg hover:bg-gray-50"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ export default function CartDrawer() {
                           </button>
                           <span className="text-sm font-medium text-gray-900 w-6 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.color)}
                             className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary-500 transition-colors rounded-r-lg hover:bg-gray-50"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function CartDrawer() {
                             </svg>
                           </button>
                         </div>
-                        <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-500 transition-colors p-1">
+                        <button onClick={() => removeItem(item.id, item.color)} className="text-gray-400 hover:text-red-500 transition-colors p-1">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
