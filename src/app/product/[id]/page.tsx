@@ -39,6 +39,19 @@ async function getProduct(slugOrId: string) {
   }
 }
 
+async function getSiblingColors(productName: string, currentId: number) {
+  try {
+    const siblings = await db.product.findMany({
+      where: { name: productName, isActive: true, id: { not: currentId } },
+      select: { id: true, slug: true, color: true, imageUrl: true },
+      orderBy: { id: "asc" },
+    });
+    return siblings;
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   try {
@@ -103,7 +116,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   const brand = product.brand;
-  const related = brand ? await getRelatedProducts(brand.id, product.id, product.category || "") : [];
+  const [related, siblingColors] = await Promise.all([
+    brand ? getRelatedProducts(brand.id, product.id, product.category || "") : [],
+    getSiblingColors(product.name, product.id),
+  ]);
 
   const productSchema = getProductSchema(product);
   const breadcrumbs = getBreadcrumbSchema([
@@ -136,7 +152,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <ProductHeroSection
             product={product}
             brand={brand}
-            colorCount={getColorNames(product.images, product.name).length}
+            colorCount={siblingColors.length + 1}
+            siblingColors={siblingColors}
           />
         </div>
 
