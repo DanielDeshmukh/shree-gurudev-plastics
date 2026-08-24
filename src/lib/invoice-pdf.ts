@@ -84,9 +84,20 @@ export async function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> 
   const contentW = pageW - margin * 2;
   const right = pageW - margin;
 
+  // Calculate page height based on content
+  const headerH = 200;
+  const billInfoH = 60;
+  const tableHeaderH = 34;
+  const itemH = invoice.items.length * 20;
+  const totalsH = 120;
+  const paymentH = 76;
+  const bankH = 100;
+  const footerH = 100;
+  const pageH = headerH + billInfoH + tableHeaderH + itemH + totalsH + paymentH + bankH + footerH + 80;
+
   const doc = new jsPDF({
     unit: "pt",
-    format: [pageW, 1200],
+    format: [pageW, Math.max(pageH, 600)],
     compress: false,
   });
 
