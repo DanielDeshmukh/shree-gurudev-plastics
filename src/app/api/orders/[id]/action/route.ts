@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { SITE_URL } from "@/lib/seo";
 
@@ -43,7 +43,7 @@ export async function POST(
       });
 
       await db.orderStatusHistory.create({
-        data: { orderId, status: "Confirmed" },
+        data: { orderId, status: "Confirmed", timestamp: sqliteNow() },
       });
 
       await db.notification.create({
@@ -52,6 +52,7 @@ export async function POST(
           title: `Order #${order.publicId} Confirmed`,
           message: `Order from ${order.customer} (${order.phone}) confirmed. Total: ₹${order.total.toLocaleString("en-IN")}`,
           orderId,
+          createdAt: sqliteNow(),
         },
       });
 
@@ -90,7 +91,7 @@ export async function POST(
       });
 
       await db.orderStatusHistory.create({
-        data: { orderId, status: "Cancelled", note: cancelReason },
+        data: { orderId, status: "Cancelled", note: cancelReason, timestamp: sqliteNow() },
       });
 
       await db.notification.create({
@@ -99,6 +100,7 @@ export async function POST(
           title: `Order #${order.publicId} Cancelled`,
           message: `Order from ${order.customer} (${order.phone}) cancelled. Reason: ${cancelReason}`,
           orderId,
+          createdAt: sqliteNow(),
         },
       });
 

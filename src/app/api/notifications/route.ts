@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -16,10 +16,11 @@ export async function GET(request: NextRequest) {
 
     const notifications = await db.notification.findMany({
       where,
-      orderBy: { createdAt: "desc" },
     });
 
     const unreadCount = await db.notification.count({ where: { read: false } });
+
+    notifications.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime());
 
     return NextResponse.json({ notifications, unreadCount });
   } catch (error) {
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
         title,
         message,
         orderId: orderId || null,
+        createdAt: sqliteNow(),
       },
     });
 

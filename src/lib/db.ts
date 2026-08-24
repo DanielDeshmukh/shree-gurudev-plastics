@@ -41,5 +41,35 @@ export const db = basePrisma.$extends({
 }) as unknown as PrismaClient;
 
 export function sqliteNow(): string {
-  return new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z");
+  return new Date().toISOString();
+}
+
+export function normalizeDate(val: unknown): string {
+  if (!val) return "";
+  const s = String(val);
+  if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.\d{3})?Z$/.test(s)) return s;
+  const fixed = s
+    .replace(/\.\d{3}\+\d{2}:\d{2}$/, ".000Z")
+    .replace(/\.\d{3}\.000Z$/, ".000Z")
+    .replace(/\+\d{2}:\d{2}$/, ".000Z")
+    .replace(/\+000Z$/, ".000Z");
+  const d = new Date(fixed);
+  return isNaN(d.getTime()) ? s : d.toISOString();
+}
+
+export function normalizeResult<T>(data: T): T {
+  if (data === null || data === undefined) return data;
+  if (typeof data === "string") {
+    if (/^\d{4}-\d{2}-\d{2}T/.test(data)) return normalizeDate(data) as T;
+    return data;
+  }
+  if (Array.isArray(data)) return data.map(normalizeResult) as T;
+  if (typeof data === "object" && !(data instanceof Date)) {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(data as Record<string, unknown>)) {
+      result[k] = normalizeResult(v);
+    }
+    return result as T;
+  }
+  return data;
 }

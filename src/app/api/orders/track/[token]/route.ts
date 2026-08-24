@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, normalizeDate } from "@/lib/db";
 
 // Rate limiting: in-memory map of IP -> request count with TTL
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -56,7 +56,6 @@ export async function GET(
         },
       },
       statusHistory: {
-        orderBy: { timestamp: "asc" },
         select: { status: true, note: true, timestamp: true },
       },
     },
@@ -82,10 +81,12 @@ export async function GET(
       quantity: item.quantity,
       price: item.price,
     })),
-    timeline: order.statusHistory.map((h: any) => ({
-      status: h.status,
-      note: h.note,
-      timestamp: h.timestamp,
-    })),
+    timeline: order.statusHistory
+      .map((h: any) => ({
+        status: h.status,
+        note: h.note,
+        timestamp: normalizeDate(h.timestamp),
+      }))
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
   });
 }

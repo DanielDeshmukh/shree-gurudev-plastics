@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
             })),
           },
           statusHistory: {
-            create: { status: "Order Placed" },
+            create: { status: "Order Placed", timestamp: sqliteNow() },
           },
         },
         include: {
@@ -168,6 +168,7 @@ export async function POST(request: NextRequest) {
         title: `New Order #${order.publicId}`,
         message: `${customer} (${phone}) placed an order: ${itemSummary}. Total: ₹${order.total.toLocaleString("en-IN")}`,
         orderId: order.id,
+        createdAt: sqliteNow(),
       },
     });
 
