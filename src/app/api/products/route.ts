@@ -58,32 +58,24 @@ export async function GET(request: NextRequest) {
       if (!isNaN(maxPrice)) (where.price as Record<string, number>).lte = maxPrice;
     }
 
-    const orderBy = (() => {
-      switch (sort) {
-        case "price-asc": return { price: "asc" as const };
-        case "price-desc": return { price: "desc" as const };
-        case "name-asc": return { name: "asc" as const };
-        case "name-desc": return { name: "desc" as const };
-        case "oldest": return { createdAt: "asc" as const };
-        case "newest":
-        default: return { createdAt: "desc" as const };
-      }
-    })();
-
-    const [allProducts, total, priceStats, rawCategories] = await Promise.all([
+    // Fetch products and categories separately (avoid aggregate issues with Turso)
+    const [allProducts, rawCategories] = await Promise.all([
       db.product.findMany({
         where,
         include: { brand: true },
-        orderBy,
       }),
-      db.product.count({ where }),
-      db.product.aggregate({ where: { ...where, price: { ...where.price as any, gt: 0 } }, _min: { price: true }, _max: { price: true } }),
       db.product.findMany({
         where: { ...where, category: { not: "" } },
         select: { category: true, subCategory: true },
-        orderBy: { category: "asc" },
       }),
     ]);
+
+    // Compute price range from fetched data (avoids Turso aggregate issues)
+    const prices = allProducts.map(p => p.price).filter(p => p > 0);
+    const priceStats = {
+      min: prices.length > 0 ? Math.min(...prices) : 0,
+      max: prices.length > 0 ? Math.max(...prices) : 0,
+    };
 
     // Group products by name — each group = one product family
     const grouped = new Map<string, any>();
@@ -136,8 +128,8 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(products.length / limit),
       },
       priceRange: {
-        min: priceStats._min.price ?? 0,
-        max: priceStats._max.price ?? 0,
+        min: priceStats.min,
+        max: priceStats.max,
       },
       categories,
     });
