@@ -135,10 +135,10 @@ export default function ProductHeroSection({ product, brand, colorCount }: Produ
         <ProductCartSection
           id={product.id}
           name={product.name}
-          color={product.color || ""}
+          color={displayColor || product.color || ""}
           size={product.size || ""}
           price={product.price}
-          imageUrl={product.imageUrl || ""}
+          imageUrl={activeImageUrl || product.imageUrl || ""}
           brand={brand?.name}
           stock={product.stock}
         />
