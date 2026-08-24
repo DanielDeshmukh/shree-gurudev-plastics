@@ -107,7 +107,7 @@ export default function TrackOrderPage() {
     }
   };
 
-  const canCancel = order && !["cancelled", "delivered", "shipped"].includes(order.status);
+  const canCancel = order && !["cancelled", "delivered"].includes(order.status);
 
   if (loading) {
     return (
