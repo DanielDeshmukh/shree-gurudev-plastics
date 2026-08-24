@@ -11,6 +11,7 @@ import {
   MdHome,
   MdCancel,
   MdStore,
+  MdClose,
 } from "react-icons/md";
 
 const STAGES = [
@@ -53,6 +54,10 @@ export default function TrackOrderPage() {
   const [order, setOrder] = useState<OrderData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -78,6 +83,31 @@ export default function TrackOrderPage() {
     const interval = setInterval(fetchOrder, 10000);
     return () => { active = false; clearInterval(interval); };
   }, [token]);
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/orders/track/${token}/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: cancelReason || "Customer requested cancellation" }),
+      });
+      if (res.ok) {
+        setShowCancelModal(false);
+        setCancelSuccess(true);
+        setOrder((prev) => prev ? { ...prev, status: "cancelled" } : prev);
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to cancel order");
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const canCancel = order && !["cancelled", "delivered", "shipped"].includes(order.status);
 
   if (loading) {
     return (
@@ -107,18 +137,15 @@ export default function TrackOrderPage() {
   const completedStatuses = order.timeline.map((t) => t.status);
   const isCancelled = order.status === "cancelled";
 
-  // Find current stage index
   const currentStageIndex = isCancelled
     ? -1
     : STAGES.findIndex((s) => s.key === order.status);
 
-  // Get timeline lookup for timestamps
   const timelineMap: Record<string, string> = {};
   order.timeline.forEach((t) => {
     timelineMap[t.status] = t.timestamp;
   });
 
-  // Calculate truck position (percentage along the path)
   const truckProgress = isCancelled
     ? 0
     : currentStageIndex >= 0
@@ -159,7 +186,7 @@ export default function TrackOrderPage() {
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Cancelled Banner */}
-        {isCancelled && (
+        {isCancelled && !cancelSuccess && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
             <MdCancel className="w-6 h-6 text-red-500 shrink-0" />
             <div>
@@ -176,14 +203,12 @@ export default function TrackOrderPage() {
 
             {/* Desktop: Horizontal */}
             <div className="hidden sm:block relative">
-              {/* Track line */}
               <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full" />
               <div
                 className="absolute top-5 left-0 h-1 bg-blue-500 rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${truckProgress}%` }}
               />
 
-              {/* Nodes */}
               <div className="relative flex justify-between">
                 {STAGES.map((stage, i) => {
                   const isCompleted = completedStatuses.includes(stage.key);
@@ -229,7 +254,6 @@ export default function TrackOrderPage() {
 
                 return (
                   <div key={stage.key} className="flex gap-3">
-                    {/* Node + Line */}
                     <div className="flex flex-col items-center">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center z-10 shrink-0 ${
@@ -247,7 +271,6 @@ export default function TrackOrderPage() {
                       )}
                     </div>
 
-                    {/* Text */}
                     <div className={`pb-6 ${isLast ? "pb-0" : ""}`}>
                       <p className={`text-sm font-medium ${isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"}`}>
                         {stage.label}
@@ -313,6 +336,16 @@ export default function TrackOrderPage() {
           </div>
         </div>
 
+        {/* Cancel Order Button */}
+        {canCancel && (
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3.5 px-4 rounded-2xl transition-colors duration-200 text-sm"
+          >
+            Cancel Order
+          </button>
+        )}
+
         {/* Footer */}
         <div className="text-center py-4">
           <p className="text-xs text-gray-400">
@@ -320,6 +353,79 @@ export default function TrackOrderPage() {
           </p>
         </div>
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full relative">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <MdClose className="w-5 h-5" />
+            </button>
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MdCancel className="w-6 h-6 text-red-500" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Cancel Order?</h3>
+            <p className="text-sm text-gray-500 text-center mb-4">
+              This action cannot be reversed. Your order will be cancelled and stock will be restored.
+            </p>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Reason for cancellation (optional)"
+              rows={2}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-300 resize-none mb-4"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="flex-1 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {cancelling ? "Cancelling..." : "Yes, Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Success Message */}
+      {cancelSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full relative text-center">
+            <button
+              onClick={() => setCancelSuccess(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <MdClose className="w-5 h-5" />
+            </button>
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MdCancel className="w-8 h-8 text-red-500" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Order Cancelled</h3>
+            <p className="text-sm text-gray-500 mb-1">
+              We understand your concerns. Your order has been cancelled.
+            </p>
+            <p className="text-sm text-gray-600 mb-6">
+              You can still shop whenever you want — we&apos;ll always be open for you. Thank you!
+            </p>
+            <button
+              onClick={() => setCancelSuccess(false)}
+              className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
