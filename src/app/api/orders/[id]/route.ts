@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, sqliteNow } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+
+const STATUS_MAP: Record<string, string> = {
+  pending: "Order Placed",
+  confirmed: "Confirmed",
+  processing: "Processing",
+  shipped: "Shipped",
+  arrived: "Out for Delivery",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  "Order Placed": "Order Placed",
+  Confirmed: "Confirmed",
+  Processing: "Processing",
+  Shipped: "Shipped",
+  "Out for Delivery": "Out for Delivery",
+  Delivered: "Delivered",
+  Cancelled: "Cancelled",
+};
 
 export async function GET(
   request: NextRequest,
@@ -79,6 +96,13 @@ const VALID_STATUSES = [
         },
       },
     });
+
+    if (body.status !== undefined && order) {
+      const trackingStatus = STATUS_MAP[body.status] || body.status;
+      await db.orderStatusHistory.create({
+        data: { orderId: order.id, status: trackingStatus, timestamp: sqliteNow() },
+      });
+    }
 
     return NextResponse.json({ order });
   } catch (error) {

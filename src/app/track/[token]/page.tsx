@@ -56,17 +56,27 @@ export default function TrackOrderPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`/api/orders/track/${token}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          return;
-        }
-        setOrder(data);
-      })
-      .catch(() => setError("Failed to load order details"))
-      .finally(() => setLoading(false));
+    let active = true;
+    const fetchOrder = () =>
+      fetch(`/api/orders/track/${token}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (!active) return;
+          if (data.error) {
+            setError(data.error);
+            return;
+          }
+          setOrder(data);
+        })
+        .catch(() => {
+          if (active) setError("Failed to load order details");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    fetchOrder();
+    const interval = setInterval(fetchOrder, 10000);
+    return () => { active = false; clearInterval(interval); };
   }, [token]);
 
   if (loading) {
@@ -124,6 +134,10 @@ export default function TrackOrderPage() {
             <div>
               <h1 className="text-lg font-bold text-gray-900">Track Your Order</h1>
               <p className="text-sm text-gray-500 mt-0.5">Order #{order.orderId}</p>
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-[10px] text-green-600 font-medium uppercase tracking-wide">Live - auto-updates</span>
+              </div>
             </div>
             <div className="text-right flex flex-col items-end gap-1.5">
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
