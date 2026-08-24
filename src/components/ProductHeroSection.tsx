@@ -117,10 +117,29 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           )}
         </div>
 
-        {/* Mobile layout: stacked */}
+        {/* Mobile layout: angles on top, main image, colors below */}
         <div className="lg:hidden">
-          {/* Main image */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-3">
+          {/* Angle thumbnails (horizontal scroll above main image) */}
+          {hasMultipleAngles && (
+            <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-1 px-1">
+              {images.map((img: any, idx: number) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveIdx(idx)}
+                  className={`relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeIdx === idx
+                      ? "border-primary-500 ring-2 ring-primary-200"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Main image (full width, large) */}
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden">
             {displaySrc ? (
               <BlurImage
                 src={displaySrc}
@@ -139,28 +158,9 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
             )}
           </div>
 
-          {/* Angle thumbnails (horizontal scroll) */}
-          {hasMultipleAngles && (
-            <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
-              {images.map((img: any, idx: number) => (
-                <button
-                  key={img.id}
-                  onClick={() => setActiveIdx(idx)}
-                  className={`relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeIdx === idx
-                      ? "border-primary-500 ring-2 ring-primary-200"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Color variant thumbnails (horizontal scroll) */}
+          {/* Color variant thumbnails (horizontal scroll below main image) */}
           {hasMultipleColors && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex gap-2 overflow-x-auto pt-3 mt-3 -mx-1 px-1">
               {allColors.map((c) => (
                 <Link
                   key={c.id}
