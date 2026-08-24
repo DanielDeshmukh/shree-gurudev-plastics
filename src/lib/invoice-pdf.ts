@@ -41,10 +41,7 @@ const fmtPlain = (n: number) =>
 
 const formatDate = (d: Date | string) => {
   const dt = new Date(d);
-  const dd = String(dt.getDate()).padStart(2, "0");
-  const mm = String(dt.getMonth() + 1).padStart(2, "0");
-  const yyyy = dt.getFullYear();
-  return `${dd}-${mm}-${yyyy}`;
+  return `${String(dt.getDate()).padStart(2, "0")}-${String(dt.getMonth() + 1).padStart(2, "0")}-${dt.getFullYear()}`;
 };
 
 const formatTime = (d: Date | string) => {
@@ -57,138 +54,141 @@ const formatTime = (d: Date | string) => {
 };
 
 async function loadImage(filename: string): Promise<string | null> {
-  // Try filesystem first (works locally)
   try {
-    const publicDir = path.join(process.cwd(), "public");
-    const filePath = path.join(publicDir, filename);
+    const filePath = path.join(process.cwd(), "public", filename);
     if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath);
-      return `data:image/png;base64,${data.toString("base64")}`;
+      return `data:image/png;base64,${fs.readFileSync(filePath).toString("base64")}`;
     }
   } catch {}
-  // Fallback: fetch from the live site (works on Vercel)
   try {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shree-gurudev-plastics.vercel.app";
     const res = await fetch(`${siteUrl}/${filename}`);
     if (res.ok) {
-      const buf = Buffer.from(await res.arrayBuffer());
-      return `data:image/png;base64,${buf.toString("base64")}`;
+      return `data:image/png;base64,${Buffer.from(await res.arrayBuffer()).toString("base64")}`;
     }
   } catch {}
   return null;
 }
 
 export async function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> {
-  const pageW = 860;
-  const margin = 50;
-  const contentW = pageW - margin * 2;
-  const right = pageW - margin;
+  const receiptW = 560;
+  const pad = 24;
+  const innerW = receiptW - pad * 2;
+  const shadowOffset = 6;
 
-  // Calculate page height based on content
-  const headerH = 200;
-  const billInfoH = 60;
-  const tableHeaderH = 34;
-  const itemH = invoice.items.length * 20;
-  const totalsH = 120;
-  const paymentH = 76;
-  const bankH = 100;
-  const footerH = 100;
-  const pageH = headerH + billInfoH + tableHeaderH + itemH + totalsH + paymentH + bankH + footerH + 80;
+  const headerImg = await loadImage("sgp-header.png");
+  const footerImg = await loadImage("sgp-footer.png");
+
+  // Estimate content height
+  const headerH = headerImg ? (innerW * 200) / 760 : 100;
+  const itemsH = invoice.items.length * 16;
+  const contentH =
+    30 + headerH + 8 + 16 + // header + gap + dashed
+    32 + 16 + // bill info + dashed
+    28 + 14 + // table header + dashed
+    itemsH + 14 + // items + dashed
+    48 + 12 + // totals + dashed
+    18 + 42 + 16 + // total + dashed
+    52 + 16 + // payment + dashed
+    80 + 14 + // bank + dashed
+    40 + // footer text
+    (footerImg ? 40 : 0) + 20;
+
+  const pageW = receiptW + shadowOffset + 10;
+  const pageH = contentH + 20;
 
   const doc = new jsPDF({
     unit: "pt",
-    format: [pageW, Math.max(pageH, 600)],
+    format: [pageW, pageH],
     compress: false,
   });
 
-  let y = 20;
+  // Shadow (gray, offset)
+  doc.setFillColor(190, 190, 190);
+  doc.roundedRect(shadowOffset, shadowOffset, receiptW, contentH, 6, 6, "F");
+
+  // White receipt
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(0, 0, receiptW, contentH, 6, 6, "F");
+
+  const rx = pad;
+  let y = 30;
 
   // ── HEADER IMAGE ──
-  const headerImg = await loadImage("sgp-header.png");
   if (headerImg) {
-    const headerW = contentW;
-    const headerH = (headerW * 200) / 860;
-    doc.addImage(headerImg, "PNG", margin, y, headerW, headerH);
-    y += headerH + 10;
+    doc.addImage(headerImg, "PNG", rx, y, innerW, headerH);
+    y += headerH + 8;
   } else {
-    // Fallback text header
     doc.setFont("times", "bold");
-    doc.setFontSize(50);
+    doc.setFontSize(36);
     doc.setTextColor(0, 0, 0);
-    doc.text("SGP", pageW / 2, y + 40, { align: "center" });
-    y += 55;
-    doc.setFontSize(24);
+    doc.text("SGP", receiptW / 2, y + 28, { align: "center" });
+    y += 36;
+    doc.setFontSize(16);
     doc.setFont("times", "bolditalic");
-    doc.text("Shree Gurudev Plastics", pageW / 2, y, { align: "center" });
-    y += 16;
-    doc.setFont("times", "italic");
-    doc.setFontSize(11);
-    doc.text("- All Kind of plastic -", pageW / 2, y, { align: "center" });
+    doc.text("Shree Gurudev Plastics", receiptW / 2, y, { align: "center" });
     y += 14;
-    doc.setFont("times", "normal");
-    doc.setFontSize(8);
-    doc.text("plastic moulded armless chair \u2022 table \u2022 crate \u2022 mug \u2022 tub \u2022", pageW / 2, y, { align: "center" });
-    y += 11;
-    doc.text("dustbin \u2022 stool \u2022 storage container \u2022 shoe rack \u2022 baby chair", pageW / 2, y, { align: "center" });
-    y += 16;
+    doc.setFont("times", "italic");
+    doc.setFontSize(9);
+    doc.text("- All Kind of plastic -", receiptW / 2, y, { align: "center" });
+    y += 12;
   }
 
   // ── DASHED LINE ──
-  doc.setDrawColor(0, 0, 0);
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(rx, y, rx + innerW, y);
   doc.setLineDashPattern([], 0);
-  y += 20;
+  y += 16;
 
   // ── BILL INFO ──
-  const col1 = margin;
-  const col2 = margin + 260;
+  const col1 = rx;
+  const col2 = rx + innerW / 2 + 10;
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(0, 0, 0);
   doc.text("Bill No.", col1, y);
   doc.setFont("helvetica", "normal");
-  doc.text(":", col1 + 60, y);
-  doc.text(invoice.invoiceNumber, col1 + 72, y);
-
+  doc.text(":", col1 + 52, y);
+  doc.text(invoice.invoiceNumber, col1 + 62, y);
   doc.setFont("helvetica", "bold");
   doc.text("Date", col2, y);
   doc.setFont("helvetica", "normal");
-  doc.text(":", col2 + 60, y);
-  doc.text(formatDate(invoice.createdAt), col2 + 72, y);
-  y += 20;
+  doc.text(":", col2 + 45, y);
+  doc.text(formatDate(invoice.createdAt), col2 + 55, y);
+  y += 16;
 
   doc.setFont("helvetica", "bold");
   doc.text("Time", col1, y);
   doc.setFont("helvetica", "normal");
-  doc.text(":", col1 + 60, y);
-  doc.text(formatTime(invoice.createdAt), col1 + 72, y);
-
+  doc.text(":", col1 + 52, y);
+  doc.text(formatTime(invoice.createdAt), col1 + 62, y);
   doc.setFont("helvetica", "bold");
   doc.text("Cashier", col2, y);
   doc.setFont("helvetica", "normal");
-  doc.text(":", col2 + 60, y);
-  doc.text("Admin", col2 + 72, y);
-  y += 20;
+  doc.text(":", col2 + 45, y);
+  doc.text("Admin", col2 + 55, y);
+  y += 16;
 
   // ── DASHED LINE ──
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(rx, y, rx + innerW, y);
   doc.setLineDashPattern([], 0);
-  y += 18;
+  y += 14;
 
   // ── TABLE HEADER ──
-  const cSno = margin;
-  const cItem = margin + 45;
-  const cHsn = margin + 430;
-  const cQty = margin + 520;
-  const cRate = margin + 580;
-  const cGst = margin + 670;
-  const cAmt = margin + 760;
+  const cSno = rx;
+  const cItem = rx + 30;
+  const cHsn = rx + 260;
+  const cQty = rx + 320;
+  const cRate = rx + 365;
+  const cGst = rx + 420;
+  const cAmt = rx + 470;
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.text("S.No.", cSno, y);
   doc.text("Item Description", cItem, y);
   doc.text("HSN", cHsn, y);
@@ -196,146 +196,137 @@ export async function generateInvoicePDF(invoice: InvoiceData): Promise<Buffer> 
   doc.text("Rate", cRate, y);
   doc.text("GST %", cGst, y);
   doc.text("Amount", cAmt, y);
-  y += 16;
+  y += 14;
 
-  // ── DASHED LINE ──
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(rx, y, rx + innerW, y);
   doc.setLineDashPattern([], 0);
-  y += 18;
+  y += 14;
 
   // ── ITEMS ──
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   invoice.items.forEach((item, i) => {
-    if (y > 1100) {
-      doc.addPage();
-      y = 50;
-    }
     doc.text(String(i + 1), cSno, y);
-    doc.text(item.productName.substring(0, 40), cItem, y);
+    doc.text(item.productName.substring(0, 30), cItem, y);
     doc.text(item.hsnCode || "-", cHsn, y);
     doc.text(String(item.quantity), cQty, y);
     doc.text(fmtPlain(item.unitPrice), cRate, y);
     doc.text(`${item.gstRate}`, cGst, y);
     doc.text(fmtPlain(item.total), cAmt, y);
-    y += 20;
+    y += 16;
   });
 
-  // ── DASHED LINE ──
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(rx, y, rx + innerW, y);
   doc.setLineDashPattern([], 0);
-  y += 20;
+  y += 14;
 
   // ── TOTALS ──
-  const totalsLabelX = margin + 500;
-  const totalsValX = right;
+  const tLabelX = rx + 310;
+  const tValX = rx + innerW;
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.text("Subtotal", totalsLabelX, y);
-  doc.text(fmtPlain(invoice.subtotal), totalsValX, y, { align: "right" });
-  y += 20;
-
-  if (invoice.igst > 0) {
-    doc.text(`IGST (${invoice.items[0]?.gstRate || 18}%)`, totalsLabelX, y);
-    doc.text(fmtPlain(invoice.igst), totalsValX, y, { align: "right" });
-    y += 20;
-  } else {
-    const halfGst = invoice.items[0]?.gstRate ? invoice.items[0].gstRate / 2 : 9;
-    doc.text(`CGST (${halfGst}%)`, totalsLabelX, y);
-    doc.text(fmtPlain(invoice.cgst), totalsValX, y, { align: "right" });
-    y += 20;
-    doc.text(`SGST (${halfGst}%)`, totalsLabelX, y);
-    doc.text(fmtPlain(invoice.sgst), totalsValX, y, { align: "right" });
-    y += 20;
-  }
-
-  // ── DASHED LINE ──
-  doc.setLineDashPattern([3, 3], 0);
-  doc.line(totalsLabelX - 10, y, right + 5, y);
-  doc.setLineDashPattern([], 0);
+  doc.setFontSize(10);
+  doc.text("Subtotal", tLabelX, y);
+  doc.text(fmtPlain(invoice.subtotal), tValX, y, { align: "right" });
   y += 16;
 
-  // ── TOTAL ──
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("TOTAL", totalsLabelX, y);
-  doc.text(fmt(invoice.total), totalsValX, y, { align: "right" });
-  y += 24;
+  if (invoice.igst > 0) {
+    doc.text(`IGST (${invoice.items[0]?.gstRate || 18}%)`, tLabelX, y);
+    doc.text(fmtPlain(invoice.igst), tValX, y, { align: "right" });
+    y += 16;
+  } else {
+    const halfGst = invoice.items[0]?.gstRate ? invoice.items[0].gstRate / 2 : 9;
+    doc.text(`CGST (${halfGst}%)`, tLabelX, y);
+    doc.text(fmtPlain(invoice.cgst), tValX, y, { align: "right" });
+    y += 16;
+    doc.text(`SGST (${halfGst}%)`, tLabelX, y);
+    doc.text(fmtPlain(invoice.sgst), tValX, y, { align: "right" });
+    y += 16;
+  }
 
-  // ── DASHED LINE ──
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(tLabelX - 5, y, rx + innerW + 2, y);
   doc.setLineDashPattern([], 0);
-  y += 20;
+  y += 12;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("TOTAL", tLabelX, y);
+  doc.text(fmt(invoice.total), tValX, y, { align: "right" });
+  y += 18;
+
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(rx, y, rx + innerW, y);
+  doc.setLineDashPattern([], 0);
+  y += 14;
 
   // ── PAYMENT ──
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.text("Payment Method", margin, y);
-  doc.text(":", margin + 120, y);
-  doc.text("Cash", margin + 135, y);
-  y += 18;
-
-  doc.text("Amount Paid", margin, y);
-  doc.text(":", margin + 120, y);
-  doc.text(fmt(invoice.total), margin + 135, y);
-  y += 18;
-
-  doc.text("Change", margin, y);
-  doc.text(":", margin + 120, y);
-  doc.text(fmt(0), margin + 135, y);
-  y += 20;
-
-  // ── DASHED LINE ──
-  doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
-  doc.setLineDashPattern([], 0);
-  y += 20;
-
-  // ── BANK DETAILS + GST INFO ──
-  doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("BANK DETAILS", margin, y);
+  doc.text("Payment Method", rx, y);
+  doc.text(":", rx + 105, y);
+  doc.text("Cash", rx + 115, y);
+  y += 14;
+  doc.text("Amount Paid", rx, y);
+  doc.text(":", rx + 105, y);
+  doc.text(fmt(invoice.total), rx + 115, y);
+  y += 14;
+  doc.text("Change", rx, y);
+  doc.text(":", rx + 105, y);
+  doc.text(fmt(0), rx + 115, y);
   y += 16;
+
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineDashPattern([3, 3], 0);
+  doc.line(rx, y, rx + innerW, y);
+  doc.setLineDashPattern([], 0);
+  y += 14;
+
+  // ── BANK DETAILS ──
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("BANK DETAILS", rx, y);
+  y += 12;
   doc.setFont("helvetica", "normal");
-  doc.text("Bank: State Bank of India", margin, y); y += 14;
-  doc.text("A/C No: 12345678901234", margin, y); y += 14;
-  doc.text("IFSC: SBIN0001234", margin, y); y += 14;
-  doc.text("Branch: Bhayander", margin, y); y += 14;
+  doc.text("Bank: State Bank of India", rx, y); y += 12;
+  doc.text("A/C No: 12345678901234", rx, y); y += 12;
+  doc.text("IFSC: SBIN0001234", rx, y); y += 12;
+  doc.text("Branch: Bhayander", rx, y); y += 12;
   if (invoice.customerGstin) {
-    doc.text(`GSTIN: ${invoice.customerGstin}`, margin, y); y += 14;
+    doc.text(`GSTIN: ${invoice.customerGstin}`, rx, y); y += 12;
   }
   if (invoice.placeOfSupply) {
-    doc.text(`Place of Supply: ${invoice.placeOfSupply}`, margin, y); y += 14;
+    doc.text(`Place of Supply: ${invoice.placeOfSupply}`, rx, y); y += 12;
   }
-  y += 10;
+  y += 8;
 
-  // ── DASHED LINE ──
+  doc.setDrawColor(180, 180, 180);
   doc.setLineDashPattern([3, 3], 0);
-  doc.line(margin, y, right, y);
+  doc.line(rx, y, rx + innerW, y);
   doc.setLineDashPattern([], 0);
-  y += 20;
+  y += 14;
 
-  // ── FOOTER TEXT ──
+  // ── FOOTER ──
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.text("Thank you for shopping with us!", pageW / 2, y, { align: "center" });
+  doc.setFontSize(10);
+  doc.setTextColor(60, 60, 60);
+  doc.text("Thank you for shopping with us!", receiptW / 2, y, { align: "center" });
+  y += 13;
+  doc.text("Goods once sold will not be taken back or exchanged.", receiptW / 2, y, { align: "center" });
+  y += 13;
+  doc.text("Visit Again!", receiptW / 2, y, { align: "center" });
   y += 16;
-  doc.text("Goods once sold will not be taken back or exchanged.", pageW / 2, y, { align: "center" });
-  y += 16;
-  doc.text("Visit Again!", pageW / 2, y, { align: "center" });
-  y += 20;
 
-  // ── FOOTER IMAGE ──
-  const footerImg = await loadImage("sgp-footer.png");
   if (footerImg) {
-    const footerW = 200;
-    const footerH = (footerW * 40) / 200;
-    doc.addImage(footerImg, "PNG", (pageW - footerW) / 2, y, footerW, footerH);
-    y += footerH + 10;
+    const fW = 150;
+    const fH = (fW * 40) / 200;
+    doc.addImage(footerImg, "PNG", (receiptW - fW) / 2, y, fW, fH);
   }
 
   const arrayBuffer = doc.output("arraybuffer");
