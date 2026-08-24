@@ -76,7 +76,7 @@ export async function GET(
     createdAt: order.createdAt,
     items: order.items.map((item: any) => ({
       name: item.product.name,
-      color: item.product.color,
+      color: item.color || item.product.color,
       brand: item.product.brand?.name || "Unknown",
       quantity: item.quantity,
       price: item.price,

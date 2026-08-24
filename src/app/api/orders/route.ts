@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       const productIds = items.map((item) => item.productId);
       const dbProducts = await tx.product.findMany({
         where: { id: { in: productIds } },
-        select: { id: true, price: true, stock: true, name: true },
+        select: { id: true, price: true, stock: true, name: true, color: true },
       });
       const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             `${dbProduct.name}: requested ${item.quantity}, only ${dbProduct.stock} in stock`
           );
         }
-        return { ...item, price: dbProduct.price };
+        return { ...item, price: dbProduct.price, color: dbProduct.color };
       });
 
       if (stockIssues.length > 0) {
@@ -146,6 +146,7 @@ export async function POST(request: NextRequest) {
               productId: item.productId,
               quantity: item.quantity,
               price: item.price,
+              color: item.color || null,
             })),
           },
           statusHistory: {
