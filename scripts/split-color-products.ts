@@ -157,7 +157,7 @@ async function main() {
             ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?,
             ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?,
             1, datetime('now'), datetime('now')
           )
         `,
@@ -183,8 +183,8 @@ async function main() {
           product.weight ? Number(product.weight) : null,
           Number(product.moq || 1),
           String(product.tags || ""),
-          String(product."hsnCode" || "3924"),
-          Number(product."gstRate" || 18),
+          String(product["hsnCode"] || "3924"),
+          Number(product["gstRate"] || 18),
         ],
       });
 
