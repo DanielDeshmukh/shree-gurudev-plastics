@@ -70,13 +70,11 @@ export async function GET(request: NextRequest) {
       }
     })();
 
-    const [products, total, priceStats, rawCategories] = await Promise.all([
+    const [allProducts, total, priceStats, rawCategories] = await Promise.all([
       db.product.findMany({
         where,
         include: { brand: true },
         orderBy,
-        skip,
-        take: limit,
       }),
       db.product.count({ where }),
       db.product.aggregate({ where: { ...where, price: { ...where.price as any, gt: 0 } }, _min: { price: true }, _max: { price: true } }),
@@ -86,6 +84,38 @@ export async function GET(request: NextRequest) {
         orderBy: { category: "asc" },
       }),
     ]);
+
+    // Group products by name — each group = one product family
+    const grouped = new Map<string, any>();
+    for (const p of allProducts) {
+      const key = p.name;
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          ...p,
+          colors: [{ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock }],
+        });
+      } else {
+        grouped.get(key)!.colors.push({ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock });
+      }
+    }
+
+    const products = Array.from(grouped.values());
+
+    // Apply client-side sort on grouped products
+    const sortedProducts = (() => {
+      switch (sort) {
+        case "price-asc": return [...products].sort((a, b) => a.price - b.price);
+        case "price-desc": return [...products].sort((a, b) => b.price - a.price);
+        case "name-asc": return [...products].sort((a, b) => a.name.localeCompare(b.name));
+        case "name-desc": return [...products].sort((a, b) => b.name.localeCompare(a.name));
+        case "oldest": return [...products].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        case "newest":
+        default: return [...products].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      }
+    })();
+
+    // Paginate grouped products
+    const paginatedProducts = sortedProducts.slice(skip, skip + limit);
 
     // Build hierarchical categories: { name, subCategories[] }
     const catMap = new Map<string, Set<string>>();
@@ -98,12 +128,12 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => a.name.localeCompare(b.name));
 
     return NextResponse.json({
-      products,
+      products: paginatedProducts,
       pagination: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: products.length,
+        totalPages: Math.ceil(products.length / limit),
       },
       priceRange: {
         min: priceStats._min.price ?? 0,
