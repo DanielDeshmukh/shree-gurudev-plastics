@@ -8,6 +8,7 @@ import PincodeCheck from "@/components/PincodeCheck";
 import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
 import ShareButton from "@/components/ShareButton";
+import { useState, useMemo } from "react";
 
 type SiblingColor = {
   id: number;
@@ -23,34 +24,57 @@ type ProductHeroProps = {
   siblingColors: SiblingColor[];
 };
 
-function colorToHex(color: string): string {
-  const map: Record<string, string> = {
-    black: "#1a1a1a", white: "#f5f5f5", red: "#dc2626", blue: "#2563eb",
-    green: "#16a34a", yellow: "#eab308", orange: "#ea580c", purple: "#9333ea",
-    pink: "#ec4899", grey: "#9ca3af", gray: "#9ca3af", brown: "#92400e",
-    beige: "#d4b896", ivory: "#fffff0", cherry: "#9b1b30", "citrus green": "#4ade80",
-    "mango yellow": "#facc15", "mango orange": "#fb923c", "marble beige": "#c8b89a",
-    "marble grey": "#a3a3a3", "mystic red": "#b91c1c", "sandal wood": "#c2a87d",
-    "weather brown": "#78593a", gold: "#ca8a04", "dark beige": "#b8a88a",
-    "marina blue": "#3b82f6", teal: "#14b8a6", cream: "#fef3c7",
-  };
-  return map[color.toLowerCase()] || "#9ca3af";
+function capitalize(s: string) {
+  return s.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
 export default function ProductHeroSection({ product, brand, colorCount, siblingColors }: ProductHeroProps) {
   const categorySlug = encodeURIComponent(product.category || "");
+  const images = product.images || [];
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const displaySrc = images[activeIdx]?.imageUrl || product.imageUrl;
+
+  const allColors: { id: number; slug: string; color: string; imageUrl: string | null; isCurrent: boolean }[] = useMemo(() => {
+    const current = { id: product.id, slug: product.slug, color: product.color || "", imageUrl: product.imageUrl, isCurrent: true };
+    const siblings = siblingColors.map(s => ({ ...s, color: s.color || "", isCurrent: false }));
+    return [current, ...siblings];
+  }, [product, siblingColors]);
+
+  const hasMultipleAngles = images.length > 1;
+  const hasMultipleColors = allColors.length > 1;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2">
-      {/* Image section */}
-      <div className="p-4 md:p-8">
-        <div className="relative bg-gray-100 rounded-xl overflow-hidden">
-          {product.imageUrl ? (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px]">
+      {/* Left: Image gallery */}
+      <div className="flex gap-3 p-4 md:p-6">
+        {/* Angle thumbnails (left column) */}
+        {hasMultipleAngles && (
+          <div className="flex flex-col gap-2 overflow-y-auto max-h-[420px] shrink-0">
+            {images.map((img: any, idx: number) => (
+              <button
+                key={img.id}
+                onClick={() => setActiveIdx(idx)}
+                className={`relative w-16 h-16 lg:w-[72px] lg:h-[72px] shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                  activeIdx === idx
+                    ? "border-primary-500 ring-2 ring-primary-200"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Main image (center) */}
+        <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
+          {displaySrc ? (
             <BlurImage
-              src={product.imageUrl}
+              src={displaySrc}
               alt={`${product.name} - ${product.color || ""}`}
               fill
-              className="object-contain p-4"
+              className="object-contain p-4 transition-all duration-300"
               priority
             />
           ) : (
@@ -58,25 +82,38 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           )}
           {product.color && (
             <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-              {product.color}
+              {capitalize(product.color)}
             </span>
           )}
         </div>
 
-        {/* Angle images */}
-        {product.images && product.images.length > 1 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto">
-            {product.images.map((img: any) => (
-              <div key={img.id} className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0 border-2 border-primary-500">
-                <BlurImage src={img.imageUrl} alt={product.name} fill className="object-contain bg-gray-50" />
-              </div>
+        {/* Color variant thumbnails (right column of image area) */}
+        {hasMultipleColors && (
+          <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[420px] shrink-0 pb-1">
+            {allColors.map((c) => (
+              <Link
+                key={c.id}
+                href={`/product/${c.slug}`}
+                className={`relative w-11 h-11 lg:w-12 lg:h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                  c.isCurrent
+                    ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+                title={c.color || "View"}
+              >
+                {c.imageUrl ? (
+                  <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
+                ) : (
+                  <div className="w-full h-full bg-gray-300" />
+                )}
+              </Link>
             ))}
           </div>
         )}
       </div>
 
-      {/* Info section */}
-      <div className="p-4 md:p-8 flex flex-col justify-center">
+      {/* Right: Product info */}
+      <div className="p-4 md:p-8 flex flex-col justify-center border-l border-gray-100">
         {brand && (
           <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
             {brand.name}
@@ -111,7 +148,6 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           </div>
         </div>
 
-        {/* Color info */}
         <div className="space-y-2 mb-6">
           {product.color && (
             <div className="flex items-center gap-2">
@@ -139,38 +175,6 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
             </div>
           )}
         </div>
-
-        {/* Available Colors */}
-        {siblingColors.length > 0 && (
-          <div className="mb-6">
-            <p className="text-sm font-medium text-gray-700 mb-2">Available Colors</p>
-            <div className="flex flex-wrap gap-2">
-              {/* Current color */}
-              <Link
-                href={`/product/${product.slug}`}
-                className="relative w-9 h-9 rounded-full ring-2 ring-primary-500 ring-offset-2 overflow-hidden"
-                title={product.color || "Current"}
-              >
-                <div className="w-full h-full" style={{ backgroundColor: colorToHex(product.color || "") }} />
-              </Link>
-              {/* Sibling colors */}
-              {siblingColors.map((s) => (
-                <Link
-                  key={s.id}
-                  href={`/product/${s.slug}`}
-                  className="relative w-9 h-9 rounded-full ring-1 ring-gray-200 hover:ring-primary-400 hover:ring-2 transition-all overflow-hidden"
-                  title={s.color || "View"}
-                >
-                  {s.imageUrl ? (
-                    <BlurImage src={s.imageUrl} alt={s.color || ""} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full" style={{ backgroundColor: colorToHex(s.color || "") }} />
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
 
         {product.description && (
           <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
