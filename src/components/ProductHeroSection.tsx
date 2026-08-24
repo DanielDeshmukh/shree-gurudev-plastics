@@ -55,7 +55,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
         <div className="hidden lg:flex gap-3 items-stretch">
           {/* Angle thumbnails (left column) */}
           {hasMultipleAngles && (
-            <div className="flex flex-col gap-2 shrink-0">
+            <div className="flex flex-col gap-2 shrink-0 h-[650px] overflow-y-auto">
               {images.map((img: any, idx: number) => (
                 <button
                   key={img.id}
@@ -94,7 +94,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
 
           {/* Color variant thumbnails (right column) */}
           {hasMultipleColors && (
-            <div className="flex flex-col gap-2.5 shrink-0 pb-1">
+            <div className="flex flex-col gap-2.5 shrink-0 pb-1 h-[650px] overflow-y-auto">
               {allColors.map((c) => (
                 <Link
                   key={c.id}
