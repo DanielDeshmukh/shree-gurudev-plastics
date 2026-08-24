@@ -52,10 +52,10 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
         {/* Desktop: 3-column layout (angles | main | color variants) */}
 
         {/* Desktop layout */}
-        <div className="hidden lg:flex gap-3">
+        <div className="hidden lg:flex gap-3 items-stretch">
           {/* Angle thumbnails (left column) */}
           {hasMultipleAngles && (
-            <div className="flex flex-col gap-2 overflow-y-auto max-h-[420px] shrink-0">
+            <div className="flex flex-col gap-2 shrink-0">
               {images.map((img: any, idx: number) => (
                 <button
                   key={img.id}
@@ -73,7 +73,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           )}
 
           {/* Main image (center) */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0 h-full min-h-[300px] max-h-[420px]">
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
             {displaySrc ? (
               <BlurImage
                 src={displaySrc}
@@ -94,7 +94,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
 
           {/* Color variant thumbnails (right column) */}
           {hasMultipleColors && (
-            <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[420px] shrink-0 pb-1">
+            <div className="flex flex-col gap-2.5 shrink-0 pb-1">
               {allColors.map((c) => (
                 <Link
                   key={c.id}
