@@ -19,6 +19,20 @@ const STATUS_MAP: Record<string, string> = {
   Cancelled: "Cancelled",
 };
 
+const STATUS_ORDER = [
+  "Order Placed",
+  "Confirmed",
+  "Processing",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered",
+];
+
+function normalizeStatus(raw: string): string {
+  if (STATUS_MAP[raw]) return STATUS_MAP[raw];
+  return raw;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -98,9 +112,30 @@ const VALID_STATUSES = [
     });
 
     if (body.status !== undefined && order) {
-      const trackingStatus = STATUS_MAP[body.status] || body.status;
+      const newStatus = normalizeStatus(body.status);
+      const now = sqliteNow();
+
+      if (newStatus !== "Cancelled") {
+        const newIdx = STATUS_ORDER.indexOf(newStatus);
+        if (newIdx > 0) {
+          const existing = await db.orderStatusHistory.findMany({
+            where: { orderId: order.id },
+          });
+          const existingStatuses = new Set(existing.map((e) => e.status));
+
+          for (let i = 0; i < newIdx; i++) {
+            const intermediate = STATUS_ORDER[i];
+            if (!existingStatuses.has(intermediate)) {
+              await db.orderStatusHistory.create({
+                data: { orderId: order.id, status: intermediate, timestamp: now },
+              });
+            }
+          }
+        }
+      }
+
       await db.orderStatusHistory.create({
-        data: { orderId: order.id, status: trackingStatus, timestamp: sqliteNow() },
+        data: { orderId: order.id, status: newStatus, timestamp: now },
       });
     }
 

@@ -218,23 +218,23 @@ export default function TrackOrderPage() {
                   return (
                     <div key={stage.key} className="flex flex-col items-center" style={{ width: `${100 / STAGES.length}%` }}>
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all duration-300 ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all duration-700 ease-out ${
                           isCompleted
-                            ? "bg-green-500 text-white shadow-md shadow-green-500/30"
+                            ? "bg-green-500 text-white shadow-md shadow-green-500/30 scale-100"
                             : isCurrent
-                              ? "bg-blue-500 text-white shadow-md shadow-blue-500/30 ring-4 ring-blue-100"
-                              : "bg-gray-200 text-gray-400"
+                              ? "bg-blue-500 text-white shadow-md shadow-blue-500/30 ring-4 ring-blue-100 scale-110"
+                              : "bg-gray-200 text-gray-400 scale-100"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <Icon className="w-5 h-5 transition-transform duration-500" />
                       </div>
-                      <p className={`text-xs mt-2 text-center font-medium ${
+                      <p className={`text-xs mt-2 text-center font-medium transition-colors duration-500 ${
                         isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"
                       }`}>
                         {stage.label}
                       </p>
                       {timelineMap[stage.key] && (
-                        <p className="text-[10px] text-gray-400 mt-0.5 text-center">
+                        <p className="text-[10px] text-gray-400 mt-0.5 text-center transition-opacity duration-500">
                           {formatDateTime(timelineMap[stage.key])}
                         </p>
                       )}
@@ -256,27 +256,27 @@ export default function TrackOrderPage() {
                   <div key={stage.key} className="flex gap-3">
                     <div className="flex flex-col items-center">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center z-10 shrink-0 ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center z-10 shrink-0 transition-all duration-700 ease-out ${
                           isCompleted
-                            ? "bg-green-500 text-white"
+                            ? "bg-green-500 text-white scale-100"
                             : isCurrent
-                              ? "bg-blue-500 text-white ring-4 ring-blue-100"
-                              : "bg-gray-200 text-gray-400"
+                              ? "bg-blue-500 text-white ring-4 ring-blue-100 scale-110"
+                              : "bg-gray-200 text-gray-400 scale-100"
                         }`}
                       >
-                        <Icon className="w-4 h-4" />
+                        <Icon className="w-4 h-4 transition-transform duration-500" />
                       </div>
                       {!isLast && (
-                        <div className={`w-0.5 h-10 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`} />
+                        <div className={`w-0.5 h-10 transition-colors duration-700 ease-out ${isCompleted ? "bg-green-500" : "bg-gray-200"}`} />
                       )}
                     </div>
 
                     <div className={`pb-6 ${isLast ? "pb-0" : ""}`}>
-                      <p className={`text-sm font-medium ${isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"}`}>
+                      <p className={`text-sm font-medium transition-colors duration-500 ${isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"}`}>
                         {stage.label}
                       </p>
                       {timelineMap[stage.key] && (
-                        <p className="text-xs text-gray-400">{formatDateTime(timelineMap[stage.key])}</p>
+                        <p className="text-xs text-gray-400 transition-opacity duration-500">{formatDateTime(timelineMap[stage.key])}</p>
                       )}
                     </div>
                   </div>
