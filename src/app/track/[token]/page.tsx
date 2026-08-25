@@ -146,6 +146,25 @@ export default function TrackOrderPage() {
     timelineMap[t.status] = t.timestamp;
   });
 
+  const highestCompletedIdx = isCancelled
+    ? -1
+    : STAGES.reduce((max, stage, i) => {
+        return completedStatuses.includes(stage.key) ? i : max;
+      }, -1);
+
+  for (let i = 0; i < highestCompletedIdx; i++) {
+    const stage = STAGES[i];
+    if (!timelineMap[stage.key]) {
+      const nextCompleted = STAGES.slice(i + 1).find((s) => timelineMap[s.key]);
+      if (nextCompleted) {
+        timelineMap[stage.key] = timelineMap[nextCompleted.key];
+        if (!completedStatuses.includes(stage.key)) {
+          completedStatuses.push(stage.key);
+        }
+      }
+    }
+  }
+
   const truckProgress = isCancelled
     ? 0
     : currentStageIndex >= 0
