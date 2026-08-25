@@ -148,12 +148,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <ProductHeroSection
-          product={product}
-          brand={brand}
-          colorCount={siblingColors.length + 1}
-          siblingColors={siblingColors}
-        />
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <ProductHeroSection
+            product={product}
+            brand={brand}
+            colorCount={siblingColors.length + 1}
+            siblingColors={siblingColors}
+          />
+        </div>
 
         <section className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Product Details</h2>
