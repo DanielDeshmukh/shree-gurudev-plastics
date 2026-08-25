@@ -115,14 +115,14 @@ const VALID_STATUSES = [
       const newStatus = normalizeStatus(body.status);
       const now = sqliteNow();
 
+      const existing = await db.orderStatusHistory.findMany({
+        where: { orderId: order.id },
+      });
+      const existingStatuses = new Set(existing.map((e) => e.status));
+
       if (newStatus !== "Cancelled") {
         const newIdx = STATUS_ORDER.indexOf(newStatus);
         if (newIdx > 0) {
-          const existing = await db.orderStatusHistory.findMany({
-            where: { orderId: order.id },
-          });
-          const existingStatuses = new Set(existing.map((e) => e.status));
-
           for (let i = 0; i < newIdx; i++) {
             const intermediate = STATUS_ORDER[i];
             if (!existingStatuses.has(intermediate)) {
@@ -138,11 +138,12 @@ const VALID_STATUSES = [
         data: { orderId: order.id, status: newStatus, timestamp: now },
       });
 
-      if (newStatus === "Delivered") {
+      // Restore stock on cancellation (only if not already cancelled)
+      if (newStatus === "Cancelled" && !existingStatuses.has("Cancelled")) {
         for (const item of order.items) {
           await db.product.update({
             where: { id: item.productId },
-            data: { stock: { decrement: item.quantity } },
+            data: { stock: { increment: item.quantity } },
           });
         }
       }
@@ -167,6 +168,25 @@ export async function DELETE(
   }
   try {
     const { id } = await params;
+
+    const order = await db.order.findUnique({
+      where: { id: parseInt(id) },
+      include: { items: true },
+    });
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Restore stock if order was not already cancelled
+    if (order.status !== "Cancelled") {
+      for (const item of order.items) {
+        await db.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } },
+        });
+      }
+    }
 
     await db.order.delete({
       where: { id: parseInt(id) },

@@ -61,14 +61,35 @@ export async function POST(request: NextRequest) {
       });
       const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
-      // 2. Validate prices
+      // 2. Validate prices AND check stock
+      const stockIssues: { productId: number; name: string; requested: number; available: number }[] = [];
       const validatedItems = items.map((item) => {
         const dbProduct = productMap.get(item.productId);
         if (!dbProduct) {
           throw new Error(`Product ${item.productId} not found`);
         }
+        if (dbProduct.stock < item.quantity) {
+          stockIssues.push({
+            productId: dbProduct.id,
+            name: `${dbProduct.name}${dbProduct.color ? ` (${dbProduct.color})` : ""}`,
+            requested: item.quantity,
+            available: dbProduct.stock,
+          });
+        }
         return { ...item, price: dbProduct.price, color: dbProduct.color };
       });
+
+      if (stockIssues.length > 0) {
+        throw new Error(`INSUFFICIENT_STOCK:${JSON.stringify(stockIssues)}`);
+      }
+
+      // 3. Deduct stock
+      for (const item of validatedItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      }
 
       // 3. Create or update customer
       let customerId: number | undefined;
