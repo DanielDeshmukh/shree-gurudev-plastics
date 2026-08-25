@@ -7,20 +7,20 @@ const WHATSAPP_NUMBER = PHONE;
 
 const TEMPLATES = {
   order_confirmation: (customerName: string, publicId: string, total: number) =>
-    `Hello ${customerName}! 🎉\n\nYour order #${publicId} has been confirmed.\nTotal: ₹${total.toLocaleString("en-IN")}\n\nThank you for shopping with Shree Gurudev Plastics!\nWe'll notify you when your order ships.\n\n— SGP Team`,
+    `Hello ${customerName}!\n\nYour order #${publicId} has been confirmed.\nTotal: Rs.${total.toLocaleString("en-IN")}\n\nThank you for shopping with Shree Gurudev Plastics!\nWe'll notify you when your order ships.\n\n- SGP Team`,
   
   delivery_followup: (customerName: string, publicId: string) =>
-    `Hi ${customerName}! 📦\n\nJust checking in — has your order #${publicId} been delivered?\nPlease reply with:\n✅ Delivered\n❌ Not yet\n⚠️ Issue\n\nYour feedback helps us serve you better!\n\n— SGP Team`,
+    `Hi ${customerName}!\n\nJust checking in - has your order #${publicId} been delivered?\nPlease reply with:\n1. Delivered\n2. Not yet\n3. Issue\n\nYour feedback helps us serve you better!\n\n- SGP Team`,
   
   review_request: (customerName: string, publicId: string) =>
-    `Hi ${customerName}! ⭐\n\nWe hope you're enjoying your recent purchase (Order #${publicId})!\n\nWe'd love your feedback — it helps other customers and helps us improve.\n\nCould you take a moment to leave a review?\n\nThank you for choosing Shree Gurudev Plastics! 🙏`,
+    `Hi ${customerName}!\n\nWe hope you're enjoying your recent purchase (Order #${publicId})!\n\nWe'd love your feedback - it helps other customers and helps us improve.\n\nCould you take a moment to leave a review?\n\nThank you for choosing Shree Gurudev Plastics!`,
   
   restock_alert: (customerName: string, productName: string) =>
-    `Hi ${customerName}! 📢\n\nGreat news — ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: ${SITE_URL}/products\n\n— SGP Team`,
+    `Hi ${customerName}!\n\nGreat news - ${productName} is back in stock!\n\nOrder now before it runs out again.\n\nShop now: ${SITE_URL}/products\n\n- SGP Team`,
 
   arrival_notification: (customerName: string, publicId: string, items: { name: string; quantity: number; price: number }[], total: number) => {
-    const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} — ₹${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");
-    return `Hi ${customerName}!\n\nGreat news! Your order #${publicId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: ₹${total.toLocaleString("en-IN")}\n\nVisit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\nPhone: ${PHONE}\n\nPlease collect at your earliest convenience.\n\n- SGP Team`;
+    const itemList = items.map((item, i) => `${i + 1}. ${item.name} x ${item.quantity} - Rs.${(item.price * item.quantity).toLocaleString("en-IN")}`).join("\n");
+    return `Hi ${customerName}!\n\nGreat news! Your order #${publicId} has arrived at our store and is ready for pickup!\n\nItems:\n${itemList}\n\nTotal: Rs.${total.toLocaleString("en-IN")}\n\nVisit us at:\nShree Gurudev Plastics\nNaigaon, Maharashtra\nPhone: ${PHONE}\n\nPlease collect at your earliest convenience.\n\n- SGP Team`;
   },
 };
 
