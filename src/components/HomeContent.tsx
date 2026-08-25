@@ -12,11 +12,11 @@ import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
 const productCategories = [
-  { name: "Plastic Chairs", slug: "chairs", desc: "Armless, Premium, Medium Back, Baby & HoReCa chairs" },
-  { name: "Plastic Stools", slug: "stools", desc: "Durable stools for home & commercial use" },
-  { name: "Plastic Tables", slug: "tables", desc: "Dining, folding & utility tables" },
-  { name: "Houseware", slug: "houseware", desc: "Containers, kitchenware, bath & storage" },
-  { name: "Dustbins", slug: "dustbins", desc: "Pedal bins, swing bins & waste baskets" },
+  { name: "Plastic Chairs", category: "Chairs", slug: "chairs", desc: "Armless, Premium, Medium Back, Baby & HoReCa chairs" },
+  { name: "Plastic Stools", category: "Stools", slug: "stools", desc: "Durable stools for home & commercial use" },
+  { name: "Plastic Tables", category: "Tables", slug: "tables", desc: "Dining, folding & utility tables" },
+  { name: "Houseware", category: "Houseware", slug: "houseware", desc: "Containers, kitchenware, bath & storage" },
+  { name: "Dustbins", category: "Dustbins", slug: "dustbins", desc: "Pedal bins, swing bins & waste baskets" },
 ];
 
 const homeFaqs = [
@@ -93,7 +93,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           {productCategories.map((cat) => (
             <Link
               key={cat.slug}
-              href={`/products?category=${cat.name}`}
+              href={`/products?category=${cat.category}`}
               className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
             >
               <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-500 transition-colors">{cat.name}</h3>
