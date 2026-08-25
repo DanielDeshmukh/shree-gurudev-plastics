@@ -26,8 +26,7 @@ interface ReportResponse {
 }
 
 export default function ReportsPage() {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [data, setData] = useState<ReportResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -40,8 +39,8 @@ export default function ReportsPage() {
     setLoading(true);
     setError("");
     const params = new URLSearchParams();
-    if (from) params.set("from", from);
-    if (to) params.set("to", to);
+    if (reportDate) params.set("from", reportDate);
+    if (reportDate) params.set("to", reportDate);
     fetch(`/api/reports?${params}`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to fetch");
@@ -57,8 +56,8 @@ export default function ReportsPage() {
     try {
       const params = new URLSearchParams({ type });
       if (type === "daily") {
-        if (from) params.set("from", from);
-        if (to) params.set("to", to);
+        if (reportDate) params.set("from", reportDate);
+        if (reportDate) params.set("to", reportDate);
       } else {
         params.set("year", String(monthlyYear));
         params.set("month", String(monthlyMonth));
@@ -100,23 +99,14 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
           <h3 className="mb-3 text-lg font-semibold">Download Daily Report (Excel)</h3>
-          <p className="mb-4 text-sm text-gray-400">Detailed order-by-order breakdown with product and customer data.</p>
+          <p className="mb-4 text-sm text-gray-400">Detailed order-by-order breakdown for a single day.</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">From</label>
+              <label className="block text-xs text-gray-400 mb-1">Date</label>
               <input
                 type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">To</label>
-              <input
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
+                value={reportDate}
+                onChange={(e) => setReportDate(e.target.value)}
                 className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
               />
             </div>
@@ -180,20 +170,11 @@ export default function ReportsPage() {
         <h3 className="mb-4 text-lg font-semibold">Online Report Viewer</h3>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">From</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Date</label>
             <input
               type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">To</label>
-            <input
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
+              value={reportDate}
+              onChange={(e) => setReportDate(e.target.value)}
               className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
             />
           </div>
