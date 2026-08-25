@@ -189,6 +189,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     price={product.price}
                     imageUrl={product.imageUrl || ""}
                     brand={brand?.name}
+                    stock={product.stock}
                   />
                   <CompareButton
                     product={{

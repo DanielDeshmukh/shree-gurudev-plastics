@@ -13,6 +13,7 @@ export type CartItem = {
   imageUrl: string;
   brand?: string;
   quantity: number;
+  stock?: number;
 };
 
 type CartContextType = {
@@ -88,10 +89,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const key = cartKey(product.id, product.color);
       const existing = prev.find((item) => cartKey(item.id, item.color) === key);
+      const maxQty = product.stock !== undefined ? product.stock : MAX_QUANTITY;
       if (existing) {
-        const newQty = Math.min(existing.quantity + 1, MAX_QUANTITY);
+        const newQty = Math.min(existing.quantity + 1, maxQty);
         return prev.map((item) =>
-          cartKey(item.id, item.color) === key ? { ...item, quantity: newQty } : item
+          cartKey(item.id, item.color) === key ? { ...item, quantity: newQty, stock: product.stock } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -111,7 +113,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (color) return prev.filter((i) => cartKey(i.id, i.color) !== cartKey(id, color));
         return prev.filter((i) => i.id !== id);
       }
-      const clamped = Math.min(quantity, MAX_QUANTITY);
+      const maxQty = prev.find((i) => (color ? cartKey(i.id, i.color) === cartKey(id, color) : i.id === id))?.stock ?? MAX_QUANTITY;
+      const clamped = Math.min(quantity, maxQty);
       if (color) {
         const key = cartKey(id, color);
         return prev.map((i) => (cartKey(i.id, i.color) === key ? { ...i, quantity: clamped } : i));

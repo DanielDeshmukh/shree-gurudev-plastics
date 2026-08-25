@@ -22,7 +22,7 @@ export default function ProductCartSection({ id, name, color, size, price, image
 
   const handleAdd = () => {
     if (outOfStock) return;
-    addItem({ id, name, color, size, price, imageUrl, brand });
+    addItem({ id, name, color, size, price, imageUrl, brand, stock });
     openCart();
   };
 

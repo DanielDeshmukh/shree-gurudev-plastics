@@ -66,6 +66,16 @@ export default function NotificationsPage() {
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
+  useEffect(() => {
+    if (activeId === null) return;
+    const notification = notifications.find((n) => n.id === activeId);
+    if (!notification || notification.read) return;
+    const timer = setTimeout(() => {
+      markAsRead([activeId]);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [activeId, notifications]);
+
   const toggleSelect = (id: number) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -446,7 +456,6 @@ export default function NotificationsPage() {
                 key={n.id}
                 onClick={() => {
                   setActiveId(n.id);
-                  if (!n.read) markAsRead([n.id]);
                 }}
                 className={`bg-gray-900 rounded-xl border transition-all cursor-pointer hover:bg-gray-800/50 ${
                   !n.read ? "border-primary-500/40" : "border-gray-800"
