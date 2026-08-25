@@ -137,6 +137,15 @@ const VALID_STATUSES = [
       await db.orderStatusHistory.create({
         data: { orderId: order.id, status: newStatus, timestamp: now },
       });
+
+      if (newStatus === "Delivered") {
+        for (const item of order.items) {
+          await db.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
+      }
     }
 
     return NextResponse.json({ order });

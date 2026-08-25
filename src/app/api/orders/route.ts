@@ -61,37 +61,16 @@ export async function POST(request: NextRequest) {
       });
       const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
-      // 2. Validate stock and prices
-      const stockIssues: string[] = [];
+      // 2. Validate prices
       const validatedItems = items.map((item) => {
         const dbProduct = productMap.get(item.productId);
         if (!dbProduct) {
           throw new Error(`Product ${item.productId} not found`);
         }
-        if (item.quantity > dbProduct.stock) {
-          stockIssues.push(
-            `${dbProduct.name}: requested ${item.quantity}, only ${dbProduct.stock} in stock`
-          );
-        }
         return { ...item, price: dbProduct.price, color: dbProduct.color };
       });
 
-      if (stockIssues.length > 0) {
-        throw new Error(`INSUFFICIENT_STOCK:${JSON.stringify(stockIssues)}`);
-      }
-
-      // 3. Deduct stock atomically for each item
-      for (const item of validatedItems) {
-        const updated = await tx.product.updateMany({
-          where: { id: item.productId, stock: { gte: item.quantity } },
-          data: { stock: { decrement: item.quantity } },
-        });
-        if (updated.count === 0) {
-          throw new Error(`STOCK_RACE_CONDITION:${item.productId}`);
-        }
-      }
-
-      // 4. Create or update customer
+      // 3. Create or update customer
       let customerId: number | undefined;
       const total = validatedItems.reduce(
         (sum, item) => sum + item.quantity * item.price, 0

@@ -41,159 +41,83 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
     return [current, ...siblings];
   }, [product, siblingColors]);
 
-  const hasMultipleAngles = images.length > 1;
-  const hasMultipleColors = allColors.length > 1;
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px]">
-      {/* Image gallery section */}
-      <div className="p-4 md:p-6">
-        {/* Mobile: vertical stack (main image top, thumbnails below) */}
-        {/* Desktop: 3-column layout (angles | main | color variants) */}
-
-        {/* Desktop layout */}
-        <div className="hidden lg:flex gap-3 items-stretch">
-          {/* Angle thumbnails (left column) */}
-          {hasMultipleAngles && (
-            <div className="flex flex-col gap-2 shrink-0 h-[650px] overflow-y-auto">
-              {images.map((img: any, idx: number) => (
-                <button
-                  key={img.id}
-                  onClick={() => setActiveIdx(idx)}
-                  className={`relative w-[72px] h-[72px] shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeIdx === idx
-                      ? "border-primary-500 ring-2 ring-primary-200"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
-                </button>
-              ))}
-            </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Left: Image + thumbnails */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-4 md:p-8">
+        <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden">
+          {displaySrc ? (
+            <BlurImage
+              src={displaySrc}
+              alt={`${product.name} - ${product.color || ""}`}
+              fill
+              className="object-contain p-4 transition-all duration-300"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
           )}
-
-          {/* Main image (center) */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden flex-1 min-w-0">
-            {displaySrc ? (
-              <BlurImage
-                src={displaySrc}
-                alt={`${product.name} - ${product.color || ""}`}
-                fill
-                className="object-contain p-4 transition-all duration-300"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
-            )}
-            {product.color && (
-              <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                {capitalize(product.color)}
-              </span>
-            )}
-          </div>
-
-          {/* Color variant thumbnails (right column) */}
-          {hasMultipleColors && (
-            <div className="flex flex-col gap-2.5 shrink-0 pb-1 h-[650px] overflow-y-auto">
-              {allColors.map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/product/${c.slug}`}
-                  className={`relative w-12 h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
-                    c.isCurrent
-                      ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                  title={c.color || "View"}
-                >
-                  {c.imageUrl ? (
-                    <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
-                  ) : (
-                    <div className="w-full h-full bg-gray-300" />
-                  )}
-                </Link>
-              ))}
-            </div>
+          {product.color && (
+            <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
+              {capitalize(product.color)}
+            </span>
           )}
         </div>
 
-        {/* Mobile layout: angles on top, main image, colors below */}
-        <div className="lg:hidden">
-          {/* Angle thumbnails (horizontal scroll above main image) */}
-          {hasMultipleAngles && (
-            <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-1 px-1">
-              {images.map((img: any, idx: number) => (
-                <button
-                  key={img.id}
-                  onClick={() => setActiveIdx(idx)}
-                  className={`relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeIdx === idx
-                      ? "border-primary-500 ring-2 ring-primary-200"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Main image (full width, large) */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden aspect-square">
-            {displaySrc ? (
-              <BlurImage
-                src={displaySrc}
-                alt={`${product.name} - ${product.color || ""}`}
-                fill
-                className="object-contain p-4 transition-all duration-300"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
-            )}
-            {product.color && (
-              <span className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
-                {capitalize(product.color)}
-              </span>
-            )}
+        {/* Angle thumbnails */}
+        {images.length > 1 && (
+          <div className="flex gap-2 mt-4">
+            {images.map((img: any, idx: number) => (
+              <button
+                key={img.id}
+                onClick={() => setActiveIdx(idx)}
+                className={`relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                  activeIdx === idx
+                    ? "border-primary-500 ring-2 ring-primary-200"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                <BlurImage src={img.imageUrl} alt={`${product.name} angle ${idx + 1}`} fill className="object-contain bg-gray-50" />
+              </button>
+            ))}
           </div>
+        )}
 
-          {/* Color variant thumbnails (horizontal scroll below main image) */}
-          {hasMultipleColors && (
-            <div className="flex gap-2 overflow-x-auto pt-3 mt-3 -mx-1 px-1">
-              {allColors.map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/product/${c.slug}`}
-                  className={`relative w-11 h-11 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
-                    c.isCurrent
-                      ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                  title={c.color || "View"}
-                >
-                  {c.imageUrl ? (
-                    <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
-                  ) : (
-                    <div className="w-full h-full bg-gray-300" />
-                  )}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Color variant thumbnails */}
+        {allColors.length > 1 && (
+          <div className="flex gap-2 mt-4 overflow-x-auto">
+            {allColors.map((c) => (
+              <Link
+                key={c.id}
+                href={`/product/${c.slug}`}
+                className={`relative w-12 h-12 shrink-0 rounded-full overflow-hidden border-2 transition-all ${
+                  c.isCurrent
+                    ? "border-primary-500 ring-2 ring-primary-200 shadow-md"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+                title={c.color || "View"}
+              >
+                {c.imageUrl ? (
+                  <BlurImage src={c.imageUrl} alt={c.color || ""} fill className="object-contain bg-gray-50" />
+                ) : (
+                  <div className="w-full h-full bg-gray-300" />
+                )}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Product info section */}
-      <div className="p-4 md:p-8 flex flex-col justify-center lg:border-l border-gray-100">
+      {/* Right: Product info */}
+      <div className="space-y-4">
         {brand && (
-          <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline mb-2">
+          <Link href={`/brand/${brand.slug}`} className="text-primary-500 text-sm font-medium hover:underline">
             {brand.name}
           </Link>
         )}
         <ProductTags tags={product.tags || ""} />
-        <div className="flex items-start justify-between gap-2 mb-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{product.name}</h1>
+        <div className="flex items-start justify-between gap-2">
+          <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
           <div className="flex items-center gap-3 shrink-0">
             <ShareButton
               product={{
@@ -220,51 +144,39 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           </div>
         </div>
 
-        <div className="space-y-2 mb-6">
-          {product.color && (
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-sm w-20">Color</span>
-              <span className="text-xs bg-primary-50 text-primary-600 px-2.5 py-0.5 rounded-full font-medium">
-                {product.color}
-              </span>
-            </div>
-          )}
-
-          {(product.height || product.width || product.depth || product.weight) && (
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-sm w-20">Dimensions</span>
-              <span className="text-gray-900 text-sm font-medium">
-                {[product.height && `H: ${product.height} cm`, product.width && `W: ${product.width} cm`, product.depth && `D: ${product.depth} cm`].filter(Boolean).join(' x ')}
-                {product.weight ? ` | Weight: ${product.weight} kg` : ''}
-              </span>
-            </div>
-          )}
-
-          {product.category && (
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-sm w-20">Category</span>
-              <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
-            </div>
-          )}
-        </div>
-
-        {product.description && (
-          <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
+        {product.color && (
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500 text-sm">Color</span>
+            <span className="text-xs bg-primary-50 text-primary-600 px-2.5 py-0.5 rounded-full font-medium">
+              {product.color}
+            </span>
+          </div>
         )}
 
-        <p className="text-3xl font-bold text-primary-500 mb-2">{product.price > 0 ? `\u20B9${product.price}` : "Price on request"}</p>
-        <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
+        {product.category && (
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500 text-sm">Category</span>
+            <Link href={`/products?category=${categorySlug}`} className="text-primary-500 text-sm font-medium hover:underline">{product.category}</Link>
+          </div>
+        )}
 
-        <div className="mb-4">
+        {product.description && (
+          <p className="text-gray-600 leading-relaxed">{product.description}</p>
+        )}
+
+        <p className="text-4xl font-bold text-primary-500">{product.price > 0 ? `\u20B9${product.price}` : "Price on request"}</p>
+        <p className="text-gray-500 text-sm">Inclusive of all taxes. Bulk pricing available.</p>
+
+        <div className="mt-6">
           <p className="text-sm font-medium text-gray-700 mb-2">Check Delivery Availability</p>
           <PincodeCheck />
         </div>
 
-        <div className="mb-6">
+        <div className="mt-6">
           {product.stock > 0 ? (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
               <span className="w-2 h-2 bg-green-500 rounded-full" />
-              In Stock - Ready to Ship
+              {product.stock} units in stock
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700 bg-red-100 px-3 py-1 rounded-full">
