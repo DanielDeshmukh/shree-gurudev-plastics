@@ -17,8 +17,11 @@ export async function GET(request: NextRequest) {
 
     if (from || to) {
       where.createdAt = {};
-      if (from) (where.createdAt as Record<string, unknown>).gte = new Date(from);
-      if (to) (where.createdAt as Record<string, unknown>).lte = new Date(to);
+      if (from) (where.createdAt as Record<string, unknown>).gte = new Date(from + "T00:00:00.000+05:30");
+      if (to) {
+        const endDate = new Date(to + "T23:59:59.999+05:30");
+        (where.createdAt as Record<string, unknown>).lte = endDate;
+      }
     }
 
     const orders = await db.order.findMany({
