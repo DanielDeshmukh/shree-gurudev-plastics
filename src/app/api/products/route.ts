@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const maxPrice = parseFloat(searchParams.get("maxPrice") || "");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "24");
+    const ungrouped = searchParams.get("ungrouped") === "true";
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};
@@ -78,20 +79,24 @@ export async function GET(request: NextRequest) {
     };
 
     // Group products by name — each group = one product family
-    const grouped = new Map<string, any>();
-    for (const p of allProducts) {
-      const key = p.name;
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          ...p,
-          colors: [{ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock }],
-        });
-      } else {
-        grouped.get(key)!.colors.push({ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock });
+    let products: any[];
+    if (ungrouped) {
+      products = allProducts;
+    } else {
+      const grouped = new Map<string, any>();
+      for (const p of allProducts) {
+        const key = p.name;
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            ...p,
+            colors: [{ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock }],
+          });
+        } else {
+          grouped.get(key)!.colors.push({ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock });
+        }
       }
+      products = Array.from(grouped.values());
     }
-
-    const products = Array.from(grouped.values());
 
     // Apply client-side sort on grouped products
     const sortedProducts = (() => {

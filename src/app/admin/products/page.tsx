@@ -60,6 +60,8 @@ export default function ProductsPage() {
   const fetchProducts = () => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
+    params.set("ungrouped", "true");
+    params.set("limit", "9999");
     fetch(`/api/products?${params}`)
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
@@ -276,12 +278,33 @@ export default function ProductsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">Color</label>
-                  <input
-                    type="text"
+                  <select
                     value={form.color}
-                    onChange={(e) => setForm({ ...form, color: e.target.value })}
+                    onChange={(e) => {
+                      const selectedColor = e.target.value;
+                      if (editingId) {
+                        const sibling = products.find((p) => p.name === form.name && p.color === selectedColor && p.id !== editingId);
+                        if (sibling) {
+                          openEdit(sibling);
+                          return;
+                        }
+                      }
+                      setForm({ ...form, color: selectedColor });
+                    }}
                     className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500"
-                  />
+                  >
+                    {(() => {
+                      const siblings = products.filter((p) => p.name === form.name);
+                      if (siblings.length > 0) {
+                        return siblings.map((p) => (
+                          <option key={p.id} value={p.color}>
+                            {p.color || "No color"}{p.stock <= 0 ? " (Out of stock)" : ""}
+                          </option>
+                        ));
+                      }
+                      return <option value={form.color}>{form.color || "No color"}</option>;
+                    })()}
+                  </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
