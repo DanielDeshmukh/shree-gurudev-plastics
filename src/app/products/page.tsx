@@ -318,7 +318,7 @@ function ProductsPageInner() {
       .catch(() => {});
   }, []);
 
-  // Server-side filtered fetch â€” re-fetches when filters change
+  // Server-side filtered fetch - re-fetches when filters change
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams();

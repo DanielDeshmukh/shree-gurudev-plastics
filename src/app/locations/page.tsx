@@ -65,7 +65,7 @@ const areas = [
 const benefits = [
   {
     title: "Same-Day Delivery for Bhayander & Naigaon",
-    description: "Order before 2 PM and get same-day delivery in Bhayander and Naigaon. No waiting for days â€” your plastic products arrive the same day.",
+    description: "Order before 2 PM and get same-day delivery in Bhayander and Naigaon. No waiting for days - your plastic products arrive the same day.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -83,7 +83,7 @@ const benefits = [
   },
   {
     title: "Direct Wholesale Prices",
-    description: "Buy directly from the distributor â€” no middleman, no markup. Get the lowest wholesale prices on all plastic products from top brands.",
+    description: "Buy directly from the distributor - no middleman, no markup. Get the lowest wholesale prices on all plastic products from top brands.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -233,7 +233,7 @@ export default function LocationsPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Business Hours</p>
-                  <p className="text-gray-700">Mon â€“ Sat: 9:00 AM â€“ 8:00 PM</p>
+                  <p className="text-gray-700">Mon - Sat: 9:00 AM - 8:00 PM</p>
                 </div>
                 <div>
                   <p className="text-gray-500 font-medium mb-1">Service Areas</p>

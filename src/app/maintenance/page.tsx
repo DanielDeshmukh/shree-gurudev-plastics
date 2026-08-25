@@ -58,7 +58,7 @@ export default function MaintenancePage() {
           if (!d.enabled) {
             window.location.href = "/";
           }
-          // else: still ON, don't reload â€” show expired state
+          // else: still ON, don't reload - show expired state
         })
         .catch(() => {});
     }
@@ -131,7 +131,7 @@ export default function MaintenancePage() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
                   </span>
                   <p className="text-base font-semibold text-gray-700">
-                    Maintenance complete â€” please refresh
+                    Maintenance complete - please refresh
                   </p>
                 </div>
               </>
@@ -186,7 +186,7 @@ export default function MaintenancePage() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
                   </span>
                   <p className="text-base font-semibold text-gray-700">
-                    We&apos;re working on it â€” back soon
+                    We&apos;re working on it - back soon
                   </p>
                 </div>
               </>

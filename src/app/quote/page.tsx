@@ -271,7 +271,7 @@ export default function QuotePage() {
               value={form.description}
               onChange={handleChange}
               className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.description ? "border-red-400" : "border-gray-300"}`}
-              placeholder={t("Describe the products you need â€” colors, sizes, specifications, or any other requirements", "à¤†à¤ªà¤•à¥‹ à¤•à¥Œà¤¨ à¤¸à¥‡ à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤šà¤¾à¤¹à¤¿à¤ â€” à¤°à¤‚à¤—, à¤†à¤•à¤¾à¤°, à¤µà¤¿à¤¨à¤¿à¤°à¥à¤¦à¥‡à¤¶, à¤¯à¤¾ à¤…à¤¨à¥à¤¯ à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾à¤à¤‚ à¤²à¤¿à¤–à¥‡à¤‚")}
+              placeholder={t("Describe the products you need - colors, sizes, specifications, or any other requirements", "à¤†à¤ªà¤•à¥‹ à¤•à¥Œà¤¨ à¤¸à¥‡ à¤‰à¤¤à¥à¤ªà¤¾à¤¦à¤¨ à¤šà¤¾à¤¹à¤¿à¤ - à¤°à¤‚à¤—, à¤†à¤•à¤¾à¤°, à¤µà¤¿à¤¨à¤¿à¤°à¥à¤¦à¥‡à¤¶, à¤¯à¤¾ à¤…à¤¨à¥à¤¯ à¤†à¤µà¤¶à¥à¤¯à¤•à¤¤à¤¾à¤à¤‚ à¤²à¤¿à¤–à¥‡à¤‚")}
             />
             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
           </div>
