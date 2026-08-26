@@ -24,6 +24,9 @@ type CartContextType = {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+  festivalDiscountPct: number;
+  festivalDiscountAmount: number;
+  finalPrice: number;
   isCartOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -71,11 +74,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [festivalDiscountPct, setFestivalDiscountPct] = useState(0);
 
-  // Hydrate from localStorage on mount
   useEffect(() => {
     setItems(loadCart());
     setHydrated(true);
+    fetch("/api/festival/status")
+      .then((r) => r.json())
+      .then((d) => { if (d.enabled && d.discountPct > 0) setFestivalDiscountPct(d.discountPct); })
+      .catch(() => {});
   }, []);
 
   // Persist to localStorage on every change (after hydration)
@@ -132,9 +139,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const totalPrice = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
+  const festivalDiscountAmount = useMemo(() => Math.round(totalPrice * festivalDiscountPct / 100), [totalPrice, festivalDiscountPct]);
+  const finalPrice = useMemo(() => totalPrice - festivalDiscountAmount, [totalPrice, festivalDiscountAmount]);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice, isCartOpen, openCart, closeCart }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice, festivalDiscountPct, festivalDiscountAmount, finalPrice, isCartOpen, openCart, closeCart }}>
       {children}
     </CartContext.Provider>
   );

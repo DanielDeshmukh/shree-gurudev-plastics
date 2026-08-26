@@ -22,7 +22,7 @@ const DELIVERY_AREAS = [
 const STORE_ADDRESS = "Shree Gurudev Plastics, Bhayander (West), Maharashtra";
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, festivalDiscountPct, festivalDiscountAmount, finalPrice, clearCart } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Placing Order..." : `Place Order — ₹${totalPrice.toLocaleString("en-IN")}`}
+                {loading ? "Placing Order..." : `Place Order — ₹${(festivalDiscountPct > 0 ? finalPrice : totalPrice).toLocaleString("en-IN")}`}
               </button>
             </form>
           </div>
@@ -401,6 +401,14 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">Subtotal ({items.length} items)</span>
                   <span className="font-medium">₹{totalPrice.toLocaleString("en-IN")}</span>
                 </div>
+                {festivalDiscountPct > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-orange-600 flex items-center gap-1">
+                      Festival Discount ({festivalDiscountPct}%)
+                    </span>
+                    <span className="text-orange-600 font-medium">-₹{festivalDiscountAmount.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 flex items-center gap-1">
                     {isDelivery ? (
@@ -414,7 +422,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
                   <span>Total</span>
-                  <span className="text-primary-500">₹{totalPrice.toLocaleString("en-IN")}</span>
+                  <span className="text-primary-500">₹{(festivalDiscountPct > 0 ? finalPrice : totalPrice).toLocaleString("en-IN")}</span>
                 </div>
               </div>
 
