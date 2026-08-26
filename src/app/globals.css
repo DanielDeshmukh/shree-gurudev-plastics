@@ -11,11 +11,68 @@
   --color-primary-700: #c2410c;
   --color-primary-800: #9a3412;
   --color-primary-900: #7c2d12;
+  --color-festival-gold: #ff8f00;
+  --color-festival-saffron: #ff6f00;
+  --color-festival-red: #c62828;
+  --color-festival-cream: #fff8e1;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #1a1a1a;
+  --festival-primary: #f97316;
+  --festival-primary-light: #fff7ed;
+  --festival-primary-dark: #c2410c;
+  --festival-accent: #c62828;
+  --festival-gradient: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+[data-festival="ganesh_chaturthi"] {
+  --festival-primary: #ff8f00;
+  --festival-primary-light: #fff8e1;
+  --festival-primary-dark: #e65100;
+  --festival-accent: #c62828;
+  --festival-gradient: linear-gradient(135deg, #ff8f00, #ff6f00, #e65100);
+}
+
+[data-festival="diwali"] {
+  --festival-primary: #ff6f00;
+  --festival-primary-light: #fff3e0;
+  --festival-primary-dark: #bf360c;
+  --festival-accent: #ffd600;
+  --festival-gradient: linear-gradient(135deg, #ff6f00, #ffab00, #ffd600);
+}
+
+[data-festival="holi"] {
+  --festival-primary: #e91e63;
+  --festival-primary-light: #fce4ec;
+  --festival-primary-dark: #880e4f;
+  --festival-accent: #7c4dff;
+  --festival-gradient: linear-gradient(135deg, #e91e63, #9c27b0, #7c4dff);
+}
+
+[data-festival="navratri"] {
+  --festival-primary: #d32f2f;
+  --festival-primary-light: #ffebee;
+  --festival-primary-dark: #b71c1c;
+  --festival-accent: #ffd600;
+  --festival-gradient: linear-gradient(135deg, #d32f2f, #ff6f00, #ffd600);
+}
+
+[data-festival="christmas"] {
+  --festival-primary: #c62828;
+  --festival-primary-light: #ffebee;
+  --festival-primary-dark: #8e0000;
+  --festival-accent: #2e7d32;
+  --festival-gradient: linear-gradient(135deg, #c62828, #2e7d32);
+}
+
+[data-festival="new_year"] {
+  --festival-primary: #1565c0;
+  --festival-primary-light: #e3f2fd;
+  --festival-primary-dark: #0d47a1;
+  --festival-accent: #ffd600;
+  --festival-gradient: linear-gradient(135deg, #1565c0, #7c4dff, #ffd600);
 }
 
 body {
@@ -26,6 +83,33 @@ body {
 
 .brand-gradient {
   background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+}
+
+.festival-gradient {
+  background: var(--festival-gradient);
+}
+
+.festival-text {
+  color: var(--festival-primary);
+}
+
+.festival-bg {
+  background-color: var(--festival-primary-light);
+}
+
+.festival-border {
+  border-color: var(--festival-primary);
+}
+
+@keyframes festival-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.festival-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-size: 200% 100%;
+  animation: festival-shimmer 3s infinite;
 }
 
 @keyframes slide-up {
