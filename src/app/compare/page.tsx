@@ -142,8 +142,11 @@ export default function ComparePage() {
         if (!d.ids || !Array.isArray(d.ids)) return;
         const res = await fetch(`/api/products?ids=${d.ids.join(",")}`);
         const data = await res.json();
-        (data.products || []).forEach((p: { id: number; name: string; slug: string; color: string; size: string; price: number; imageUrl: string; brand?: string; stock: number; category: string }) => {
-          if (!isComparing(p.id)) toggleCompare(p);
+        (data.products || []).forEach((p: any) => {
+          if (!isComparing(p.id)) toggleCompare({
+            ...p,
+            brand: typeof p.brand === "object" && p.brand !== null ? p.brand.name : (p.brand ?? ""),
+          });
         });
       })
       .catch(() => {});

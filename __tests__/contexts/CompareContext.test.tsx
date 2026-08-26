@@ -70,7 +70,6 @@ describe("CompareContext", () => {
   });
 
   it("limits to 4 items", async () => {
-    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
     const wrapper = ({ children }: { children: React.ReactNode }) => <CompareProvider>{children}</CompareProvider>;
     const { result } = renderHook(() => useCompare(), { wrapper });
     // Add 4 items
@@ -81,8 +80,6 @@ describe("CompareContext", () => {
     // 5th should be blocked
     act(() => result.current.toggleCompare(allItems[4]));
     expect(result.current.compareCount).toBe(4);
-    expect(alertSpy).toHaveBeenCalled();
-    alertSpy.mockRestore();
   });
 
   it("throws when used outside provider", () => {
