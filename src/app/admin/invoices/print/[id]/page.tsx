@@ -19,7 +19,7 @@ export default async function PrintInvoicePage({ params }: { params: Promise<{ i
 
   if (!invoice) {
     return (
-      <html>
+    <html lang="en">
         <body style={{ padding: 40, textAlign: "center", fontFamily: "Arial, sans-serif" }}>
           <h1>Invoice not found</h1>
         </body>

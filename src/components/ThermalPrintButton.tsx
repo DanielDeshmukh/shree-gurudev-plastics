@@ -43,7 +43,7 @@ export default function ThermalPrintButton({ pdfUrl }: { pdfUrl: string }) {
 
     doc.open();
     doc.write([
-      "<html><head><style>" + thermalCSS + "</style></head><body>",
+      "<!DOCTYPE html><html><head><style>" + thermalCSS + "</style></head><body>",
       '<div class="receipt">' + content.innerHTML + "</div>",
       "</body></html>",
     ].join(""));
