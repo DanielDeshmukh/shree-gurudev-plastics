@@ -1,10 +1,46 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { useCompare } from "@/context/CompareContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+
+function SwipeableCard({ children, onSwipe }: { children: React.ReactNode; onSwipe: () => void }) {
+  const startX = useRef(0);
+  const [offset, setOffset] = useState(0);
+  const [swiping, setSwiping] = useState(false);
+
+  const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX; setSwiping(true); };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!swiping) return;
+    const diff = e.touches[0].clientX - startX.current;
+    if (diff < 0) setOffset(Math.max(diff, -120));
+  };
+  const onTouchEnd = () => {
+    setSwiping(false);
+    if (offset < -80) { onSwipe(); setOffset(0); }
+    else setOffset(0);
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-xl">
+      <div className="absolute inset-0 flex items-center justify-end pr-4 bg-red-500 text-white text-xs font-medium rounded-xl" style={{ opacity: Math.min(Math.abs(offset) / 80, 1) }}>
+        {offset < -80 ? "Release to remove" : "Swipe to remove"}
+      </div>
+      <div
+        className="relative bg-white border border-gray-200 rounded-xl transition-transform"
+        style={{ transform: `translateX(${offset}px)`, transition: swiping ? "none" : "transform 0.2s ease" }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
@@ -129,7 +165,8 @@ export default function ComparePage() {
 
         <div className="md:hidden space-y-4">
           {items.map((item) => (
-            <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <SwipeableCard key={item.id} onSwipe={() => removeCompare(item.id)}>
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="flex gap-3 p-4">
                 <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-200">
                   {item.imageUrl ? (
@@ -170,7 +207,8 @@ export default function ComparePage() {
                           {t("WhatsApp Enquiry", "WhatsApp पूछताछ")}
                 </a>
               </div>
-            </div>
+              </div>
+            </SwipeableCard>
           ))}
         </div>
       </div>
