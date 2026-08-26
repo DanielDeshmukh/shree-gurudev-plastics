@@ -7,7 +7,7 @@ import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
-import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping } from "react-icons/md";
+import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat } from "react-icons/md";
 
 type RatingMap = Record<number, { avg: number; count: number }>;
 type PincodeResult = { available: boolean; area: string; estimatedDays: string; deliveryCharge: string } | null;
@@ -84,6 +84,14 @@ export default function ComparePage() {
     setPincodeLoading(false);
   };
 
+  const handleBulkEnquiry = () => {
+    const productList = items
+      .map((item, i) => `${i + 1}. ${item.name}${item.color ? ` (${item.color})` : ""}${item.brand ? ` - ${item.brand}` : ""}`)
+      .join("\n");
+    const msg = `Namaste!\n\nI am interested in the following products:\n\n${productList}\n\nKindly share the best prices, availability, and delivery details for all.\n\nThank you!`;
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
   if (compareCount === 0) {
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -139,6 +147,11 @@ export default function ComparePage() {
             <button onClick={clearCompare} className="px-3 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">
               {t("Clear All", "सभी हटाएं")}
             </button>
+            {compareCount >= 2 && (
+              <button onClick={handleBulkEnquiry} className="px-3 py-2 text-sm font-medium text-green-600 border border-green-300 rounded-lg hover:bg-green-50 transition-colors flex items-center gap-1.5">
+                <MdChat size={16} /> {t("Enquiry All", "सभी की पूछताछ")}
+              </button>
+            )}
           </div>
         </div>
 
