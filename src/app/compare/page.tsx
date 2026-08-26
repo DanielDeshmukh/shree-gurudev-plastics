@@ -9,6 +9,7 @@ import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
 import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat, MdShare, MdLocalFireDepartment } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 type RatingMap = Record<number, { avg: number; count: number; totalOrdered: number }>;
 type PincodeResult = { available: boolean; area: string; estimatedDays: string; deliveryCharge: string } | null;
@@ -99,6 +100,7 @@ export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount, toggleCompare, isComparing } = useCompare();
   const { addItem, openCart } = useCart();
   const { t } = useLanguage();
+  const { toast } = useToast();
   const searchParams = useSearchParams();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
@@ -187,9 +189,9 @@ export default function ComparePage() {
       const { token } = await res.json();
       const url = `${window.location.origin}/compare?c=${token}`;
       await navigator.clipboard.writeText(url);
-      alert(t("Comparison link copied!", "तुलना लिंक कॉपी हो गया!"));
+      toast(t("Comparison link copied!", "तुलना लिंक कॉपी हो गया!"), "success");
     } catch {
-      alert(t("Failed to generate link", "लिंक बनाने में विफल"));
+      toast(t("Failed to generate link", "लिंक बनाने में विफल"), "error");
     }
   };
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useToast } from "@/components/Toast";
 import {
   MdCheckCircle,
   MdShoppingCart,
@@ -51,6 +52,7 @@ function formatDateTime(dateStr: string) {
 export default function TrackOrderPage() {
   const routeParams = useParams();
   const token = routeParams.token as string;
+  const { toast } = useToast();
   const [order, setOrder] = useState<OrderData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -98,10 +100,10 @@ export default function TrackOrderPage() {
         setOrder((prev) => prev ? { ...prev, status: "cancelled" } : prev);
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to cancel order");
+        toast(data.error || "Failed to cancel order", "error");
       }
     } catch {
-      alert("Something went wrong. Please try again.");
+      toast("Something went wrong. Please try again.", "error");
     } finally {
       setCancelling(false);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
+import { useToast } from "@/components/Toast";
 
 export type CompareItem = {
   id: number;
@@ -28,6 +29,7 @@ const CompareContext = createContext<CompareContextType | undefined>(undefined);
 
 export function CompareProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CompareItem[]>([]);
+  const { toast } = useToast();
 
   const toggleCompare = useCallback((item: CompareItem) => {
     setItems((prev) => {
@@ -36,12 +38,12 @@ export function CompareProvider({ children }: { children: ReactNode }) {
         return prev.filter((i) => i.id !== item.id);
       }
       if (prev.length >= 4) {
-        alert("You can compare up to 4 products at a time.");
+        toast("You can compare up to 4 products at a time.", "error");
         return prev;
       }
       return [...prev, item];
     });
-  }, []);
+  }, [toast]);
 
   const removeCompare = useCallback((id: number) => {
     setItems((prev) => prev.filter((i) => i.id !== id));

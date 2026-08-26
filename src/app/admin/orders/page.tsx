@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MdStore, MdLocalShipping, MdContentCopy, MdChat, MdPrint } from "react-icons/md";
 import { SITE_URL } from "@/lib/seo";
 import ThermalReceiptModal from "@/components/ThermalReceiptModal";
+import { useToast } from "@/components/Toast";
 
 interface OrderItem {
   id: number;
@@ -56,6 +57,7 @@ const paymentMethodLabels: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+  const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
@@ -171,9 +173,9 @@ export default function OrdersPage() {
     const url = getTrackingUrl(order.trackingToken);
     try {
       await navigator.clipboard.writeText(url);
-      alert("Tracking link copied!");
+      toast("Tracking link copied!", "success");
     } catch {
-      prompt("Copy this tracking link:", url);
+      toast("Failed to copy link", "error");
     }
   };
 
