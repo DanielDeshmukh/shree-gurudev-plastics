@@ -264,41 +264,6 @@ All pincodes verified against India Post API.
 
 ---
 
-## Getting Started
-
-```bash
-# Clone
-git clone https://github.com/DanielDeshmukh/shree-gurudev-plastics.git
-cd shree-gurudev-plastics
-
-# Install
-npm install --legacy-peer-deps
-
-# Setup
-cp .env.example .env  # Fill in credentials
-npx prisma generate
-npx prisma db push
-
-# Run
-npm run dev
-```
-
-### Required Environment Variables
-
-```
-DATABASE_URL=libsql://...
-TURSO_AUTH_TOKEN=eyJ...
-JWT_SECRET=your-secret
-ADMIN_USERNAME=shreegurudev
-ADMIN_PASSWORD=shreegurudevplastics
-CLOUDINARY_CLOUD_NAME=ieszjiwe
-CLOUDINARY_API_KEY=...
-CLOUDINARY_API_SECRET=...
-NEXT_PUBLIC_SITE_URL=https://shree-gurudev-plastics.vercel.app
-```
-
----
-
 ## License
 
 Private — Shree Gurudev Plastics
