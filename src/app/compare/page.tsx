@@ -1,14 +1,43 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useCompare } from "@/context/CompareContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+import { MdStar, MdStarHalf } from "react-icons/md";
+
+type RatingMap = Record<number, { avg: number; count: number }>;
+
+function StarRating({ avg, count }: { avg: number; count: number }) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(avg)) stars.push(<MdStar key={i} size={14} className="text-amber-400" />);
+    else if (i - 0.5 <= avg) stars.push(<MdStarHalf key={i} size={14} className="text-amber-400" />);
+    else stars.push(<MdStar key={i} size={14} className="text-gray-200" />);
+  }
+  return (
+    <span className="inline-flex items-center gap-0.5">
+      {stars}
+      <span className="text-[10px] text-gray-400 ml-1">({count})</span>
+    </span>
+  );
+}
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
   const { t } = useLanguage();
+  const [ratings, setRatings] = useState<RatingMap>({});
+
+  useEffect(() => {
+    if (items.length === 0) return;
+    const ids = items.map((i) => i.id).join(",");
+    fetch(`/api/reviews/batch?ids=${ids}`)
+      .then((r) => r.json())
+      .then((d) => setRatings(d.ratings || {}))
+      .catch(() => {});
+  }, [items]);
 
   if (compareCount === 0) {
     return (
@@ -32,6 +61,7 @@ export default function ComparePage() {
     { label: t("Size", "आकार"), key: "size" },
     { label: t("Category", "श्रेणी"), key: "category" },
     { label: t("Stock", "स्टॉक"), key: "stock" },
+    { label: t("Rating", "रेटिंग"), key: "rating" },
     { label: t("Enquiry", "पूछताछ"), key: "enquiry" },
   ];
 
@@ -100,11 +130,18 @@ export default function ComparePage() {
                       {attr.key === "color" && <span className="text-sm text-gray-700">{item.color || "—"}</span>}
                       {attr.key === "size" && <span className="text-sm text-gray-700">{item.size || "—"}</span>}
                       {attr.key === "category" && <span className="text-sm text-gray-700">{item.category || "—"}</span>}
-                      {attr.key === "stock" && (
+                       {attr.key === "stock" && (
                         <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${item.stock > 0 ? "text-green-700 bg-green-100" : "text-red-700 bg-red-100"}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? "bg-green-500" : "bg-red-500"}`} />
                            {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out of Stock", "स्टॉक में नहीं")}
                         </span>
+                      )}
+                      {attr.key === "rating" && (
+                        ratings[item.id] ? (
+                          <StarRating avg={ratings[item.id].avg} count={ratings[item.id].count} />
+                        ) : (
+                          <span className="text-xs text-gray-300">{t("No reviews", "कोई समीक्षा नहीं")}</span>
+                        )
                       )}
                       {attr.key === "enquiry" && (
                         <a
@@ -155,6 +192,14 @@ export default function ComparePage() {
                     <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? "bg-green-500" : "bg-red-500"}`} />
                     {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out", "नहीं")}
                   </span>
+                </div>
+                <div className="bg-gray-50 px-3 py-2">
+                  <span className="text-[10px] text-gray-500 block">{t("Rating", "रेटिंग")}</span>
+                  {ratings[item.id] ? (
+                    <StarRating avg={ratings[item.id].avg} count={ratings[item.id].count} />
+                  ) : (
+                    <span className="text-[10px] text-gray-300">{t("No reviews", "कोई समीक्षा नहीं")}</span>
+                  )}
                 </div>
               </div>
               <div className="p-3 border-t border-gray-200">
