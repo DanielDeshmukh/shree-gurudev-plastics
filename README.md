@@ -2,7 +2,7 @@
 
 # Shree Gurudev Plastics
 
-Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. Browse 866+ products from Aristo, KG Plast, and Mango Chairs — chairs, tables, buckets, containers, storage, kitchenware, and accessories.
+Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. Browse 1,361+ products from Aristo, KG Plast, and Mango Chairs — chairs, tables, buckets, containers, storage, kitchenware, and accessories.
 
 ---
 
@@ -12,7 +12,7 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
 [![Prisma](https://img.shields.io/badge/Prisma-6.12-2D3748?logo=prisma)](https://prisma.io)
-[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)](https://sqlite.org)
+[![Turso](https://img.shields.io/badge/Turso-Database-4FF8D2?logo=sqlite)](https://turso.tech)
 [![Cloudinary](https://img.shields.io/badge/Cloudinary-Image_Storage-FD9A00?logo=cloudinary)](https://cloudinary.com)
 [![License](https://img.shields.io/badge/License-Private-red)](#)
 
@@ -25,10 +25,45 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 | **Business** | Shree Gurudev Plastics |
 | **Location** | Naigaon, Bhayander, Maharashtra, India |
 | **Warehouse** | 5,000 sq ft |
-| **Products** | 866+ across 3 brand catalogs |
+| **Products** | 1,361+ color variants across 3 brand catalogs |
 | **Brands** | Aristo, KG Plast, Mango Chairs |
 | **WhatsApp** | [+91 85520 84251](https://wa.me/918552084251) |
-| **Business Model** | Wholesale distributor, bulk seller |
+| **Business Model** | Wholesale distributor, bulk seller, monthly subscription |
+| **Built in** | 16 days |
+
+---
+
+## Architecture
+
+```
+Customer (Browser/Phone)
+    |
+    v
+Next.js App (Vercel)
+    |-- Public: Product catalog, cart, order tracking, quote form
+    |-- Admin: Products, orders, invoices, analytics, reports
+    |-- API: REST endpoints with JWT auth
+    |
+    v
+Turso Database (libSQL)          Cloudinary (Images)
+    |-- 22 models                     |-- Product photos
+    |-- 1,361+ products               |-- Brand logos
+    |-- 63 verified pincodes          |-- Optimized delivery
+    |
+    v
+WhatsApp Business API (via wa.me)
+    |-- Order enquiries
+    |-- Follow-up messages
+    |-- Festival broadcasts
+```
+
+### Key Technical Decisions
+
+- **Product-per-color architecture**: Each color variant is a separate DB row with its own ID, slug, stock, and image. Public API groups by name; admin API shows all variants.
+- **Stock race conditions solved**: Atomic `$transaction` for deduction, status history checks before restoration, no double-decrement on delivery.
+- **Invoice-status sync**: Invoice status auto-updates when order payment changes (draft -> paid).
+- **Thermal receipts**: 58mm iframe-based print with `@page { size: 58mm auto }` instead of stretched A4 PDFs.
+- **63 verified pincodes**: Verified against India Post API across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, Palghar.
 
 ---
 
@@ -103,13 +138,164 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 | Framework | Next.js 15.5 (App Router) |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS v4 |
-| Database | SQLite + Prisma 6.12 |
+| Database | Turso (libSQL) + Prisma 6.12 |
 | Image Storage | Cloudinary |
 | Authentication | JWT + bcryptjs |
 | Charts | Recharts |
 | Excel Export | Exceljs |
-| Icons | react-icons |
+| PDF | jsPDF |
+| Icons | react-icons (Material Design) |
 | PWA | Service Worker + Manifest |
+| Hosting | Vercel |
+| CI/CD | GitHub Actions |
+
+---
+
+## Order Lifecycle
+
+```
+Customer places order
+  -> Stock deducted atomically in transaction
+  -> Tracking token generated (32-char hex)
+  -> Notification created for admin
+
+Admin: pending -> confirmed -> shipped -> arrived -> delivered
+  -> Intermediate statuses auto-filled in history
+  -> Customer sees real-time updates on tracking page (auto-refreshes every 10s)
+
+Admin: mark paid
+  -> Invoice status auto-syncs to "paid"
+  -> Payment status updated across system
+```
+
+### Race Conditions Solved
+
+| Problem | Solution |
+|---------|----------|
+| Double stock restore on cancel | Check `existingStatuses.has("Cancelled")` before restoring |
+| Stock double-decrement on delivery | Removed stock change from delivery — only deducted on creation |
+| Delete after cancel restores again | `DELETE` checks `order.status !== "Cancelled"` |
+| Cart exceeds available stock | `CartItem.stock` field, `+` button disabled at limit, "Only X left" warning |
+| Two orders oversell same stock | Atomic `$transaction` — validation + deduction in one DB operation |
+
+---
+
+## GST Invoice System
+
+- **Invoice number**: `SGP/YYMM/NNNN` (e.g., `SGP/2608/0001`)
+- **Intra-state** (Maharashtra): CGST + SGST (split equally)
+- **Inter-state**: IGST (full amount)
+- **HSN codes**: Auto-mapped by category (chairs: 9401, tables: 9403, buckets: 3924, bottles: 3923, bags: 3926, pipes: 3917)
+- **Thermal receipt**: 58mm paper style with SGP header/footer, Courier New monospace
+- **Status sync**: Invoice status follows order payment status (draft/paid/cancelled)
+
+---
+
+## Delivery System
+
+### 63 Verified Pincodes
+
+| Area | Pincodes | Delivery Time |
+|------|----------|---------------|
+| Bhayander | 401101, 401102 | Same-day |
+| Naigaon | 401208 | 1-2 days |
+| Vasai/Nallasopara | 401201, 401202, 401203, 401207, 401209, 401303 | 2-3 days |
+| Virar | 401301, 401302, 401304, 401305, 401306 | 2-3 days |
+| Mira Road | 401104, 401107 | 2-3 days |
+| Thane | 400601-400615 (11 pincodes) | 2-3 days |
+| Mumbai | 32 pincodes across suburbs | 2-3 days |
+| Palghar | 401401, 401402 | 2-3 days |
+
+All pincodes verified against India Post API.
+
+---
+
+## Security
+
+| Layer | Implementation |
+|-------|---------------|
+| Auth | JWT + bcryptjs, httpOnly cookies, 7-day expiry |
+| Middleware | All `/admin/*` routes validated server-side before page load |
+| Headers | X-Frame-Options DENY, HSTS, CSP, nosniff, XSS protection |
+| CORS | Whitelisted origins only |
+| Admin Lock | Single admin account enforced at ORM, login, and middleware |
+| Security Logger | Tracks unauthorized access, path traversal, rate limiting |
+| Registration | All signup endpoints return 404 (blocked) |
+
+---
+
+## SEO
+
+- 80+ targeted keywords (product, location, business terms)
+- JSON-LD structured data: LocalBusiness with geo-coordinates, FAQ, Breadcrumb
+- Dynamic sitemap from DB (products, brands, static pages)
+- Meta tags, Open Graph, Twitter cards on every page
+- robots.txt with sitemap reference
+
+---
+
+## Testing
+
+- **174 automated tests** across 17 test suites
+- Unit tests: GST calculations, pincodes, pricing, validation, auth, rate limiting
+- Integration tests: API routes, middleware
+- Component tests: Cart context, comparison context
+- CI: GitHub Actions runs lint, typecheck, build, and test on every push/PR
+
+---
+
+## Admin Panel Features
+
+| Feature | Description |
+|---------|-------------|
+| Dashboard | Revenue stats, order counts, customer metrics, low stock alerts |
+| Products | CRUD with images, categories, 4-tier pricing, MOQ, stock levels |
+| Orders | Status management, payment tracking, stock restoration on cancel |
+| Invoices | GST invoices with CGST/SGST/IGST, thermal receipt modal |
+| Analytics | Sales timeline, category breakdown, top products/customers (Recharts) |
+| Reports | Daily/monthly Excel exports with branded formatting |
+| Delivery | Time slot management, driver assignment, dispatch tracking |
+| Recurring | Subscription orders (daily/weekly/biweekly/monthly) |
+| Suppliers | Supplier database, purchase order tracking |
+| Bundles | Combo deals with auto-calculated discounts |
+| Customers | Auto-created on order, tier tracking, credit ledger |
+| WhatsApp | Follow-up templates, arrival notifications, festival broadcasts |
+| Notifications | Auto-read after 5 seconds, real-time alerts |
+
+---
+
+## Getting Started
+
+```bash
+# Clone
+git clone https://github.com/DanielDeshmukh/shree-gurudev-plastics.git
+cd shree-gurudev-plastics
+
+# Install
+npm install --legacy-peer-deps
+
+# Setup
+cp .env.example .env  # Fill in credentials
+npx prisma generate
+npx prisma db push
+
+# Run
+npm run dev
+```
+
+### Required Environment Variables
+
+```
+DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=eyJ...
+JWT_SECRET=your-secret
+ADMIN_USERNAME=shreegurudev
+ADMIN_PASSWORD=shreegurudevplastics
+CLOUDINARY_CLOUD_NAME=ieszjiwe
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+NEXT_PUBLIC_SITE_URL=https://shree-gurudev-plastics.vercel.app
+```
 
 ---
 
