@@ -204,13 +204,13 @@ export default function ComparePage() {
         )}
 
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm min-w-[600px]">
+          <table className="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm min-w-[600px] relative">
             <tbody>
               {attributes.map((attr, rowIndex) => {
                 const differs = hasDifference(attr.key);
                 return (
-                <tr key={attr.key} className={`${getRowBg(rowIndex)} ${differs ? "ring-1 ring-inset ring-amber-300 bg-amber-50/50" : ""}`}>
-                  <td className="py-4 px-5 font-semibold text-gray-700 border-r border-gray-200 w-36 text-sm">
+                <tr key={attr.key} className={`${getRowBg(rowIndex)} ${differs ? "ring-1 ring-inset ring-amber-300 bg-amber-50/50" : ""} ${attr.key === "name" ? "sticky top-0 z-10 bg-white shadow-sm" : ""}`}>
+                  <td className={`py-4 px-5 font-semibold text-gray-700 border-r border-gray-200 w-36 text-sm ${attr.key === "name" ? "bg-white" : ""}`}>
                     <button
                       onClick={() => handleSort(attr.key)}
                       className="flex items-center gap-1 hover:text-primary-500 transition-colors text-left"
