@@ -8,6 +8,7 @@ import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import PincodeCheck from "@/components/PincodeCheck";
+import MostBought from "@/components/MostBought";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
@@ -245,6 +246,10 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           </div>
         </section>
       )}
+
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <MostBought limit={10} />
+      </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">{t("Serving", "सेवा क्षेत्र")} {CITY} & Nearby Areas</h2>
