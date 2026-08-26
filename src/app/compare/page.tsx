@@ -92,14 +92,18 @@ export default function ComparePage() {
                         </div>
                       )}
                       {attr.key === "brand" && <span className="text-sm text-gray-700">{item.brand || "—"}</span>}
-                      {attr.key === "price" && <span className="text-sm font-bold text-primary-500">₹{item.price}</span>}
+                      {attr.key === "price" && (
+                        <span className={`text-sm font-bold ${item.price > 0 ? "text-primary-500" : "text-gray-400"}`}>
+                          {item.price > 0 ? `₹${item.price.toLocaleString("en-IN")}` : t("Contact for price", "मूल्य के लिए संपर्क करें")}
+                        </span>
+                      )}
                       {attr.key === "color" && <span className="text-sm text-gray-700">{item.color || "—"}</span>}
                       {attr.key === "size" && <span className="text-sm text-gray-700">{item.size || "—"}</span>}
                       {attr.key === "category" && <span className="text-sm text-gray-700">{item.category || "—"}</span>}
                       {attr.key === "stock" && (
                         <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${item.stock > 0 ? "text-green-700 bg-green-100" : "text-red-700 bg-red-100"}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? "bg-green-500" : "bg-red-500"}`} />
-                           {item.stock > 0 ? t("In Stock", "स्टॉक में") : t("Out of Stock", "स्टॉक में नहीं")}
+                           {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out of Stock", "स्टॉक में नहीं")}
                         </span>
                       )}
                       {attr.key === "enquiry" && (
@@ -137,7 +141,7 @@ export default function ComparePage() {
                 <div className="flex-1 min-w-0">
                   <Link href={`/product/${item.slug}`} className="font-semibold text-gray-900 hover:text-primary-500 text-sm line-clamp-1">{item.name}</Link>
                   <p className="text-xs text-gray-500 mt-0.5">{item.brand}</p>
-                  <p className="text-base font-bold text-primary-500 mt-1">₹{item.price}</p>
+                  <p className={`text-base font-bold mt-1 ${item.price > 0 ? "text-primary-500" : "text-gray-400"}`}>{item.price > 0 ? `₹${item.price.toLocaleString("en-IN")}` : t("Contact for price", "मूल्य के लिए संपर्क करें")}</p>
                 </div>
                 <button onClick={() => removeCompare(item.id)} className="text-xs text-red-500 hover:text-red-600 self-start">{t("Remove", "हटाएं")}</button>
               </div>
@@ -149,7 +153,7 @@ export default function ComparePage() {
                   <span className="text-[10px] text-gray-500 block">{t("Stock", "स्टॉक")}</span>
                   <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${item.stock > 0 ? "text-green-700" : "text-red-700"}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? "bg-green-500" : "bg-red-500"}`} />
-                    {item.stock > 0 ? t("In Stock", "स्टॉक में") : t("Out", "नहीं")}
+                    {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out", "नहीं")}
                   </span>
                 </div>
               </div>
