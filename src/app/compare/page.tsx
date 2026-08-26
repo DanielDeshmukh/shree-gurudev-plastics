@@ -1,14 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { useCompare } from "@/context/CompareContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+import { MdLocalShipping } from "react-icons/md";
+
+type PincodeResult = { available: boolean; area: string; estimatedDays: string; deliveryCharge: string } | null;
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
   const { t } = useLanguage();
+  const [pincode, setPincode] = useState("");
+  const [pincodeResult, setPincodeResult] = useState<PincodeResult>(null);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+
+  const checkPincode = async () => {
+    if (!/^\d{6}$/.test(pincode)) return;
+    setPincodeLoading(true);
+    try {
+      const res = await fetch(`/api/pincode?pincode=${pincode}`);
+      const data = await res.json();
+      setPincodeResult(data.pincode || null);
+    } catch {
+      setPincodeResult(null);
+    }
+    setPincodeLoading(false);
+  };
 
   if (compareCount === 0) {
     return (
@@ -63,6 +83,39 @@ export default function ComparePage() {
             <Link href="/products" className="inline-block mt-3 text-primary-500 hover:text-primary-600 font-medium underline">
               {t("Browse Products", "उत्पादन देखें")}
             </Link>
+          </div>
+        )}
+
+        {compareCount >= 2 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <MdLocalShipping size={18} className="text-primary-500" />
+              {t("Check delivery:", "डिलीवरी जांचें:")}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={pincode}
+                onChange={(e) => { setPincode(e.target.value.replace(/\D/g, "").slice(0, 6)); setPincodeResult(null); }}
+                onKeyDown={(e) => e.key === "Enter" && checkPincode()}
+                placeholder="6-digit pincode"
+                className="w-36 rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-primary-500"
+              />
+              <button
+                onClick={checkPincode}
+                disabled={pincode.length !== 6 || pincodeLoading}
+                className="rounded-lg bg-primary-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                {pincodeLoading ? "..." : t("Check", "जांचें")}
+              </button>
+            </div>
+            {pincodeResult && (
+              <span className={`text-sm font-medium ${pincodeResult.available ? "text-green-600" : "text-red-500"}`}>
+                {pincodeResult.available
+                  ? `${pincodeResult.area} - ${pincodeResult.estimatedDays}`
+                  : t("Not deliverable", "डिलीवरी उपलब्ध नहीं")}
+              </span>
+            )}
           </div>
         )}
 
