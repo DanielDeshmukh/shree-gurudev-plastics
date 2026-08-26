@@ -1,16 +1,44 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useCompare } from "@/context/CompareContext";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+import { MdArrowUpward, MdArrowDownward } from "react-icons/md";
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
   const { addItem, openCart } = useCart();
   const { t } = useLanguage();
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const sortedItems = useMemo(() => {
+    if (!sortKey) return items;
+    return [...items].sort((a, b) => {
+      const aVal = (a as Record<string, unknown>)[sortKey];
+      const bVal = (b as Record<string, unknown>)[sortKey];
+      if (aVal === null || aVal === undefined) return 1;
+      if (bVal === null || bVal === undefined) return -1;
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+      }
+      const cmp = String(aVal).localeCompare(String(bVal));
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [items, sortKey, sortDir]);
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
 
   if (compareCount === 0) {
     return (
@@ -93,12 +121,20 @@ export default function ComparePage() {
                 return (
                 <tr key={attr.key} className={`${getRowBg(rowIndex)} ${differs ? "ring-1 ring-inset ring-amber-300 bg-amber-50/50" : ""}`}>
                   <td className="py-4 px-5 font-semibold text-gray-700 border-r border-gray-200 w-36 text-sm">
-                    <span className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleSort(attr.key)}
+                      className="flex items-center gap-1 hover:text-primary-500 transition-colors text-left"
+                    >
                       {attr.label}
-                      {differs && <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" title={t("Values differ", "मान अलग-अलग हैं")} />}
-                    </span>
+                      {sortKey === attr.key ? (
+                        sortDir === "asc" ? <MdArrowUpward size={14} className="text-primary-500" /> : <MdArrowDownward size={14} className="text-primary-500" />
+                      ) : (
+                        <span className="text-gray-300"><MdArrowUpward size={14} /></span>
+                      )}
+                      {differs && <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 ml-1" title={t("Values differ", "मान अलग-अलग हैं")} />}
+                    </button>
                   </td>
-                  {items.map((item) => (
+                  {sortedItems.map((item) => (
                     <td key={item.id} className="py-4 px-5 border-r border-gray-100 last:border-r-0">
                       {attr.key === "name" && (
                         <div className="flex flex-col items-center gap-2">
@@ -166,7 +202,7 @@ export default function ComparePage() {
         </div>
 
         <div className="md:hidden space-y-4">
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="flex gap-3 p-4">
                 <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-200">
