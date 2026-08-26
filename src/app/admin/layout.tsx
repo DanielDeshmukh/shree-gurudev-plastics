@@ -23,6 +23,7 @@ import {
   MdPeople,
   MdChat,
   MdCampaign,
+  MdCelebration,
   MdMenu,
   MdClose,
 } from "react-icons/md";
@@ -48,6 +49,7 @@ const navLinks = [
   { href: "/admin/customers", label: "Customers", icon: MdPeople },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
+  { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -59,6 +61,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [maintenanceEta, setMaintenanceEta] = useState("");
   const [showMaintenancePicker, setShowMaintenancePicker] = useState(false);
   const [maintenanceSaving, setMaintenanceSaving] = useState(false);
+  const [festivalEnabled, setFestivalEnabled] = useState(false);
+  const [festivalSlug, setFestivalSlug] = useState("");
+  const [festivalDiscount, setFestivalDiscount] = useState(0);
+  const [festivalBanner, setFestivalBanner] = useState("");
+  const [festivalEndDate, setFestivalEndDate] = useState("");
+  const [showFestivalPicker, setShowFestivalPicker] = useState(false);
+  const [festivalSaving, setFestivalSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
@@ -96,6 +105,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     fetchPending();
     const interval = setInterval(fetchPending, 15000);
     return () => clearInterval(interval);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+    fetch("/api/admin/festival", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => {
+        setFestivalEnabled(d.enabled);
+        setFestivalSlug(d.slug || "");
+        setFestivalDiscount(d.discountPct || 0);
+        setFestivalBanner(d.bannerMessage || "");
+        if (d.endDate) {
+          const dt = new Date(d.endDate);
+          const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+          setFestivalEndDate(local);
+        }
+      })
+      .catch(() => {});
   }, [pathname]);
 
   useEffect(() => {
@@ -172,6 +199,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       showToast("Failed to save", "error");
     } finally {
       setMaintenanceSaving(false);
+    }
+  };
+
+  const saveFestival = async () => {
+    setFestivalSaving(true);
+    try {
+      const res = await fetch("/api/admin/festival", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          enabled: festivalEnabled,
+          slug: festivalSlug,
+          discountPct: festivalDiscount,
+          bannerMessage: festivalBanner,
+          endDate: festivalEndDate ? new Date(festivalEndDate).toISOString() : null,
+        }),
+      });
+      if (res.ok) {
+        showToast(festivalEnabled ? `Festival ON — ${festivalSlug}` : "Festival OFF");
+        document.documentElement.setAttribute("data-festival", festivalEnabled ? festivalSlug : "");
+        setTimeout(() => setShowFestivalPicker(false), 1200);
+      } else {
+        showToast("Failed to save festival settings", "error");
+      }
+    } catch {
+      showToast("Failed to save festival settings", "error");
+    } finally {
+      setFestivalSaving(false);
     }
   };
 
@@ -344,6 +400,101 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           : "Deployments blocked — turn on maintenance first"}
                       </p>
                     </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Festival toggle */}
+            <div className="relative">
+              <button
+                onClick={() => setShowFestivalPicker(!showFestivalPicker)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  festivalEnabled
+                    ? "bg-orange-500/20 text-orange-400 border border-orange-500/40"
+                    : "bg-gray-700/50 text-gray-400 border border-gray-600/30"
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${festivalEnabled ? "bg-orange-500" : "bg-gray-500"}`} />
+                {festivalEnabled ? "FESTIVAL" : "FESTIVAL OFF"}
+              </button>
+              {showFestivalPicker && (
+                <div className="fixed right-2 top-16 sm:absolute sm:right-0 sm:top-full sm:mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 w-[calc(100vw-1rem)] sm:w-80 max-w-80 overflow-hidden">
+                  <div className={`px-4 py-3 ${festivalEnabled ? "bg-orange-500/10 border-b border-orange-500/20" : "bg-gray-800 border-b border-gray-700"}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-3 h-3 rounded-full ${festivalEnabled ? "bg-orange-500" : "bg-gray-500"}`} />
+                        <span className={`text-sm font-bold ${festivalEnabled ? "text-orange-400" : "text-gray-400"}`}>
+                          {festivalEnabled ? "FESTIVAL MODE ON" : "FESTIVAL MODE OFF"}
+                        </span>
+                      </div>
+                      <button onClick={() => setShowFestivalPicker(false)} className="p-1 text-gray-500 hover:text-gray-300">
+                        <MdClose className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-300">Enable festival mode</span>
+                      <button
+                        onClick={() => setFestivalEnabled(!festivalEnabled)}
+                        className={`relative w-12 h-6 rounded-full transition-colors ${festivalEnabled ? "bg-orange-500" : "bg-gray-600"}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${festivalEnabled ? "translate-x-6" : ""}`} />
+                      </button>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1.5">Festival</label>
+                      <select
+                        value={festivalSlug}
+                        onChange={(e) => setFestivalSlug(e.target.value)}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+                      >
+                        <option value="">Select festival</option>
+                        <option value="ganesh_chaturthi">Ganesh Chaturthi</option>
+                        <option value="diwali">Diwali</option>
+                        <option value="holi">Holi</option>
+                        <option value="navratri">Navratri</option>
+                        <option value="christmas">Christmas</option>
+                        <option value="new_year">New Year</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1.5">Discount %</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="50"
+                        value={festivalDiscount}
+                        onChange={(e) => setFestivalDiscount(parseInt(e.target.value) || 0)}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1.5">Banner message</label>
+                      <input
+                        type="text"
+                        value={festivalBanner}
+                        onChange={(e) => setFestivalBanner(e.target.value)}
+                        placeholder="Festival offer message..."
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1.5">End date (auto-disable)</label>
+                      <input
+                        type="datetime-local"
+                        value={festivalEndDate}
+                        onChange={(e) => setFestivalEndDate(e.target.value)}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+                      />
+                    </div>
+                    <button
+                      onClick={saveFestival}
+                      disabled={festivalSaving}
+                      className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors disabled:opacity-50"
+                    >
+                      {festivalSaving ? "Saving..." : "Save Festival Settings"}
+                    </button>
                   </div>
                 </div>
               )}
