@@ -37,6 +37,15 @@ export default function ComparePage() {
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
 
+  const hasDifference = (key: string) => {
+    if (items.length < 2) return false;
+    const values = items.map((item) => {
+      const val = (item as Record<string, unknown>)[key];
+      return val === null || val === undefined || val === "" ? "—" : String(val);
+    });
+    return new Set(values).size > 1;
+  };
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
@@ -66,13 +75,25 @@ export default function ComparePage() {
           </div>
         )}
 
+        {compareCount >= 2 && (
+          <p className="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
+            {t("Amber dot indicates values differ across products", "नारंगी बिंदु दर्शाता है कि मान अलग-अलग हैं")}
+          </p>
+        )}
+
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm min-w-[600px]">
             <tbody>
-              {attributes.map((attr, rowIndex) => (
-                <tr key={attr.key} className={getRowBg(rowIndex)}>
+              {attributes.map((attr, rowIndex) => {
+                const differs = hasDifference(attr.key);
+                return (
+                <tr key={attr.key} className={`${getRowBg(rowIndex)} ${differs ? "ring-1 ring-inset ring-amber-300 bg-amber-50/50" : ""}`}>
                   <td className="py-4 px-5 font-semibold text-gray-700 border-r border-gray-200 w-36 text-sm">
-                    {attr.label}
+                    <span className="flex items-center gap-1.5">
+                      {attr.label}
+                      {differs && <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" title={t("Values differ", "मान अलग-अलग हैं")} />}
+                    </span>
                   </td>
                   {items.map((item) => (
                     <td key={item.id} className="py-4 px-5 border-r border-gray-100 last:border-r-0">
@@ -122,7 +143,8 @@ export default function ComparePage() {
                     </td>
                   ))}
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>
@@ -146,10 +168,10 @@ export default function ComparePage() {
                 <button onClick={() => removeCompare(item.id)} className="text-xs text-red-500 hover:text-red-600 self-start">{t("Remove", "हटाएं")}</button>
               </div>
               <div className="grid grid-cols-2 gap-px bg-gray-200 border-t border-gray-200">
-                <div className="bg-gray-50 px-3 py-2"><span className="text-[10px] text-gray-500 block">{t("Color", "रंग")}</span><span className="text-xs text-gray-900">{item.color || "—"}</span></div>
-                <div className="bg-white px-3 py-2"><span className="text-[10px] text-gray-500 block">{t("Size", "आकार")}</span><span className="text-xs text-gray-900">{item.size || "—"}</span></div>
-                <div className="bg-gray-50 px-3 py-2"><span className="text-[10px] text-gray-500 block">{t("Category", "श्रेणी")}</span><span className="text-xs text-gray-900">{item.category || "—"}</span></div>
-                <div className="bg-white px-3 py-2">
+                <div className={`px-3 py-2 ${hasDifference("color") ? "bg-amber-50" : "bg-gray-50"}`}><span className="text-[10px] text-gray-500 block">{t("Color", "रंग")}{hasDifference("color") && " *"}</span><span className="text-xs text-gray-900">{item.color || "—"}</span></div>
+                <div className={`px-3 py-2 ${hasDifference("size") ? "bg-amber-50" : "bg-white"}`}><span className="text-[10px] text-gray-500 block">{t("Size", "आकार")}{hasDifference("size") && " *"}</span><span className="text-xs text-gray-900">{item.size || "—"}</span></div>
+                <div className={`px-3 py-2 ${hasDifference("category") ? "bg-amber-50" : "bg-gray-50"}`}><span className="text-[10px] text-gray-500 block">{t("Category", "श्रेणी")}{hasDifference("category") && " *"}</span><span className="text-xs text-gray-900">{item.category || "—"}</span></div>
+                <div className={`px-3 py-2 ${hasDifference("stock") ? "bg-amber-50" : "bg-white"}`}>
                   <span className="text-[10px] text-gray-500 block">{t("Stock", "स्टॉक")}</span>
                   <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${item.stock > 0 ? "text-green-700" : "text-red-700"}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? "bg-green-500" : "bg-red-500"}`} />
