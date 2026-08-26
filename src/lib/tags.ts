@@ -4,6 +4,7 @@ export const AVAILABLE_TAGS = [
   { id: "sale", label: "Sale", color: "bg-red-500" },
   { id: "bulk-discount", label: "Bulk Discount", color: "bg-green-500" },
   { id: "limited-stock", label: "Limited Stock", color: "bg-purple-500" },
+  { id: "festival", label: "Festival Special", color: "bg-orange-500" },
 ] as const;
 
 export type TagId = (typeof AVAILABLE_TAGS)[number]["id"];
