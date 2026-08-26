@@ -21,14 +21,15 @@ interface GeneratedMessage {
 }
 
 const FESTIVAL_OPTIONS = [
-  { value: "diwali", label: "Diwali", emoji: "🪔" },
-  { value: "raksha_bandhan", label: "Raksha Bandhan", emoji: "🎀" },
-  { value: "holi", label: "Holi", emoji: "🎨" },
-  { value: "new_year", label: "New Year", emoji: "🎉" },
-  { value: "navratri", label: "Navratri", emoji: "🙏" },
-  { value: "christmas", label: "Christmas", emoji: "🎄" },
-  { value: "pongal", label: "Pongal", emoji: "🌾" },
-  { value: "eid", label: "Eid", emoji: "🌙" },
+  { value: "diwali", label: "Diwali" },
+  { value: "raksha_bandhan", label: "Raksha Bandhan" },
+  { value: "holi", label: "Holi" },
+  { value: "new_year", label: "New Year" },
+  { value: "navratri", label: "Navratri" },
+  { value: "christmas", label: "Christmas" },
+  { value: "pongal", label: "Pongal" },
+  { value: "eid", label: "Eid" },
+  { value: "ganesh_chaturthi", label: "Ganesh Chaturthi" },
 ];
 
 export default function BroadcastPage() {
@@ -130,7 +131,7 @@ export default function BroadcastPage() {
                       : "border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600"
                   }`}
                 >
-                  <span className="mr-1">{f.emoji}</span> {f.label}
+                  <span>{f.label}</span>
                 </button>
               ))}
             </div>
