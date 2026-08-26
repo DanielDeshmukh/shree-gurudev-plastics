@@ -6,6 +6,38 @@ import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
 
+function PriceRangeBar({ items }: { items: { name: string; price: number }[] }) {
+  const priced = items.filter((i) => i.price > 0);
+  if (priced.length < 2) return null;
+  const prices = priced.map((i) => i.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  if (min === max) return null;
+  const range = max - min;
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+      <p className="text-xs text-gray-500 mb-3 font-medium">{priced.length} {priced.length === 2 ? "products" : "products"} - Price Range</p>
+      <div className="relative h-8 bg-gray-100 rounded-full overflow-hidden">
+        <div className="absolute inset-y-0 bg-gradient-to-r from-green-400 to-amber-400 rounded-full" style={{ left: 0, right: 0 }} />
+        {priced.map((item) => {
+          const pos = ((item.price - min) / range) * 100;
+          return (
+            <div key={item.name} className="absolute top-0 h-full flex flex-col items-center" style={{ left: `${pos}%`, transform: "translateX(-50%)" }}>
+              <div className="w-0.5 h-full bg-gray-900 opacity-30" />
+              <span className="absolute -bottom-5 text-[10px] font-medium text-gray-600 whitespace-nowrap">{item.name.slice(0, 12)} - {item.price.toLocaleString("en-IN")}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex justify-between mt-8 text-xs text-gray-400">
+        <span>Cheapest: {min.toLocaleString("en-IN")}</span>
+        <span>Most expensive: {max.toLocaleString("en-IN")}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
   const { t } = useLanguage();
@@ -65,6 +97,8 @@ export default function ComparePage() {
             </Link>
           </div>
         )}
+
+        {compareCount >= 2 && <PriceRangeBar items={items} />}
 
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm min-w-[600px]">
