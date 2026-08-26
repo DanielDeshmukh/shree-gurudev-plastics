@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import BlurImage from "@/components/BlurImage";
 import { BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -9,6 +10,7 @@ import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import PincodeCheck from "@/components/PincodeCheck";
 import MostBought from "@/components/MostBought";
+import FestivalHero from "@/components/FestivalHero";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
@@ -30,9 +32,25 @@ const homeFaqs = [
 
 export default function HomeContent({ brands, featured }: { brands: any[]; featured: any[] }) {
   const { t } = useLanguage();
+  const [festival, setFestival] = useState<{ slug: string; bannerMessage: string; discountPct: number; endDate: string | null } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/festival/status")
+      .then((r) => r.json())
+      .then((d) => { if (d.enabled) setFestival(d); })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
+      {festival && (
+        <FestivalHero
+          slug={festival.slug}
+          bannerMessage={festival.bannerMessage}
+          discountPct={festival.discountPct}
+          endDate={festival.endDate}
+        />
+      )}
       <section className="relative bg-gradient-to-br from-primary-500 to-primary-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import CompareBar from "@/components/CompareBar";
+import FestivalBar from "@/components/FestivalBar";
 
 export default function PublicShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
 
   return (
     <>
+      <FestivalBar />
       <Navbar />
       {children}
       <Footer />
