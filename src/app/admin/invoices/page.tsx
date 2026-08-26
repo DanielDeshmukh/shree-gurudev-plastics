@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MdClose } from "react-icons/md";
+import { MdClose, MdPrint } from "react-icons/md";
+import ThermalReceiptModal from "@/components/ThermalReceiptModal";
 
 interface InvoiceItem {
   id: number;
@@ -42,6 +43,7 @@ export default function InvoicesPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [printInvoiceId, setPrintInvoiceId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     customerName: "",
@@ -242,21 +244,12 @@ export default function InvoicesPage() {
                 >
                   Delete
                 </button>
-                <a
-                  href={`/admin/invoices/print/${selectedInvoice.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20"
+                <button
+                  onClick={() => setPrintInvoiceId(selectedInvoice.id)}
+                  className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 flex items-center gap-1"
                 >
-                  Print
-                </a>
-                <a
-                  href={`/api/admin/invoices/${selectedInvoice.id}/pdf`}
-                  download={`${selectedInvoice.invoiceNumber}.pdf`}
-                  className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20"
-                >
-                  Download PDF
-                </a>
+                  <MdPrint size={14} /> Print
+                </button>
               </div>
             </div>
 
@@ -396,6 +389,9 @@ export default function InvoicesPage() {
             </div>
           </div>
         </div>
+      )}
+      {printInvoiceId && (
+        <ThermalReceiptModal invoiceId={printInvoiceId} onClose={() => setPrintInvoiceId(null)} />
       )}
     </div>
   );
