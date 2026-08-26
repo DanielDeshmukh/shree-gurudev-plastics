@@ -37,8 +37,8 @@ describe("tags", () => {
   });
 
   describe("AVAILABLE_TAGS", () => {
-    it("has 5 tags", () => {
-      expect(AVAILABLE_TAGS).toHaveLength(5);
+    it("has 6 tags", () => {
+      expect(AVAILABLE_TAGS).toHaveLength(6);
     });
 
     it("each tag has id, label, color", () => {
