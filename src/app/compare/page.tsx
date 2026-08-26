@@ -8,9 +8,9 @@ import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
-import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat, MdShare } from "react-icons/md";
+import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat, MdShare, MdLocalFireDepartment } from "react-icons/md";
 
-type RatingMap = Record<number, { avg: number; count: number }>;
+type RatingMap = Record<number, { avg: number; count: number; totalOrdered: number }>;
 type PincodeResult = { available: boolean; area: string; estimatedDays: string; deliveryCharge: string } | null;
 
 function StarRating({ avg, count }: { avg: number; count: number }) {
@@ -211,10 +211,14 @@ export default function ComparePage() {
     { label: t("Size", "आकार"), key: "size" },
     { label: t("Category", "श्रेणी"), key: "category" },
     { label: t("Stock", "स्टॉक"), key: "stock" },
-    { label: t("Rating", "रेटिंग"), key: "rating" },
+    ...(compareCount >= 2 ? [{ label: t("Rating", "रेटिंग"), key: "rating" }] : []),
+    ...(compareCount >= 2 ? [{ label: t("Popularity", "लोकप्रियता"), key: "popularity" }] : []),
     { label: t("Enquiry", "पूछताछ"), key: "enquiry" },
-    { label: t("Cart", "कार्ट"), key: "cart" },
   ];
+
+  const mostBoughtId = compareCount >= 2
+    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])?.id
+    : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
 
@@ -366,6 +370,26 @@ export default function ComparePage() {
                           <span className="text-xs text-gray-300">{t("No reviews", "कोई समीक्षा नहीं")}</span>
                         )
                       )}
+                      {attr.key === "popularity" && (
+                        <div className="flex flex-col items-center gap-1">
+                          {ratings[item.id] ? (
+                            <>
+                              <div className="flex items-center gap-1">
+                                {mostBoughtId === item.id && <MdLocalFireDepartment size={12} className="text-orange-500" />}
+                                <span className={`text-sm font-bold ${mostBoughtId === item.id ? "text-orange-600" : "text-gray-900"}`}>
+                                  {ratings[item.id].totalOrdered}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-gray-400">{t("units sold", "इकाइयां बिकीं")}</span>
+                              {mostBoughtId === item.id && (
+                                <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">{t("MOST BOUGHT", "सबसे ज़्यादा बिका")}</span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </div>
+                      )}
                       {attr.key === "enquiry" && (
                         <a
                           href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI am interested in ${item.name}. Kindly share the price, availability, and delivery details.\n\nThank you!`)}`}
@@ -439,6 +463,16 @@ export default function ComparePage() {
                     <span className="text-[10px] text-gray-300">{t("No reviews", "कोई समीक्षा नहीं")}</span>
                   )}
                 </div>
+                {ratings[item.id] && (
+                  <div className="bg-white px-3 py-2">
+                    <span className="text-[10px] text-gray-500 block">{t("Popularity", "लोकप्रियता")}</span>
+                    <div className="flex items-center gap-1">
+                      {mostBoughtId === item.id && <MdLocalFireDepartment size={10} className="text-orange-500" />}
+                      <span className={`text-xs font-bold ${mostBoughtId === item.id ? "text-orange-600" : "text-gray-900"}`}>{ratings[item.id].totalOrdered} {t("sold", "बिके")}</span>
+                      {mostBoughtId === item.id && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1 py-0.5 rounded-full">{t("BEST", "बेस्ट")}</span>}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="p-3 border-t border-gray-200 space-y-2">
                 <button
