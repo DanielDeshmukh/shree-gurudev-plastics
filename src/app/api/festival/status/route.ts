@@ -27,6 +27,10 @@ export async function GET() {
     let isActive = enabled;
     if (isActive && endDate && new Date(endDate) < new Date()) {
       isActive = false;
+      await db.setting.update({
+        where: { key: "festival_enabled" },
+        data: { value: "false" },
+      }).catch(() => {});
     }
 
     const data = {
