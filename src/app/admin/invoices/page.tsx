@@ -149,7 +149,7 @@ export default function InvoicesPage() {
       </div>
 
       <div className="flex gap-2">
-        {["all", "draft", "issued", "paid", "cancelled"].map((f) => (
+        {["all", "draft", "paid", "cancelled"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -194,11 +194,9 @@ export default function InvoicesPage() {
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             inv.status === "paid"
                               ? "bg-green-500/10 text-green-400"
-                              : inv.status === "issued"
-                                ? "bg-blue-500/10 text-blue-400"
-                                : inv.status === "cancelled"
-                                  ? "bg-red-500/10 text-red-400"
-                                  : "bg-gray-500/10 text-gray-400"
+                              : inv.status === "cancelled"
+                                ? "bg-red-500/10 text-red-400"
+                                : "bg-gray-500/10 text-gray-400"
                           }`}
                         >
                           {inv.status}
@@ -228,14 +226,6 @@ export default function InvoicesPage() {
                     className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20"
                   >
                     Mark Paid
-                  </button>
-                )}
-                {selectedInvoice.status !== "cancelled" && (
-                  <button
-                    onClick={() => handleStatusUpdate(selectedInvoice.id, "cancelled")}
-                    className="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20"
-                  >
-                    Cancel
                   </button>
                 )}
                 <button

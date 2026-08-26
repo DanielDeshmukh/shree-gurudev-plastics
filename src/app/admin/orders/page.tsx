@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MdStore, MdLocalShipping, MdContentCopy, MdChat } from "react-icons/md";
+import { MdStore, MdLocalShipping, MdContentCopy, MdChat, MdPrint } from "react-icons/md";
 import { SITE_URL } from "@/lib/seo";
+import ThermalReceiptModal from "@/components/ThermalReceiptModal";
 
 interface OrderItem {
   id: number;
@@ -59,6 +60,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [printInvoiceId, setPrintInvoiceId] = useState<number | null>(null);
 
   const fetchOrders = () => {
     fetch("/api/orders")
@@ -119,9 +121,7 @@ export default function OrdersPage() {
       if (res.ok) {
         const data = await res.json();
         const invoiceId = data.invoice?.id;
-        if (invoiceId) {
-          window.open(`/api/admin/invoices/${invoiceId}/pdf`, "_blank");
-        }
+        if (invoiceId) setPrintInvoiceId(invoiceId);
       }
     } catch {}
   };
@@ -152,6 +152,15 @@ export default function OrdersPage() {
           prev.map((o) => (o.id === orderId ? { ...o, paymentStatus, paymentNote: paymentNote || o.paymentNote } : o))
         );
       }
+    } catch {}
+  };
+
+  const handlePrintInvoice = async (orderId: number) => {
+    try {
+      const res = await fetch("/api/admin/invoices");
+      const data = await res.json();
+      const inv = (data.invoices || []).find((i: { orderId: number }) => i.orderId === orderId);
+      if (inv) setPrintInvoiceId(inv.id);
     } catch {}
   };
 
@@ -293,6 +302,12 @@ export default function OrdersPage() {
                         >
                           Invoice
                         </button>
+                        <button
+                          onClick={() => handlePrintInvoice(order.id)}
+                          className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-colors flex items-center gap-1"
+                        >
+                          <MdPrint size={12} /> Print
+                        </button>
                         {order.trackingToken && (
                           <>
                             <button
@@ -380,6 +395,9 @@ export default function OrdersPage() {
             </tbody>
           </table>
         </div>
+      )}
+      {printInvoiceId && (
+        <ThermalReceiptModal invoiceId={printInvoiceId} onClose={() => setPrintInvoiceId(null)} />
       )}
     </div>
   );

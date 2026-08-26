@@ -44,6 +44,12 @@ export async function POST(request: NextRequest) {
 
     const gstBreakdown = calculateInvoiceGST(gstItems, placeOfSupply || "Maharashtra");
 
+    let invoiceStatus = "draft";
+    if (orderId) {
+      const order = await db.order.findUnique({ where: { id: orderId }, select: { paymentStatus: true } });
+      if (order?.paymentStatus === "paid") invoiceStatus = "paid";
+    }
+
     const invoiceCount = await db.invoice.count();
     const invoiceNumber = generateInvoiceNumber(invoiceCount + 1);
 
@@ -61,7 +67,7 @@ export async function POST(request: NextRequest) {
         sgst: gstBreakdown.sgst,
         igst: gstBreakdown.igst,
         total: gstBreakdown.total,
-        status: "issued",
+        status: invoiceStatus,
         items: {
           create: gstItems.map((item) => {
             const lineTotal = item.quantity * item.unitPrice;

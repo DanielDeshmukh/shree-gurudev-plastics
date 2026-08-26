@@ -111,6 +111,15 @@ const VALID_STATUSES = [
       },
     });
 
+    // Sync linked invoice status with payment status
+    if (body.paymentStatus !== undefined && order) {
+      const invoiceStatus = body.paymentStatus === "paid" ? "paid" : "draft";
+      await db.invoice.updateMany({
+        where: { orderId: order.id },
+        data: { status: invoiceStatus },
+      });
+    }
+
     if (body.status !== undefined && order) {
       const newStatus = normalizeStatus(body.status);
       const now = sqliteNow();
