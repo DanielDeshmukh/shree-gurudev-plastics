@@ -1,6 +1,7 @@
 "use client";
 
 import { useCompare } from "@/context/CompareContext";
+import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
@@ -8,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
+  const { addItem, openCart } = useCart();
   const { t } = useLanguage();
 
   if (compareCount === 0) {
@@ -33,6 +35,7 @@ export default function ComparePage() {
     { label: t("Category", "श्रेणी"), key: "category" },
     { label: t("Stock", "स्टॉक"), key: "stock" },
     { label: t("Enquiry", "पूछताछ"), key: "enquiry" },
+    { label: t("Cart", "कार्ट"), key: "cart" },
   ];
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
@@ -119,6 +122,19 @@ export default function ComparePage() {
                           WhatsApp
                         </a>
                       )}
+                      {attr.key === "cart" && (
+                        <button
+                          onClick={() => {
+                            addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
+                            openCart();
+                          }}
+                          disabled={item.stock <= 0}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded-full"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
+                          {item.stock > 0 ? t("Add to Cart", "कार्ट में जोड़ें") : t("Out of Stock", "स्टॉक में नहीं")}
+                        </button>
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -157,7 +173,18 @@ export default function ComparePage() {
                   </span>
                 </div>
               </div>
-              <div className="p-3 border-t border-gray-200">
+              <div className="p-3 border-t border-gray-200 space-y-2">
+                <button
+                  onClick={() => {
+                    addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
+                    openCart();
+                  }}
+                  disabled={item.stock <= 0}
+                  className="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors px-3 py-2 rounded-lg"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
+                  {item.stock > 0 ? t("Add to Cart", "कार्ट में जोड़ें") : t("Out of Stock", "स्टॉक में नहीं")}
+                </button>
                 <a
                   href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Hi, I'm interested in ${item.name}. Please share details.`)}`}
                   target="_blank"
