@@ -5,10 +5,28 @@ import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+import { useState, useEffect } from "react";
+import { MdStar, MdLocalFireDepartment } from "react-icons/md";
+
+interface RatingData {
+  avg: number;
+  count: number;
+  totalOrdered: number;
+}
 
 export default function ComparePage() {
   const { items, removeCompare, clearCompare, compareCount } = useCompare();
   const { t } = useLanguage();
+  const [ratings, setRatings] = useState<Record<number, RatingData>>({});
+
+  useEffect(() => {
+    if (compareCount < 2) return;
+    const ids = items.map((i) => i.id).join(",");
+    fetch(`/api/reviews/batch?ids=${ids}`)
+      .then((r) => r.json())
+      .then((d) => setRatings(d.ratings || {}))
+      .catch(() => {});
+  }, [items, compareCount]);
 
   if (compareCount === 0) {
     return (
@@ -32,8 +50,14 @@ export default function ComparePage() {
     { label: t("Size", "आकार"), key: "size" },
     { label: t("Category", "श्रेणी"), key: "category" },
     { label: t("Stock", "स्टॉक"), key: "stock" },
+    ...(compareCount >= 2 ? [{ label: t("Rating", "रेटिंग"), key: "rating" }] : []),
+    ...(compareCount >= 2 ? [{ label: t("Popularity", "लोकप्रियता"), key: "popularity" }] : []),
     { label: t("Enquiry", "पूछताछ"), key: "enquiry" },
   ];
+
+  const mostBoughtId = compareCount >= 2
+    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])?.id
+    : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
 
@@ -106,6 +130,41 @@ export default function ComparePage() {
                            {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out of Stock", "स्टॉक में नहीं")}
                         </span>
                       )}
+                      {attr.key === "rating" && (
+                        <div className="flex flex-col items-center gap-1">
+                          {ratings[item.id] ? (
+                            <>
+                              <div className="flex items-center gap-1">
+                                <MdStar size={14} className="text-amber-400 fill-amber-400" />
+                                <span className="text-sm font-semibold text-gray-900">{ratings[item.id].avg > 0 ? ratings[item.id].avg.toFixed(1) : "—"}</span>
+                              </div>
+                              <span className="text-[10px] text-gray-400">{ratings[item.id].count} {t("reviews", "समीक्षाएं")}</span>
+                            </>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </div>
+                      )}
+                      {attr.key === "popularity" && (
+                        <div className="flex flex-col items-center gap-1">
+                          {ratings[item.id] ? (
+                            <>
+                              <div className="flex items-center gap-1">
+                                {mostBoughtId === item.id && <MdLocalFireDepartment size={12} className="text-orange-500" />}
+                                <span className={`text-sm font-bold ${mostBoughtId === item.id ? "text-orange-600" : "text-gray-900"}`}>
+                                  {ratings[item.id].totalOrdered}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-gray-400">{t("units sold", "इकाइयां बिकीं")}</span>
+                              {mostBoughtId === item.id && (
+                                <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">{t("MOST BOUGHT", "सबसे ज़्यादा बिका")}</span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </div>
+                      )}
                       {attr.key === "enquiry" && (
                         <a
                           href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Namaste!\n\nI am interested in ${item.name}. Kindly share the price, availability, and delivery details.\n\nThank you!`)}`}
@@ -156,6 +215,26 @@ export default function ComparePage() {
                     {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out", "नहीं")}
                   </span>
                 </div>
+                {ratings[item.id] && (
+                  <>
+                    <div className="bg-gray-50 px-3 py-2">
+                      <span className="text-[10px] text-gray-500 block">{t("Rating", "रेटिंग")}</span>
+                      <div className="flex items-center gap-1">
+                        <MdStar size={12} className="text-amber-400 fill-amber-400" />
+                        <span className="text-xs font-semibold text-gray-900">{ratings[item.id].avg > 0 ? ratings[item.id].avg.toFixed(1) : "—"}</span>
+                        <span className="text-[10px] text-gray-400">({ratings[item.id].count})</span>
+                      </div>
+                    </div>
+                    <div className="bg-white px-3 py-2">
+                      <span className="text-[10px] text-gray-500 block">{t("Popularity", "लोकप्रियता")}</span>
+                      <div className="flex items-center gap-1">
+                        {mostBoughtId === item.id && <MdLocalFireDepartment size={10} className="text-orange-500" />}
+                        <span className={`text-xs font-bold ${mostBoughtId === item.id ? "text-orange-600" : "text-gray-900"}`}>{ratings[item.id].totalOrdered} {t("sold", "बिके")}</span>
+                        {mostBoughtId === item.id && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1 py-0.5 rounded-full">{t("BEST", "बेस्ट")}</span>}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="p-3 border-t border-gray-200">
                 <a
