@@ -3,11 +3,12 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useCompare } from "@/context/CompareContext";
 import { useCart } from "@/context/CartContext";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
-import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat } from "react-icons/md";
+import { MdArrowUpward, MdArrowDownward, MdStar, MdStarHalf, MdLocalShipping, MdChat, MdShare } from "react-icons/md";
 
 type RatingMap = Record<number, { avg: number; count: number }>;
 type PincodeResult = { available: boolean; area: string; estimatedDays: string; deliveryCharge: string } | null;
@@ -95,9 +96,10 @@ function PriceRangeBar({ items }: { items: { name: string; price: number }[] }) 
 }
 
 export default function ComparePage() {
-  const { items, removeCompare, clearCompare, compareCount } = useCompare();
+  const { items, removeCompare, clearCompare, compareCount, toggleCompare, isComparing } = useCompare();
   const { addItem, openCart } = useCart();
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [ratings, setRatings] = useState<RatingMap>({});
@@ -130,6 +132,23 @@ export default function ComparePage() {
   };
 
   useEffect(() => {
+    const ids = searchParams.get("ids");
+    if (ids) {
+      const productIds = ids.split(",").map(Number).filter(Boolean);
+      if (productIds.length > 0) {
+        fetch(`/api/products?ids=${productIds.join(",")}`)
+          .then((r) => r.json())
+          .then((d) => {
+            (d.products || []).forEach((p: { id: number; name: string; slug: string; color: string; size: string; price: number; imageUrl: string; brand?: string; stock: number; category: string }) => {
+              if (!isComparing(p.id)) toggleCompare(p);
+            });
+          })
+          .catch(() => {});
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (items.length === 0) return;
     const ids = items.map((i) => i.id).join(",");
     fetch(`/api/reviews/batch?ids=${ids}`)
@@ -157,6 +176,17 @@ export default function ComparePage() {
       .join("\n");
     const msg = `Namaste!\n\nI am interested in the following products:\n\n${productList}\n\nKindly share the best prices, availability, and delivery details for all.\n\nThank you!`;
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const handleShare = async () => {
+    const ids = items.map((i) => i.id).join(",");
+    const url = `${window.location.origin}/compare?ids=${ids}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      alert(t("Comparison link copied!", "तुलना लिंक कॉपी हो गया!"));
+    } catch {
+      prompt(t("Copy this link:", "यह लिंक कॉपी करें:"), url);
+    }
   };
 
   if (compareCount === 0) {
@@ -215,9 +245,14 @@ export default function ComparePage() {
               {t("Clear All", "सभी हटाएं")}
             </button>
             {compareCount >= 2 && (
-              <button onClick={handleBulkEnquiry} className="px-3 py-2 text-sm font-medium text-green-600 border border-green-300 rounded-lg hover:bg-green-50 transition-colors flex items-center gap-1.5">
-                <MdChat size={16} /> {t("Enquiry All", "सभी की पूछताछ")}
-              </button>
+              <>
+                <button onClick={handleBulkEnquiry} className="px-3 py-2 text-sm font-medium text-green-600 border border-green-300 rounded-lg hover:bg-green-50 transition-colors flex items-center gap-1.5">
+                  <MdChat size={16} /> {t("Enquiry All", "सभी की पूछताछ")}
+                </button>
+                <button onClick={handleShare} className="px-3 py-2 text-sm font-medium text-primary-500 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors flex items-center gap-1.5">
+                  <MdShare size={16} /> {t("Share", "शेयर")}
+                </button>
+              </>
             )}
           </div>
         </div>
