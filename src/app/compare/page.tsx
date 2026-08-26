@@ -1,14 +1,44 @@
 "use client";
 
 import { useCompare } from "@/context/CompareContext";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import { PHONE } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
+import { MdShare } from "react-icons/md";
 
 export default function ComparePage() {
-  const { items, removeCompare, clearCompare, compareCount } = useCompare();
+  const { items, removeCompare, clearCompare, compareCount, toggleCompare, isComparing } = useCompare();
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const ids = searchParams.get("ids");
+    if (!ids) return;
+    const productIds = ids.split(",").map(Number).filter(Boolean);
+    if (productIds.length === 0) return;
+    fetch(`/api/products?ids=${productIds.join(",")}`)
+      .then((r) => r.json())
+      .then((d) => {
+        (d.products || []).forEach((p: { id: number; name: string; slug: string; color: string; size: string; price: number; imageUrl: string; brand?: string; stock: number; category: string }) => {
+          if (!isComparing(p.id)) toggleCompare(p);
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleShare = async () => {
+    const ids = items.map((i) => i.id).join(",");
+    const url = `${window.location.origin}/compare?ids=${ids}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      alert(t("Comparison link copied!", "तुलना लिंक कॉपी हो गया!"));
+    } catch {
+      prompt(t("Copy this link:", "यह लिंक कॉपी करें:"), url);
+    }
+  };
 
   if (compareCount === 0) {
     return (
@@ -54,6 +84,11 @@ export default function ComparePage() {
             <button onClick={clearCompare} className="px-3 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">
               {t("Clear All", "सभी हटाएं")}
             </button>
+            {compareCount >= 2 && (
+              <button onClick={handleShare} className="px-3 py-2 text-sm font-medium text-primary-500 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors flex items-center gap-1.5">
+                <MdShare size={16} /> {t("Share", "शेयर")}
+              </button>
+            )}
           </div>
         </div>
 

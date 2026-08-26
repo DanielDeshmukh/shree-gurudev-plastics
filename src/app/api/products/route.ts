@@ -15,19 +15,25 @@ function slugify(text: string): string {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const brand = searchParams.get("brand");
-    const search = searchParams.get("search");
-    const category = searchParams.get("category");
-    const subCategory = searchParams.get("subCategory");
-    const sort = searchParams.get("sort") || "newest";
-    const minPrice = parseFloat(searchParams.get("minPrice") || "");
-    const maxPrice = parseFloat(searchParams.get("maxPrice") || "");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "24");
-    const ungrouped = searchParams.get("ungrouped") === "true";
+  const brand = searchParams.get("brand");
+  const search = searchParams.get("search");
+  const category = searchParams.get("category");
+  const subCategory = searchParams.get("subCategory");
+  const sort = searchParams.get("sort") || "newest";
+  const minPrice = parseFloat(searchParams.get("minPrice") || "");
+  const maxPrice = parseFloat(searchParams.get("maxPrice") || "");
+  const ids = searchParams.get("ids");
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "24");
+  const ungrouped = searchParams.get("ungrouped") === "true";
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};
+
+  if (ids) {
+    const idList = ids.split(",").map(Number).filter(Boolean);
+    where.id = { in: idList };
+  }
 
     where.isActive = true;
 
