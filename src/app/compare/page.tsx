@@ -132,20 +132,19 @@ export default function ComparePage() {
   };
 
   useEffect(() => {
-    const ids = searchParams.get("ids");
-    if (ids) {
-      const productIds = ids.split(",").map(Number).filter(Boolean);
-      if (productIds.length > 0) {
-        fetch(`/api/products?ids=${productIds.join(",")}`)
-          .then((r) => r.json())
-          .then((d) => {
-            (d.products || []).forEach((p: { id: number; name: string; slug: string; color: string; size: string; price: number; imageUrl: string; brand?: string; stock: number; category: string }) => {
-              if (!isComparing(p.id)) toggleCompare(p);
-            });
-          })
-          .catch(() => {});
-      }
-    }
+    const token = searchParams.get("c");
+    if (!token) return;
+    fetch(`/api/compare-token?token=${encodeURIComponent(token)}`)
+      .then((r) => r.json())
+      .then(async (d) => {
+        if (!d.ids || !Array.isArray(d.ids)) return;
+        const res = await fetch(`/api/products?ids=${d.ids.join(",")}`);
+        const data = await res.json();
+        (data.products || []).forEach((p: { id: number; name: string; slug: string; color: string; size: string; price: number; imageUrl: string; brand?: string; stock: number; category: string }) => {
+          if (!isComparing(p.id)) toggleCompare(p);
+        });
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -179,13 +178,18 @@ export default function ComparePage() {
   };
 
   const handleShare = async () => {
-    const ids = items.map((i) => i.id).join(",");
-    const url = `${window.location.origin}/compare?ids=${ids}`;
     try {
+      const res = await fetch("/api/compare-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: items.map((i) => i.id) }),
+      });
+      const { token } = await res.json();
+      const url = `${window.location.origin}/compare?c=${token}`;
       await navigator.clipboard.writeText(url);
       alert(t("Comparison link copied!", "तुलना लिंक कॉपी हो गया!"));
     } catch {
-      prompt(t("Copy this link:", "यह लिंक कॉपी करें:"), url);
+      alert(t("Failed to generate link", "लिंक बनाने में विफल"));
     }
   };
 
