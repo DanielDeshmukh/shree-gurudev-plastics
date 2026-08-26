@@ -52,7 +52,7 @@ export default function ThermalPrintButton({ pdfUrl }: { pdfUrl: string }) {
     setTimeout(() => {
       pri.contentWindow?.focus();
       pri.contentWindow?.print();
-      document.body.removeChild(pri);
+      if (pri.parentNode === document.body) document.body.removeChild(pri);
     }, 500);
   };
 
