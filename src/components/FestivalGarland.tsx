@@ -19,7 +19,7 @@ export default function FestivalGarland() {
   return (
     <div
       className="pointer-events-none select-none w-full overflow-hidden leading-none sticky top-16 z-50"
-      style={{ marginTop: "-1px" }}
+      style={{ marginTop: "-1px", marginBottom: "-140px" }}
       aria-hidden="true"
     >
       <div
