@@ -44,6 +44,10 @@
   background-color: rgba(255, 255, 255, 0.88) !important;
 }
 
+[data-festival="ganesh_chaturthi"] .bg-gray-50 {
+  background-color: transparent !important;
+}
+
 [data-festival="ganesh_chaturthi"] .shadow-sm,
 [data-festival="ganesh_chaturthi"] .shadow-md,
 [data-festival="ganesh_chaturthi"] .shadow-lg {

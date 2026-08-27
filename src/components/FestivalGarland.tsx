@@ -23,7 +23,7 @@ export default function FestivalGarland() {
       style={{ marginTop: "-1px" }}
     >
       <img
-        src="/garland-2.svg"
+        src="/garland-4.svg"
         alt=""
         className="block w-full h-auto object-cover"
         draggable={false}
