@@ -40,6 +40,16 @@
   min-height: 100vh;
 }
 
+[data-festival="ganesh_chaturthi"] .bg-white {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+[data-festival="ganesh_chaturthi"] .shadow-sm,
+[data-festival="ganesh_chaturthi"] .shadow-md,
+[data-festival="ganesh_chaturthi"] .shadow-lg {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
 [data-festival="diwali"] {
   --festival-primary: #ff6f00;
   --festival-primary-light: #fff3e0;
