@@ -35,6 +35,11 @@
   --festival-gradient: linear-gradient(135deg, #ff8f00, #ff6f00, #e65100);
 }
 
+[data-festival="ganesh_chaturthi"] body {
+  background: linear-gradient(to bottom right, #FDD819, #E80505);
+  min-height: 100vh;
+}
+
 [data-festival="diwali"] {
   --festival-primary: #ff6f00;
   --festival-primary-light: #fff3e0;
