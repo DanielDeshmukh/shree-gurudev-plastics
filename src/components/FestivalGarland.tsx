@@ -19,7 +19,7 @@ export default function FestivalGarland() {
   return (
     <div
       className="pointer-events-none select-none w-full overflow-hidden leading-none"
-      style={{ position: "relative", zIndex: 50, marginTop: "-1px" }}
+      style={{ position: "relative", zIndex: 9999, marginTop: "-1px" }}
       aria-hidden="true"
     >
       <div
@@ -27,9 +27,9 @@ export default function FestivalGarland() {
           backgroundImage: "url(/garland-4.svg)",
           backgroundRepeat: "repeat-x",
           backgroundPosition: "top center",
-          backgroundSize: "auto 100%",
+          backgroundSize: "auto 40%",
           width: "100%",
-          height: "220px",
+          height: "90px",
         }}
       />
     </div>
