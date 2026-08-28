@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-
-let cache: { data: Record<string, unknown>; ts: number } | null = null;
-const CACHE_TTL = 60_000;
+import { getFestivalCache, setFestivalCache } from "@/lib/festival-cache";
 
 export async function GET() {
   try {
-    if (cache && Date.now() - cache.ts < CACHE_TTL) {
-      return NextResponse.json(cache.data);
+    const cached = getFestivalCache();
+    if (cached) {
+      return NextResponse.json(cached);
     }
 
     const settings = await db.setting.findMany({
@@ -41,7 +40,7 @@ export async function GET() {
       endDate,
     };
 
-    cache = { data, ts: Date.now() };
+    setFestivalCache(data);
     return NextResponse.json(data);
   } catch {
     return NextResponse.json({ enabled: false, slug: "", discountPct: 0, bannerMessage: "", endDate: null });

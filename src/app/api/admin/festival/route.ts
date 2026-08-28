@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { clearFestivalCache } from "@/lib/festival-cache";
 
 const FESTIVAL_KEYS = [
   "festival_enabled",
@@ -51,6 +52,8 @@ export async function POST(request: NextRequest) {
     ];
 
     await Promise.all(upserts);
+
+    clearFestivalCache();
 
     return NextResponse.json({ success: true });
   } catch {
