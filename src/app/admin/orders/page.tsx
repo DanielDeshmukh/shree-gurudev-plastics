@@ -157,13 +157,19 @@ export default function OrdersPage() {
     } catch {}
   };
 
-  const handlePrintInvoice = async (orderId: number) => {
+  const handlePrintInvoice = async (order: Order) => {
     try {
       const res = await fetch("/api/admin/invoices");
       const data = await res.json();
-      const inv = (data.invoices || []).find((i: { orderId: number }) => i.orderId === orderId);
-      if (inv) setPrintInvoiceId(inv.id);
-    } catch {}
+      const inv = (data.invoices || []).find((i: { orderId: number }) => i.orderId === order.id);
+      if (inv) {
+        setPrintInvoiceId(inv.id);
+      } else {
+        await handleGenerateInvoice(order);
+      }
+    } catch {
+      showToast("Failed to load invoice", "error");
+    }
   };
 
   const getTrackingUrl = (token: string) => `${SITE_URL}/track/${token}`;
@@ -305,7 +311,7 @@ export default function OrdersPage() {
                           Invoice
                         </button>
                         <button
-                          onClick={() => handlePrintInvoice(order.id)}
+                          onClick={() => handlePrintInvoice(order)}
                           className="rounded-lg bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-colors flex items-center gap-1"
                         >
                           <MdPrint size={12} /> Print

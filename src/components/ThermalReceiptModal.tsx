@@ -57,12 +57,16 @@ interface Invoice {
 export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId: number; onClose: () => void }) {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/invoices/${invoiceId}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((d) => setInvoice(d.invoice || d))
-      .catch(() => {})
+      .catch(() => setError("Failed to load invoice. Please try again."))
       .finally(() => setLoading(false));
   }, [invoiceId]);
 
@@ -118,7 +122,16 @@ export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId:
     );
   }
 
-  if (!invoice) return null;
+  if (error || !invoice) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-6 text-center" onClick={(e) => e.stopPropagation()}>
+          <p className="text-red-400 text-sm mb-4">{error || "Invoice not found"}</p>
+          <button onClick={onClose} className="rounded-lg bg-gray-700 px-4 py-2 text-sm text-white hover:bg-gray-600">Close</button>
+        </div>
+      </div>
+    );
+  }
 
   const halfGst = invoice.items[0]?.gstRate ? invoice.items[0].gstRate / 2 : 9;
 
