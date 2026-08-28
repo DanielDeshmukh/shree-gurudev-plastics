@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import BlurImage from "@/components/BlurImage";
 import { BUSINESS_NAME, CITY, PHONE } from "@/lib/seo";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -13,6 +12,7 @@ import MostBought from "@/components/MostBought";
 import FestivalHero from "@/components/FestivalHero";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
 
 const productCategories = [
   { name: "Plastic Chairs", category: "Chairs", slug: "chairs", desc: "Armless, Premium, Medium Back, Baby & HoReCa chairs" },
@@ -32,18 +32,11 @@ const homeFaqs = [
 
 export default function HomeContent({ brands, featured }: { brands: any[]; featured: any[] }) {
   const { t } = useLanguage();
-  const [festival, setFestival] = useState<{ slug: string; bannerMessage: string; discountPct: number; endDate: string | null } | null>(null);
-
-  useEffect(() => {
-    fetch("/api/festival/status")
-      .then((r) => r.json())
-      .then((d) => { if (d.enabled) setFestival(d); })
-      .catch(() => {});
-  }, []);
+  const festival = useFestivalStatus();
 
   return (
     <>
-      {festival && (
+      {festival?.enabled && (
         <FestivalHero
           slug={festival.slug}
           bannerMessage={festival.bannerMessage}

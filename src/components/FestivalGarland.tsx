@@ -1,20 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
 
 export default function FestivalGarland() {
-  const [visible, setVisible] = useState(false);
+  const status = useFestivalStatus();
 
-  useEffect(() => {
-    fetch("/api/festival/status")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.enabled && (d.slug === "ganesh_chaturthi" || d.slug === "diwali")) setVisible(true);
-      })
-      .catch(() => {});
-  }, []);
-
-  if (!visible) return null;
+  if (!status?.enabled || (status.slug !== "ganesh_chaturthi" && status.slug !== "diwali")) return null;
 
   return (
     <div

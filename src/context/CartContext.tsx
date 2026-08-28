@@ -79,10 +79,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setItems(loadCart());
     setHydrated(true);
-    fetch("/api/festival/status")
-      .then((r) => r.json())
-      .then((d) => { if (d.enabled && d.discountPct > 0) setFestivalDiscountPct(d.discountPct); })
-      .catch(() => {});
+
+    const fetchDiscount = () => {
+      fetch("/api/festival/status")
+        .then((r) => r.json())
+        .then((d) => { if (d.enabled && d.discountPct > 0) setFestivalDiscountPct(d.discountPct); else setFestivalDiscountPct(0); })
+        .catch(() => {});
+    };
+
+    fetchDiscount();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "festival_update") fetchDiscount();
+    };
+    window.addEventListener("storage", onStorage);
+
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   // Persist to localStorage on every change (after hydration)

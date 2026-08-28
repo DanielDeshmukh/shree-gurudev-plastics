@@ -61,6 +61,7 @@ export default function FestivalSettingsPage() {
       });
       if (res.ok) {
         document.documentElement.setAttribute("data-festival", enabled ? slug : "");
+        localStorage.setItem("festival_update", Date.now().toString());
         showToast("Festival settings saved!");
       } else {
         showToast("Failed to save", "error");

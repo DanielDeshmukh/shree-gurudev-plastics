@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
-
-interface FestivalStatus {
-  enabled: boolean;
-  slug: string;
-  discountPct: number;
-  bannerMessage: string;
-  endDate: string | null;
-}
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
 
 function getTimeLeft(endDate: string | null) {
   if (!endDate) return null;
@@ -32,44 +25,42 @@ const FESTIVAL_LABELS: Record<string, string> = {
 };
 
 export default function FestivalBar() {
-  const [festival, setFestival] = useState<FestivalStatus | null>(null);
+  const status = useFestivalStatus();
   const [dismissed, setDismissed] = useState(false);
   const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft>>(null);
 
   useEffect(() => {
     const hidden = sessionStorage.getItem("festival_bar_dismissed");
-    if (hidden) { setDismissed(true); return; }
-
-    fetch("/api/festival/status")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.enabled) {
-          setFestival(d);
-          document.documentElement.setAttribute("data-festival", d.slug);
-        }
-      })
-      .catch(() => {});
+    if (hidden) setDismissed(true);
   }, []);
 
   useEffect(() => {
-    if (!festival?.endDate) return;
-    const tick = () => setTimeLeft(getTimeLeft(festival.endDate));
+    if (!status?.endDate) return;
+    const tick = () => setTimeLeft(getTimeLeft(status.endDate));
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [festival?.endDate]);
+  }, [status?.endDate]);
 
-  if (!festival || dismissed) return null;
+  useEffect(() => {
+    if (status?.enabled) {
+      document.documentElement.setAttribute("data-festival", status.slug);
+    } else {
+      document.documentElement.removeAttribute("data-festival");
+    }
+  }, [status?.enabled, status?.slug]);
 
-  const label = FESTIVAL_LABELS[festival.slug] || festival.bannerMessage;
+  if (!status?.enabled || dismissed) return null;
+
+  const label = FESTIVAL_LABELS[status.slug] || status.bannerMessage;
 
   return (
     <div className="festival-gradient text-white text-center py-2 px-4 text-sm relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
         <span className="font-bold">{label}</span>
-        {festival.discountPct > 0 && (
+        {status.discountPct > 0 && (
           <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs font-semibold">
-            {festival.discountPct}% OFF
+            {status.discountPct}% OFF
           </span>
         )}
         {timeLeft && (
