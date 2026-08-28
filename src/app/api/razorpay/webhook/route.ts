@@ -84,6 +84,102 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      case "subscription.authenticated": {
+        const sub = payload.subscription?.entity;
+        if (sub?.id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: sub.id },
+            data: {
+              status: "authenticated",
+              razorpayPaymentMethod: sub.payment_method || null,
+              mandateId: sub.token_id || null,
+              currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
+              currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
+            },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "subscription.activated": {
+        const sub = payload.subscription?.entity;
+        if (sub?.id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: sub.id },
+            data: {
+              status: "active",
+              currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
+              currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
+              nextBillingDate: sub.current_end ? new Date(sub.current_end * 1000) : null,
+            },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "subscription.charged": {
+        const sub = payload.subscription?.entity;
+        if (sub?.id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: sub.id },
+            data: {
+              status: "active",
+              currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
+              currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
+              nextBillingDate: sub.current_end ? new Date(sub.current_end * 1000) : null,
+            },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "subscription.cancelled": {
+        const sub = payload.subscription?.entity;
+        if (sub?.id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: sub.id },
+            data: { status: "cancelled" },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "subscription.paused": {
+        const sub = payload.subscription?.entity;
+        if (sub?.id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: sub.id },
+            data: { status: "paused" },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "invoice.paid": {
+        const invoice = payload.invoice?.entity;
+        if (invoice?.subscription_id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: invoice.subscription_id },
+            data: {
+              status: "active",
+              nextBillingDate: invoice.next_invoice_at ? new Date(invoice.next_invoice_at * 1000) : null,
+            },
+          }).catch(() => {});
+        }
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = payload.invoice?.entity;
+        if (invoice?.subscription_id) {
+          await db.subscription.update({
+            where: { razorpaySubscriptionId: invoice.subscription_id },
+            data: { status: "past_due" },
+          }).catch(() => {});
+        }
+        break;
+      }
+
       default:
         break;
     }

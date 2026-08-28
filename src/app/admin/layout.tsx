@@ -50,6 +50,7 @@ const navLinks = [
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
   { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
+  { href: "/admin/subscriptions", label: "Subscriptions", icon: MdAutorenew },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
