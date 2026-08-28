@@ -168,7 +168,7 @@ export default function OrdersPage() {
         await handleGenerateInvoice(order);
       }
     } catch {
-      showToast("Failed to load invoice", "error");
+      toast("Failed to load invoice", "error");
     }
   };
 
