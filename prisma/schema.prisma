@@ -123,6 +123,7 @@ model Order {
   customerRef     Customer?         @relation("CustomerOrders", fields: [customerId], references: [id])
   items           OrderItem[]
   invoices        Invoice[]
+  payments        Payment[]
   deliveries      DeliverySchedule[]
   statusHistory   OrderStatusHistory[]
   createdAt       DateTime          @default(now())
@@ -143,6 +144,49 @@ model OrderStatusHistory {
   timestamp DateTime @default(now())
 
   @@index([orderId])
+}
+
+model Payment {
+  id                Int      @id @default(autoincrement())
+  orderId           Int
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  razorpayOrderId   String?
+  razorpayPaymentId String?   @unique
+  razorpaySignature String?
+  amount            Int
+  currency          String   @default("INR")
+  status            String   @default("created")
+  method            String?
+  description       String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([razorpayPaymentId])
+  @@index([status])
+}
+
+model Subscription {
+  id                          Int      @id @default(autoincrement())
+  razorpaySubscriptionId      String?  @unique
+  razorpayCustomerId          String?
+  razorpayPlanId              String?
+  razorpayTokenId             String?
+  customerName                String?
+  customerPhone               String?
+  amount                      Int
+  currency                    String   @default("INR")
+  status                      String   @default("created")
+  currentPeriodStart          DateTime?
+  currentPeriodEnd            DateTime?
+  nextBillingDate             DateTime?
+  razorpayPaymentMethod       String?
+  mandateId                   String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@index([status])
+  @@index([nextBillingDate])
 }
 
 model OrderItem {

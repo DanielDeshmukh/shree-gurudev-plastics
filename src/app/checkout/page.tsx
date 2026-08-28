@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
-import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney } from "react-icons/md";
+import RazorpayCheckout from "@/components/RazorpayCheckout";
+import { MdStore, MdLocalShipping, MdCheckCircle, MdArrowBack, MdPayment, MdAccountBalance, MdCreditCard, MdMoney, MdLock } from "react-icons/md";
 import { PHONE } from "@/lib/seo";
 
 const DELIVERY_AREAS = [
@@ -29,11 +30,13 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false);
   const [publicId, setPublicId] = useState<string | null>(null);
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [paymentPending, setPaymentPending] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
     deliveryMethod: "delivery" as "pickup" | "delivery",
-    paymentMethod: "cod" as "cod" | "upi" | "card" | "bank_transfer" | "other",
+    paymentMethod: "cod" as "cod" | "online" | "bank_transfer" | "other",
     address: "",
     area: "Bhayander",
     notes: "",
@@ -91,6 +94,14 @@ export default function CheckoutPage() {
       const data = await res.json();
       setPublicId(data.order.publicId);
       setTrackingToken(data.order.trackingToken);
+      setOrderId(data.order.id);
+
+      if (form.paymentMethod === "online") {
+        setPaymentPending(true);
+        setLoading(false);
+        return;
+      }
+
       setSuccess(true);
       clearCart();
     } catch (err: any) {
@@ -250,8 +261,7 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
                     { key: "cod" as const, icon: MdMoney, label: "Cash on Delivery", desc: "Pay at delivery" },
-                    { key: "upi" as const, icon: MdPayment, label: "UPI", desc: "GPay, PhonePe, etc." },
-                    { key: "card" as const, icon: MdCreditCard, label: "Card", desc: "Debit / Credit" },
+                    { key: "online" as const, icon: MdCreditCard, label: "Pay Online", desc: "UPI / Card / Wallet" },
                     { key: "bank_transfer" as const, icon: MdAccountBalance, label: "Bank Transfer", desc: "NEFT / RTGS / IMPS" },
                   ].map(({ key, icon: Icon, label, desc }) => (
                     <button
@@ -270,8 +280,8 @@ export default function CheckoutPage() {
                     </button>
                   ))}
                 </div>
-                {form.paymentMethod === "upi" && (
-                  <p className="text-xs text-gray-500 mt-2">Our UPI ID will be shared after order confirmation. You can pay via any UPI app.</p>
+                {form.paymentMethod === "online" && (
+                  <p className="text-xs text-green-600 mt-2 flex items-center gap-1"><MdLock size={12} /> Secure payment via Razorpay. UPI, Credit/Debit Cards, and Wallets accepted.</p>
                 )}
                 {form.paymentMethod === "bank_transfer" && (
                   <p className="text-xs text-gray-500 mt-2">Bank details will be shared after order confirmation via WhatsApp.</p>
@@ -357,13 +367,34 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Placing Order..." : `Place Order — ₹${(festivalDiscountPct > 0 ? finalPrice : totalPrice).toLocaleString("en-IN")}`}
-              </button>
+              {paymentPending && orderId ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-700 mb-3 text-center">Complete your payment to confirm the order.</p>
+                  <RazorpayCheckout
+                    orderId={orderId}
+                    amount={festivalDiscountPct > 0 ? finalPrice : totalPrice}
+                    customer={form.name.trim()}
+                    phone={form.phone.trim()}
+                    onSuccess={() => {
+                      setSuccess(true);
+                      setPaymentPending(false);
+                      clearCart();
+                    }}
+                    onError={(err) => setError(err)}
+                  />
+                  <p className="text-xs text-gray-500 text-center mt-2">
+                    Order #{publicId} created. Pay now or pay later from your order tracking link.
+                  </p>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "Placing Order..." : `Place Order — Rs.${(festivalDiscountPct > 0 ? finalPrice : totalPrice).toLocaleString("en-IN")}`}
+                </button>
+              )}
             </form>
           </div>
 

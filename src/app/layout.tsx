@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import PublicShell from "@/components/PublicShell";
 import SWRegister from "@/components/SWRegister";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
@@ -89,6 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </CartProvider>
           </LanguageProvider>
         </CustomerAuthProvider>
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       </body>
     </html>
   );
