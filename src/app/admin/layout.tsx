@@ -24,6 +24,7 @@ import {
   MdChat,
   MdCampaign,
   MdCelebration,
+  MdPaid,
   MdMenu,
   MdClose,
 } from "react-icons/md";
@@ -51,6 +52,7 @@ const navLinks = [
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
   { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
   { href: "/admin/subscriptions", label: "Subscriptions", icon: MdAutorenew },
+  { href: "/admin/payments", label: "Payments", icon: MdPaid },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
