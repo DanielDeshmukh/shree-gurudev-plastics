@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const rpOrder = await razorpay.orders.create({
+    const rpOrder = await razorpay().orders.create({
       amount: Math.round(amount * 100),
       currency: "INR",
       receipt: `order_${order.publicId}`,
