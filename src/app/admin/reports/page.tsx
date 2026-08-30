@@ -41,7 +41,7 @@ export default function ReportsPage() {
     const params = new URLSearchParams();
     if (reportDate) params.set("from", reportDate);
     if (reportDate) params.set("to", reportDate);
-    fetch(`/api/reports?${params}`, { credentials: "include" })
+    fetch(`/api/admin/reports-data?${params}`, { credentials: "include" })
       .then((r) => {
         if (!r.ok) throw new Error("Failed to fetch");
         return r.json();
