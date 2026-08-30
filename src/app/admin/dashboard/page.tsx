@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import {
@@ -56,6 +56,11 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [analytics, setAnalytics] = useState<{
+    categoryData: { category: string; count: number }[];
+    salesTimeline: { date: string; orders: number; revenue: number }[];
+    topCustomers: { name: string; phone: string; totalOrders: number; totalSpent: number }[];
+  } | null>(null);
 
   useEffect(() => {
     fetch("/api/dashboard", { credentials: "include" })
@@ -63,6 +68,15 @@ export default function DashboardPage() {
       .then(setData)
       .catch(() => setError("Failed to load dashboard data"))
       .finally(() => setLoading(false));
+
+    fetch("/api/admin/analytics", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setAnalytics({
+        categoryData: d.categoryData || [],
+        salesTimeline: d.salesTimeline || [],
+        topCustomers: d.topCustomers || [],
+      }))
+      .catch(() => {});
   }, []);
 
   if (loading) {
@@ -101,7 +115,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Dashboard</h2>
+      <h2 className="text-2xl font-bold">Dashboard & Analytics</h2>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
@@ -263,6 +277,92 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Analytics: Sales Timeline + Category Pie */}
+      {analytics && (analytics.salesTimeline.length > 0 || analytics.categoryData.length > 0) && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {analytics.salesTimeline.length > 0 && (
+            <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
+              <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Sales Timeline (30 days)</h3>
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={analytics.salesTimeline}>
+                  <defs>
+                    <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F97316" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#F97316" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="date" tick={{ fill: "#9CA3AF", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                  <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(value: number, name: string) => [
+                      name === "revenue" ? `₹${value.toLocaleString("en-IN")}` : value,
+                      name === "revenue" ? "Revenue" : "Orders",
+                    ]}
+                    labelFormatter={(label) => `Date: ${label}`}
+                  />
+                  <Area type="monotone" dataKey="revenue" stroke="#F97316" strokeWidth={2} fill="url(#revenueGrad)" />
+                  <Line type="monotone" dataKey="orders" stroke="#3B82F6" strokeWidth={2} dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {analytics.categoryData.length > 0 && (
+            <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
+              <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Orders by Category</h3>
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie
+                    data={analytics.categoryData}
+                    dataKey="count"
+                    nameKey="category"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={85}
+                    paddingAngle={3}
+                    label={({ category, count }) => `${category} (${count})`}
+                  >
+                    {analytics.categoryData.map((_, i) => (
+                      <Cell key={i} fill={BRAND_COLORS[i % BRAND_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={tooltipStyle} formatter={(value: number, name: string) => [`${value} orders`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Analytics: Top Customers */}
+      {analytics && analytics.topCustomers.length > 0 && (
+        <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
+          <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Top Customers</h3>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {analytics.topCustomers.map((c, i) => (
+              <div key={i} className="flex items-center justify-between rounded-lg bg-gray-800 px-4 py-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-6 h-6 rounded-full bg-primary-500/10 text-primary-400 flex items-center justify-center text-xs font-bold shrink-0">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{c.name}</p>
+                    <p className="text-xs text-gray-400">{c.phone}</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-primary-400">₹{c.totalSpent.toLocaleString("en-IN")}</p>
+                  <p className="text-xs text-gray-400">{c.totalOrders} orders</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent Orders Table */}
       <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
