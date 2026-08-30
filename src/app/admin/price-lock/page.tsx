@@ -6,6 +6,7 @@ import { useToast } from "@/components/Toast";
 interface PriceLock {
   id: number;
   productId: number;
+  product: { id: number; name: string; color: string } | null;
   lockedPrice: number;
   lockedAt: string;
   expiresAt: string;
@@ -16,6 +17,7 @@ interface PriceLock {
 interface PriceHistory {
   id: number;
   productId: number;
+  product: { id: number; name: string; color: string } | null;
   oldPrice: number;
   newPrice: number;
   changedBy: string | null;
@@ -27,6 +29,7 @@ export default function PriceLockPage() {
   const { toast } = useToast();
   const [locks, setLocks] = useState<PriceLock[]>([]);
   const [history, setHistory] = useState<PriceHistory[]>([]);
+  const [products, setProducts] = useState<{ id: number; name: string; color: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"locks" | "history">("locks");
   const [showCreate, setShowCreate] = useState(false);
@@ -36,10 +39,12 @@ export default function PriceLockPage() {
     Promise.all([
       fetch("/api/admin/price-lock", { credentials: "include" }).then((r) => r.json()),
       fetch("/api/admin/price-history", { credentials: "include" }).then((r) => r.json()),
+      fetch("/api/products?ungrouped=true&limit=9999", { credentials: "include" }).then((r) => r.json()),
     ])
-      .then(([locksData, historyData]) => {
+      .then(([locksData, historyData, productsData]) => {
         setLocks(locksData.locks || []);
         setHistory(historyData.history || []);
+        setProducts((productsData.products || []).map((p: any) => ({ id: p.id, name: p.name, color: p.color })));
       })
       .catch(() => toast("Failed to load price data", "error"))
       .finally(() => setLoading(false));
@@ -114,7 +119,7 @@ export default function PriceLockPage() {
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-gray-800 text-gray-400">
-                    <th className="px-4 py-3 font-medium">Product ID</th>
+                    <th className="px-4 py-3 font-medium">Product</th>
                     <th className="px-4 py-3 font-medium">Locked Price</th>
                     <th className="px-4 py-3 font-medium">Locked At</th>
                     <th className="px-4 py-3 font-medium">Expires At</th>
@@ -127,7 +132,7 @@ export default function PriceLockPage() {
                     const isExpired = new Date(lock.expiresAt) <= new Date();
                     return (
                       <tr key={lock.id} className="text-gray-300">
-                        <td className="px-4 py-3">#{lock.productId}</td>
+                        <td className="px-4 py-3">{lock.product ? `${lock.product.name} (${lock.product.color})` : `#${lock.productId}`}</td>
                         <td className="px-4 py-3 font-medium">₹{lock.lockedPrice.toLocaleString("en-IN")}</td>
                         <td className="px-4 py-3 text-gray-400">{new Date(lock.lockedAt).toLocaleString("en-IN")}</td>
                         <td className="px-4 py-3 text-gray-400">{new Date(lock.expiresAt).toLocaleString("en-IN")}</td>
@@ -159,7 +164,7 @@ export default function PriceLockPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-800 text-gray-400">
-                  <th className="px-4 py-3 font-medium">Product ID</th>
+                  <th className="px-4 py-3 font-medium">Product</th>
                   <th className="px-4 py-3 font-medium">Old Price</th>
                   <th className="px-4 py-3 font-medium">New Price</th>
                   <th className="px-4 py-3 font-medium">Changed By</th>
@@ -170,7 +175,7 @@ export default function PriceLockPage() {
               <tbody className="divide-y divide-gray-800">
                 {history.map((h) => (
                   <tr key={h.id} className="text-gray-300">
-                    <td className="px-4 py-3">#{h.productId}</td>
+                    <td className="px-4 py-3">{h.product ? `${h.product.name} (${h.product.color})` : `#${h.productId}`}</td>
                     <td className="px-4 py-3">₹{h.oldPrice.toLocaleString("en-IN")}</td>
                     <td className="px-4 py-3 font-medium">₹{h.newPrice.toLocaleString("en-IN")}</td>
                     <td className="px-4 py-3 text-gray-400">{h.changedBy || "—"}</td>
@@ -190,8 +195,13 @@ export default function PriceLockPage() {
             <h3 className="mb-4 text-lg font-bold">Lock Product Price</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Product ID</label>
-                <input type="number" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500" />
+                <label className="block text-sm text-gray-300 mb-1">Product</label>
+                <select value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white text-sm outline-none focus:border-primary-500">
+                  <option value="">Select product</option>
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name} ({p.color})</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-1">Locked Price (₹)</label>

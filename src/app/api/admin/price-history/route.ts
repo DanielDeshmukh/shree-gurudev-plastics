@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
 
     const history = await db.priceHistory.findMany({
       where,
+      include: { product: { select: { id: true, name: true, color: true } } },
       take: 100,
     }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime()));
 
