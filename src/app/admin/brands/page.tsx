@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast";
 
 interface Brand {
   id: number;
@@ -11,6 +12,7 @@ interface Brand {
 }
 
 export default function BrandsPage() {
+  const { toast } = useToast();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
@@ -25,7 +27,7 @@ export default function BrandsPage() {
     fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
-      .catch(() => {})
+      .catch(() => { toast("Failed to load brands", "error"); })
       .finally(() => setLoading(false));
   };
 
@@ -86,7 +88,7 @@ export default function BrandsPage() {
     try {
       await fetch(`/api/brands/${id}`, { method: "DELETE", credentials: "include" });
       fetchBrands();
-    } catch {}
+    } catch { toast("Failed to delete brand", "error"); }
   };
 
   const generateSlug = (value: string) => {

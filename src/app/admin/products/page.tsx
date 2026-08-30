@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AVAILABLE_TAGS } from "@/lib/tags";
+import { useToast } from "@/components/Toast";
 
 interface Brand {
   id: number;
@@ -47,6 +48,7 @@ const emptyForm = {
 };
 
 export default function ProductsPage() {
+  const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,7 @@ export default function ProductsPage() {
     fetch(`/api/products?${params}`, { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
-      .catch(() => {})
+      .catch(() => { toast("Failed to load products", "error"); })
       .finally(() => setLoading(false));
   };
 
@@ -73,7 +75,7 @@ export default function ProductsPage() {
     fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
-      .catch(() => {});
+      .catch(() => { toast("Failed to load brands", "error"); });
   };
 
   useEffect(() => {
@@ -151,7 +153,7 @@ export default function ProductsPage() {
     try {
       await fetch(`/api/products/${id}`, { method: "DELETE", credentials: "include" });
       fetchProducts();
-    } catch {}
+    } catch { toast("Failed to delete product", "error"); }
   };
 
   const filtered = products;

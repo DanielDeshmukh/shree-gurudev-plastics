@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/Toast";
 
 interface Product {
   id: number;
@@ -17,6 +18,7 @@ interface Product {
 }
 
 export default function InventoryPage() {
+  const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,7 @@ export default function InventoryPage() {
     fetch("/api/admin/inventory", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
-      .catch(() => {})
+      .catch(() => toast("Failed to load inventory", "error"))
       .finally(() => setLoading(false));
   }, []);
 

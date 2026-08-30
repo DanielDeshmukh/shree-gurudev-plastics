@@ -68,7 +68,7 @@ export default function OrdersPage() {
     fetch("/api/orders", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
-      .catch(() => {})
+      .catch(() => { toast("Failed to load orders", "error"); })
       .finally(() => setLoading(false));
   };
 
@@ -89,7 +89,7 @@ export default function OrdersPage() {
           prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
         );
       }
-    } catch {}
+    } catch { toast("Failed to update status", "error"); }
   };
 
   const handleDelete = async (id: number) => {
@@ -97,7 +97,7 @@ export default function OrdersPage() {
     try {
       await fetch(`/api/orders/${id}`, { method: "DELETE", credentials: "include" });
       setOrders((prev) => prev.filter((o) => o.id !== id));
-    } catch {}
+    } catch { toast("Failed to delete order", "error"); }
   };
 
   const handleGenerateInvoice = async (order: Order) => {
@@ -127,7 +127,7 @@ export default function OrdersPage() {
         const invoiceId = data.invoice?.id;
         if (invoiceId) setPrintInvoiceId(invoiceId);
       }
-    } catch {}
+    } catch { toast("Failed to generate invoice", "error"); }
   };
 
   const handleNotifyArrival = async (order: Order) => {
@@ -142,7 +142,7 @@ export default function OrdersPage() {
       if (data.whatsappUrl) {
         window.open(data.whatsappUrl, "_blank");
       }
-    } catch {}
+    } catch { toast("Failed to send notification", "error"); }
   };
 
   const handlePaymentUpdate = async (orderId: number, paymentStatus: string, paymentNote?: string) => {
@@ -158,7 +158,7 @@ export default function OrdersPage() {
           prev.map((o) => (o.id === orderId ? { ...o, paymentStatus, paymentNote: paymentNote || o.paymentNote } : o))
         );
       }
-    } catch {}
+    } catch { toast("Failed to update payment", "error"); }
   };
 
   const handlePrintInvoice = async (order: Order) => {

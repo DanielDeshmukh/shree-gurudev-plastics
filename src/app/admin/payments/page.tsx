@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MdRefresh, MdTrendingUp, MdWarning, MdError, MdPaid, MdSearch, MdUndo } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 interface Payment {
   id: number;
@@ -35,6 +36,7 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function PaymentsPage() {
+  const { toast } = useToast();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,9 @@ export default function PaymentsPage() {
       const data = await res.json();
       setPayments(data.payments || []);
       setStats(data.stats || null);
-    } catch {}
+    } catch {
+      toast("Failed to load payments", "error");
+    }
     setLoading(false);
   };
 

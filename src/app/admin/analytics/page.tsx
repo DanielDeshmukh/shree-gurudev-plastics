@@ -6,6 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { MdTrendingUp, MdTrendingDown, MdShoppingCart, MdPeople } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 interface AnalyticsData {
   summary: {
@@ -34,6 +35,7 @@ const tooltipStyle = {
 };
 
 export default function AnalyticsPage() {
+  const { toast } = useToast();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,7 @@ export default function AnalyticsPage() {
     fetch("/api/admin/analytics", { credentials: "include" })
       .then((r) => r.json())
       .then(setData)
-      .catch(() => {})
+      .catch(() => toast("Failed to load analytics", "error"))
       .finally(() => setLoading(false));
   }, []);
 

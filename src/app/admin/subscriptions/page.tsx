@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MdAutorenew, MdCheckCircle, MdCancel, MdPause, MdWarning, MdRefresh } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 interface Subscription {
   id: number;
@@ -26,6 +27,7 @@ const STATUS_CONFIG: Record<string, { color: string; icon: any; label: string }>
 };
 
 export default function SubscriptionsPage() {
+  const { toast } = useToast();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +37,9 @@ export default function SubscriptionsPage() {
       const res = await fetch("/api/razorpay/subscription", { credentials: "include" });
       const data = await res.json();
       setSubscriptions(data.subscriptions || []);
-    } catch {}
+    } catch {
+      toast("Failed to load subscriptions", "error");
+    }
     setLoading(false);
   };
 

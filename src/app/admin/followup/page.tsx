@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MdCelebration, MdInventory, MdStar, MdCampaign } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 interface Order {
   id: number;
@@ -29,6 +30,7 @@ const TEMPLATE_ICONS: Record<string, React.ComponentType<{ className?: string }>
 };
 
 export default function FollowupPage() {
+  const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -42,7 +44,7 @@ export default function FollowupPage() {
     fetch("/api/admin/followup", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
-      .catch(() => {})
+      .catch(() => toast("Failed to load orders", "error"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -65,7 +67,9 @@ export default function FollowupPage() {
         setGeneratedUrl(data.whatsappUrl);
         setPreviewMessage(data.message);
       }
-    } catch {}
+    } catch {
+      toast("Failed to generate message", "error");
+    }
     setSending(false);
   };
 

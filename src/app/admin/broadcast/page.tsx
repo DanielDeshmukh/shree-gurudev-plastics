@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MdCampaign, MdMessage, MdCheckCircle } from "react-icons/md";
+import { useToast } from "@/components/Toast";
 
 interface Customer {
   id: number;
@@ -33,6 +34,7 @@ const FESTIVAL_OPTIONS = [
 ];
 
 export default function BroadcastPage() {
+  const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [templates, setTemplates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function BroadcastPage() {
         setCustomers(d.customers || []);
         setTemplates(d.templates || []);
       })
-      .catch(() => {})
+      .catch(() => toast("Failed to load data", "error"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -86,7 +88,9 @@ export default function BroadcastPage() {
       });
       const data = await res.json();
       setGenerated(data.messages || []);
-    } catch {}
+    } catch {
+      toast("Failed to generate messages", "error");
+    }
   };
 
   const handleSend = (msg: GeneratedMessage) => {

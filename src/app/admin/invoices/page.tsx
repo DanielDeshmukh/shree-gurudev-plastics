@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { MdClose, MdPrint } from "react-icons/md";
 import ThermalReceiptModal from "@/components/ThermalReceiptModal";
+import { useToast } from "@/components/Toast";
 
 interface InvoiceItem {
   id: number;
@@ -38,6 +39,7 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
+  const { toast } = useToast();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -62,7 +64,7 @@ export default function InvoicesPage() {
     fetch("/api/admin/invoices", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setInvoices(d.invoices || []))
-      .catch(() => {})
+      .catch(() => toast("Failed to load invoices", "error"))
       .finally(() => setLoading(false));
   };
 
@@ -87,7 +89,9 @@ export default function InvoicesPage() {
           items: [{ productName: "", hsnCode: "3924", quantity: 1, unitPrice: 0, gstRate: 18 }],
         });
       }
-    } catch {}
+    } catch {
+      toast("Failed to create invoice", "error");
+    }
   };
 
   const handleStatusUpdate = async (id: number, status: string) => {

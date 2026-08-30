@@ -93,7 +93,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           setMaintenanceEta(local);
         }
       })
-      .catch(() => {});
+      .catch(() => { showToast("Failed to load maintenance status", "error"); });
 
     const fetchPending = async () => {
       try {
@@ -125,7 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           setFestivalEndDate(local);
         }
       })
-      .catch(() => {});
+      .catch(() => { showToast("Failed to load festival settings", "error"); });
   }, [pathname]);
 
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TIER_LABELS, type CustomerTier } from "@/lib/pricing";
+import { useToast } from "@/components/Toast";
 
 interface Customer {
   id: number;
@@ -18,6 +19,7 @@ interface Customer {
 }
 
 export default function CustomersPage() {
+  const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -26,7 +28,7 @@ export default function CustomersPage() {
     fetch("/api/admin/customers", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setCustomers(d.customers || []))
-      .catch(() => {})
+      .catch(() => { toast("Failed to load customers", "error"); })
       .finally(() => setLoading(false));
   }, []);
 

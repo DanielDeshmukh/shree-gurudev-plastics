@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast";
 
 interface PriceLock {
   id: number;
@@ -23,6 +24,7 @@ interface PriceHistory {
 }
 
 export default function PriceLockPage() {
+  const { toast } = useToast();
   const [locks, setLocks] = useState<PriceLock[]>([]);
   const [history, setHistory] = useState<PriceHistory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export default function PriceLockPage() {
         setLocks(locksData.locks || []);
         setHistory(historyData.history || []);
       })
-      .catch(() => {})
+      .catch(() => toast("Failed to load price data", "error"))
       .finally(() => setLoading(false));
   }, []);
 
