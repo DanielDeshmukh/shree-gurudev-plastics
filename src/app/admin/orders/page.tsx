@@ -65,7 +65,7 @@ export default function OrdersPage() {
   const [printInvoiceId, setPrintInvoiceId] = useState<number | null>(null);
 
   const fetchOrders = () => {
-    fetch("/api/orders")
+    fetch("/api/orders", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
       .catch(() => {})
@@ -82,6 +82,7 @@ export default function OrdersPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
+        credentials: "include",
       });
       if (res.ok) {
         setOrders((prev) =>
@@ -94,7 +95,7 @@ export default function OrdersPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this order?")) return;
     try {
-      await fetch(`/api/orders/${id}`, { method: "DELETE" });
+      await fetch(`/api/orders/${id}`, { method: "DELETE", credentials: "include" });
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch {}
   };
@@ -111,6 +112,7 @@ export default function OrdersPage() {
       const res = await fetch("/api/admin/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           orderId: order.id,
           customerName: order.customer,
@@ -133,6 +135,7 @@ export default function OrdersPage() {
       const res = await fetch("/api/admin/followup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ orderId: order.id, template: "arrival_notification" }),
       });
       const data = await res.json();
@@ -147,6 +150,7 @@ export default function OrdersPage() {
       const res = await fetch(`/api/orders/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ paymentStatus, paymentNote: paymentNote || undefined }),
       });
       if (res.ok) {
@@ -159,7 +163,7 @@ export default function OrdersPage() {
 
   const handlePrintInvoice = async (order: Order) => {
     try {
-      const res = await fetch("/api/admin/invoices");
+      const res = await fetch("/api/admin/invoices", { credentials: "include" });
       const data = await res.json();
       const inv = (data.invoices || []).find((i: { orderId: number }) => i.orderId === order.id);
       if (inv) {

@@ -11,14 +11,14 @@ export default function SuppliersPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", gstNumber: "", notes: "" });
 
-  useEffect(() => { fetch("/api/admin/suppliers").then(r => r.json()).then(d => { setSuppliers(d.suppliers || []); setLoading(false); }); }, []);
+  useEffect(() => { fetch("/api/admin/suppliers", { credentials: "include" }).then(r => r.json()).then(d => { setSuppliers(d.suppliers || []); setLoading(false); }); }, []);
 
   const handleSave = async () => {
     if (!form.name || !form.phone) return;
     const url = "/api/admin/suppliers";
     const method = editId ? "PUT" : "POST";
     const body = editId ? { id: editId, ...form } : form;
-    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), credentials: "include" });
     if (res.ok) {
       const data = await res.json();
       if (editId) { setSuppliers((prev) => prev.map((s) => s.id === editId ? data.supplier : s)); }
@@ -30,7 +30,7 @@ export default function SuppliersPage() {
   const handleEdit = (s: Supplier) => { setForm({ name: s.name, phone: s.phone, email: s.email || "", address: s.address || "", gstNumber: s.gstNumber || "", notes: s.notes || "" }); setEditId(s.id); setShowCreate(true); };
 
   const handleDelete = async (id: number) => {
-    await fetch(`/api/admin/suppliers?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/suppliers?id=${id}`, { method: "DELETE", credentials: "include" });
     setSuppliers((prev) => prev.filter((s) => s.id !== id));
   };
 

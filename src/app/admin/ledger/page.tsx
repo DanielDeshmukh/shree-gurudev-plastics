@@ -15,7 +15,7 @@ export default function LedgerPage() {
 
   const fetchEntries = async () => {
     const url = customerFilter ? `/api/admin/ledger?customerId=${customerFilter}` : "/api/admin/ledger";
-    const res = await fetch(url);
+    const res = await fetch(url, { credentials: "include" });
     const data = await res.json();
     setEntries(data.entries || []);
     setLoading(false);
@@ -25,7 +25,7 @@ export default function LedgerPage() {
 
   const handleAdd = async () => {
     if (!form.customerId || !form.amount || !form.description) return;
-    const res = await fetch("/api/admin/ledger", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, amount: parseFloat(form.amount), orderId: form.orderId || undefined }) });
+    const res = await fetch("/api/admin/ledger", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ ...form, amount: parseFloat(form.amount), orderId: form.orderId || undefined }) });
     if (res.ok) { const data = await res.json(); setEntries(prev => [data.entry, ...prev]); setShowAdd(false); setForm({ customerId: "", orderId: "", type: "credit", amount: "", description: "", referenceNo: "" }); }
   };
 

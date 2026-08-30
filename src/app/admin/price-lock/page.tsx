@@ -32,8 +32,8 @@ export default function PriceLockPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/admin/price-lock").then((r) => r.json()),
-      fetch("/api/admin/price-history").then((r) => r.json()),
+      fetch("/api/admin/price-lock", { credentials: "include" }).then((r) => r.json()),
+      fetch("/api/admin/price-history", { credentials: "include" }).then((r) => r.json()),
     ])
       .then(([locksData, historyData]) => {
         setLocks(locksData.locks || []);
@@ -49,6 +49,7 @@ export default function PriceLockPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, productId: parseInt(form.productId), lockedPrice: parseFloat(form.lockedPrice), durationHours: parseInt(form.durationHours) }),
+      credentials: "include",
     });
     if (res.ok) {
       const data = await res.json();
@@ -59,7 +60,7 @@ export default function PriceLockPage() {
   };
 
   const handleDeleteLock = async (id: number) => {
-    await fetch(`/api/admin/price-lock?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/price-lock?id=${id}`, { method: "DELETE", credentials: "include" });
     setLocks((prev) => prev.filter((l) => l.id !== id));
   };
 

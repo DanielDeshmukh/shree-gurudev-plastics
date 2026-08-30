@@ -38,7 +38,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/analytics")
+    fetch("/api/admin/analytics", { credentials: "include" })
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})

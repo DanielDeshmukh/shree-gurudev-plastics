@@ -41,7 +41,7 @@ export default function ReportsPage() {
     const params = new URLSearchParams();
     if (reportDate) params.set("from", reportDate);
     if (reportDate) params.set("to", reportDate);
-    fetch(`/api/reports?${params}`)
+    fetch(`/api/reports?${params}`, { credentials: "include" })
       .then((r) => {
         if (!r.ok) throw new Error("Failed to fetch");
         return r.json();
@@ -62,7 +62,7 @@ export default function ReportsPage() {
         params.set("year", String(monthlyYear));
         params.set("month", String(monthlyMonth));
       }
-      const res = await fetch(`/api/admin/reports?${params}`);
+      const res = await fetch(`/api/admin/reports?${params}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to download");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);

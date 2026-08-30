@@ -21,7 +21,7 @@ export default function AdminReviewsPage() {
   const [filter, setFilter] = useState<Filter>("all");
 
   const fetchReviews = () => {
-    fetch("/api/admin/reviews")
+    fetch("/api/admin/reviews", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setReviews(d.reviews || []))
       .catch(() => {})
@@ -37,13 +37,14 @@ export default function AdminReviewsPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ approved }),
+      credentials: "include",
     });
     fetchReviews();
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this review?")) return;
-    await fetch(`/api/reviews/${id}`, { method: "DELETE" });
+    await fetch(`/api/reviews/${id}`, { method: "DELETE", credentials: "include" });
     fetchReviews();
   };
 

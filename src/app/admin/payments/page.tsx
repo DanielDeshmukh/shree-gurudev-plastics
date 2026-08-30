@@ -45,7 +45,7 @@ export default function PaymentsPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/razorpay/payments");
+      const res = await fetch("/api/razorpay/payments", { credentials: "include" });
       const data = await res.json();
       setPayments(data.payments || []);
       setStats(data.stats || null);
@@ -63,6 +63,7 @@ export default function PaymentsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentId: payment.razorpayPaymentId, reason: "Admin refund" }),
+        credentials: "include",
       });
       if (res.ok) {
         fetchData();

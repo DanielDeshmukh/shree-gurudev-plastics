@@ -21,7 +21,7 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/inventory")
+    fetch("/api/admin/inventory", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
       .catch(() => {})

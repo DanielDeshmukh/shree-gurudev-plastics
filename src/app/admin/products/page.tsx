@@ -62,7 +62,7 @@ export default function ProductsPage() {
     if (search) params.set("search", search);
     params.set("ungrouped", "true");
     params.set("limit", "9999");
-    fetch(`/api/products?${params}`)
+    fetch(`/api/products?${params}`, { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
       .catch(() => {})
@@ -70,7 +70,7 @@ export default function ProductsPage() {
   };
 
   const fetchBrands = () => {
-    fetch("/api/brands")
+    fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
       .catch(() => {});
@@ -129,6 +129,7 @@ export default function ProductsPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(form),
       });
       if (!res.ok) {
@@ -148,7 +149,7 @@ export default function ProductsPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this product?")) return;
     try {
-      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      await fetch(`/api/products/${id}`, { method: "DELETE", credentials: "include" });
       fetchProducts();
     } catch {}
   };

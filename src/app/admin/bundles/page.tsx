@@ -13,13 +13,14 @@ export default function BundlesPage() {
   const [form, setForm] = useState({ name: "", description: "", imageUrl: "", totalOriginal: "", bundlePrice: "" });
   const [items, setItems] = useState<{ productId: string; quantity: string }[]>([{ productId: "", quantity: "1" }]);
 
-  useEffect(() => { fetch("/api/admin/bundles").then(r => r.json()).then(d => { setBundles(d.bundles || []); setLoading(false); }); }, []);
+  useEffect(() => { fetch("/api/admin/bundles", { credentials: "include" }).then(r => r.json()).then(d => { setBundles(d.bundles || []); setLoading(false); }); }, []);
 
   const handleCreate = async () => {
     if (!form.name || !form.totalOriginal || !form.bundlePrice || items.some(i => !i.productId)) return;
     const res = await fetch("/api/admin/bundles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         ...form,
         totalOriginal: parseFloat(form.totalOriginal),
@@ -31,12 +32,12 @@ export default function BundlesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`/api/admin/bundles?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/bundles?id=${id}`, { method: "DELETE", credentials: "include" });
     setBundles(prev => prev.filter(b => b.id !== id));
   };
 
   const handleToggle = async (id: number, active: boolean) => {
-    await fetch("/api/admin/bundles", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, active: !active }) });
+    await fetch("/api/admin/bundles", { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ id, active: !active }) });
     setBundles(prev => prev.map(b => b.id === id ? { ...b, active: !active } : b));
   };
 

@@ -44,7 +44,7 @@ export default function BroadcastPage() {
   const [sentIds, setSentIds] = useState<number[]>([]);
 
   useEffect(() => {
-    fetch("/api/admin/broadcast")
+    fetch("/api/admin/broadcast", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
         setCustomers(d.customers || []);
@@ -77,6 +77,7 @@ export default function BroadcastPage() {
       const res = await fetch("/api/admin/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           customerIds: selectedIds.length > 0 ? selectedIds : undefined,
           template: selectedTemplate || undefined,

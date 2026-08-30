@@ -23,7 +23,7 @@ export default function CustomersPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("/api/admin/customers")
+    fetch("/api/admin/customers", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setCustomers(d.customers || []))
       .catch(() => {})
@@ -43,6 +43,7 @@ export default function CustomersPage() {
     await fetch(`/api/admin/customers/${customerId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ tier: newTier }),
     });
     setCustomers((prev) => prev.map((c) => c.id === customerId ? { ...c, tier: newTier } : c));

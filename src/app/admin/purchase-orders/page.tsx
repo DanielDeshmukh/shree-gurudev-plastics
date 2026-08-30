@@ -13,18 +13,18 @@ export default function PurchaseOrdersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ supplierId: "", productId: "", productName: "", quantity: "1", unitCost: "", expectedDate: "", invoiceNumber: "", notes: "" });
 
-  useEffect(() => { fetch("/api/admin/purchase-orders").then(r => r.json()).then(d => { setOrders(d.orders || []); setLoading(false); }); }, []);
+  useEffect(() => { fetch("/api/admin/purchase-orders", { credentials: "include" }).then(r => r.json()).then(d => { setOrders(d.orders || []); setLoading(false); }); }, []);
 
   const handleStatusUpdate = async (id: number, status: string) => {
     const body: Record<string, unknown> = { id, status };
     if (status === "received") body.receivedDate = new Date().toISOString();
-    await fetch("/api/admin/purchase-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    await fetch("/api/admin/purchase-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), credentials: "include" });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status, receivedDate: status === "received" ? new Date().toISOString() : o.receivedDate } : o));
   };
 
   const handleCreate = async () => {
     if (!form.supplierId || !form.productId || !form.productName || !form.unitCost) return;
-    const res = await fetch("/api/admin/purchase-orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, quantity: parseInt(form.quantity) || 1, unitCost: parseFloat(form.unitCost) }) });
+    const res = await fetch("/api/admin/purchase-orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, quantity: parseInt(form.quantity) || 1, unitCost: parseFloat(form.unitCost) }), credentials: "include" });
     if (res.ok) {
       const data = await res.json();
       setOrders((prev) => [data.order, ...prev]);

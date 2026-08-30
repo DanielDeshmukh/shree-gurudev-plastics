@@ -58,7 +58,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/dashboard")
+    fetch("/api/dashboard", { credentials: "include" })
       .then((res) => { if (!res.ok) throw new Error("Failed"); return res.json(); })
       .then(setData)
       .catch(() => setError("Failed to load dashboard data"))

@@ -21,8 +21,8 @@ export default function DeliveryPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/admin/delivery/slots").then(r => r.json()),
-      fetch("/api/admin/delivery/schedule").then(r => r.json()),
+      fetch("/api/admin/delivery/slots", { credentials: "include" }).then(r => r.json()),
+      fetch("/api/admin/delivery/schedule", { credentials: "include" }).then(r => r.json()),
     ]).then(([slotsData, schedulesData]) => {
       setSlots(slotsData.slots || []);
       setSchedules(schedulesData.schedules || []);
@@ -31,23 +31,23 @@ export default function DeliveryPage() {
 
   const handleCreateSlot = async () => {
     if (!slotForm.label || !slotForm.startTime || !slotForm.endTime) return;
-    const res = await fetch("/api/admin/delivery/slots", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...slotForm, maxOrders: parseInt(slotForm.maxOrders) }) });
+    const res = await fetch("/api/admin/delivery/slots", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ ...slotForm, maxOrders: parseInt(slotForm.maxOrders) }) });
     if (res.ok) { const data = await res.json(); setSlots(prev => [...prev, data.slot]); setShowSlotForm(false); setSlotForm({ label: "", startTime: "", endTime: "", maxOrders: "5" }); }
   };
 
   const handleDeleteSlot = async (id: number) => {
-    await fetch(`/api/admin/delivery/slots?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/delivery/slots?id=${id}`, { method: "DELETE", credentials: "include" });
     setSlots(prev => prev.filter(s => s.id !== id));
   };
 
   const handleAssign = async () => {
     if (!assignForm.orderId || !assignForm.customerId || !assignForm.slotId || !assignForm.date || !assignForm.address || !assignForm.pincode || !assignForm.contactPhone) return;
-    const res = await fetch("/api/admin/delivery/schedule", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(assignForm) });
+    const res = await fetch("/api/admin/delivery/schedule", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify(assignForm) });
     if (res.ok) { const data = await res.json(); setSchedules(prev => [data.schedule, ...prev]); setShowAssign(false); setAssignForm({ orderId: "", customerId: "", slotId: "", date: "", address: "", pincode: "", contactPhone: "", notes: "" }); }
   };
 
   const handleStatusUpdate = async (id: number, status: string) => {
-    await fetch("/api/admin/delivery/schedule", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
+    await fetch("/api/admin/delivery/schedule", { method: "PATCH", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ id, status }) });
     setSchedules(prev => prev.map(s => s.id === id ? { ...s, status, deliveredAt: status === "delivered" ? new Date().toISOString() : s.deliveredAt } : s));
   };
 

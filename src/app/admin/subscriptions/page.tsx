@@ -32,7 +32,7 @@ export default function SubscriptionsPage() {
   const fetchSubscriptions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/razorpay/subscription");
+      const res = await fetch("/api/razorpay/subscription", { credentials: "include" });
       const data = await res.json();
       setSubscriptions(data.subscriptions || []);
     } catch {}

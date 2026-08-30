@@ -22,7 +22,7 @@ export default function BrandsPage() {
   const [error, setError] = useState("");
 
   const fetchBrands = () => {
-    fetch("/api/brands")
+    fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
       .catch(() => {})
@@ -64,6 +64,7 @@ export default function BrandsPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ name, slug, logo }),
       });
       if (!res.ok) {
@@ -83,7 +84,7 @@ export default function BrandsPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this brand?")) return;
     try {
-      await fetch(`/api/brands/${id}`, { method: "DELETE" });
+      await fetch(`/api/brands/${id}`, { method: "DELETE", credentials: "include" });
       fetchBrands();
     } catch {}
   };

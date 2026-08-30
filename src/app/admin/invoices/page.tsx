@@ -59,7 +59,7 @@ export default function InvoicesPage() {
   }, []);
 
   const fetchInvoices = () => {
-    fetch("/api/admin/invoices")
+    fetch("/api/admin/invoices", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setInvoices(d.invoices || []))
       .catch(() => {})
@@ -73,6 +73,7 @@ export default function InvoicesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
+        credentials: "include",
       });
       if (res.ok) {
         setShowCreateModal(false);
@@ -94,6 +95,7 @@ export default function InvoicesPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
+      credentials: "include",
     });
     fetchInvoices();
     if (selectedInvoice?.id === id) {
@@ -103,7 +105,7 @@ export default function InvoicesPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this invoice?")) return;
-    await fetch(`/api/admin/invoices/${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/invoices/${id}`, { method: "DELETE", credentials: "include" });
     fetchInvoices();
     if (selectedInvoice?.id === id) setSelectedInvoice(null);
   };

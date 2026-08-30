@@ -28,7 +28,7 @@ export default function RecurringOrdersPage() {
   const [form, setForm] = useState({ customerId: "", productId: "", productName: "", quantity: "1", frequency: "weekly", pricePerUnit: "", notes: "" });
 
   const fetchOrders = async () => {
-    const res = await fetch("/api/admin/recurring-orders");
+    const res = await fetch("/api/admin/recurring-orders", { credentials: "include" });
     const data = await res.json();
     setOrders(data.orders || []);
     setLoading(false);
@@ -38,12 +38,12 @@ export default function RecurringOrdersPage() {
 
   const handleStatusToggle = async (id: number, current: string) => {
     const next = current === "active" ? "paused" : "active";
-    await fetch("/api/admin/recurring-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status: next }) });
+    await fetch("/api/admin/recurring-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status: next }), credentials: "include" });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status: next } : o));
   };
 
   const handleCancel = async (id: number) => {
-    await fetch("/api/admin/recurring-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status: "cancelled" }) });
+    await fetch("/api/admin/recurring-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status: "cancelled" }), credentials: "include" });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status: "cancelled" } : o));
   };
 
@@ -53,6 +53,7 @@ export default function RecurringOrdersPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: "include",
     });
     if (res.ok) {
       const data = await res.json();

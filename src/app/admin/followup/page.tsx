@@ -39,7 +39,7 @@ export default function FollowupPage() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/followup")
+    fetch("/api/admin/followup", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
       .catch(() => {})
@@ -58,6 +58,7 @@ export default function FollowupPage() {
           template: selectedTemplate,
           customMessage: customMessage || undefined,
         }),
+        credentials: "include",
       });
       const data = await res.json();
       if (data.whatsappUrl) {
