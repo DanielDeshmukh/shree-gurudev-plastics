@@ -13,7 +13,6 @@ import {
   MdStar,
   MdNotificationsActive,
   MdLock,
-  MdAutorenew,
   MdFactory,
   MdAssignment,
   MdLocalShipping,
@@ -48,7 +47,6 @@ const navLinks = [
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
   { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
-  { href: "/admin/subscriptions", label: "Subscriptions", icon: MdAutorenew },
   { href: "/admin/payments", label: "Payments", icon: MdPaid },
 ];
 
