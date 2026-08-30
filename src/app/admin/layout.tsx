@@ -39,7 +39,6 @@ const navLinks = [
   { href: "/admin/reviews", label: "Reviews", icon: MdStar },
   { href: "/admin/inventory", label: "Inventory", icon: MdInventory },
   { href: "/admin/price-lock", label: "Price Lock", icon: MdLock },
-  { href: "/admin/recurring-orders", label: "Recurring Orders", icon: MdAutorenew },
   { href: "/admin/suppliers", label: "Suppliers", icon: MdFactory },
   { href: "/admin/purchase-orders", label: "Purchase Orders", icon: MdAssignment },
   { href: "/admin/delivery", label: "Delivery", icon: MdLocalShipping },
