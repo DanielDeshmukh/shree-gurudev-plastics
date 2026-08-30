@@ -102,13 +102,14 @@ export default function BroadcastPage() {
     }, 1000);
   };
 
-  const handleSendAll = () => {
-    generated.forEach((msg, i) => {
-      setTimeout(() => {
-        window.open(msg.whatsappUrl, "_blank");
-        setSentIds((prev) => [...prev, msg.id]);
-      }, i * 1500);
-    });
+  const handleSendAll = async () => {
+    const links = generated.filter((m) => !sentIds.includes(m.id)).map((m) => `${m.name}: ${m.whatsappUrl}`).join("\n");
+    try {
+      await navigator.clipboard.writeText(links);
+      toast(`Copied ${generated.filter((m) => !sentIds.includes(m.id)).length} WhatsApp links to clipboard. Open each link to send.`, "success");
+    } catch {
+      toast("Failed to copy links", "error");
+    }
   };
 
   return (
@@ -211,7 +212,7 @@ export default function BroadcastPage() {
                   onClick={handleSendAll}
                   className="flex items-center gap-2 rounded-lg bg-green-500/10 px-4 py-2 text-sm font-medium text-green-400 hover:bg-green-500/20 transition-colors"
                 >
-                  <MdMessage /> Send All
+                  <MdMessage /> Copy All Links
                 </button>
               </div>
               <div className="space-y-3">
