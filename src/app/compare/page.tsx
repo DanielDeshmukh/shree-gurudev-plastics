@@ -212,6 +212,15 @@ export default function ComparePage() {
     );
   }
 
+  const hasDifference = (key: string) => {
+    if (items.length < 2) return false;
+    const values = items.map((item) => {
+      const val = (item as Record<string, unknown>)[key];
+      return val === null || val === undefined || val === "" ? "—" : String(val);
+    });
+    return new Set(values).size > 1;
+  };
+
   const allAttributes = [
     { label: t("Name", "नाम"), key: "name" },
     { label: t("Brand", "ब्रांड"), key: "brand" },
@@ -243,15 +252,6 @@ export default function ComparePage() {
     : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
-
-  const hasDifference = (key: string) => {
-    if (items.length < 2) return false;
-    const values = items.map((item) => {
-      const val = (item as Record<string, unknown>)[key];
-      return val === null || val === undefined || val === "" ? "—" : String(val);
-    });
-    return new Set(values).size > 1;
-  };
 
   return (
     <main className="min-h-screen bg-gray-50">
