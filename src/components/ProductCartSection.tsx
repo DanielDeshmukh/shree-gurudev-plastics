@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { PHONE } from "@/lib/seo";
+import { logEnquiry } from "@/lib/log-enquiry";
 
 type ProductCartSectionProps = {
   id: number;
@@ -37,6 +38,7 @@ export default function ProductCartSection({ id, name, color, size, price, image
     ].filter(Boolean).join("\n");
 
     const message = `Namaste!\n\nI am interested in the following product:\n\n${details}\n\nKindly share the best price, availability, and delivery details.\n\nThank you!`;
+    logEnquiry({ productId: id, productName: name, message, source: "whatsapp" });
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 

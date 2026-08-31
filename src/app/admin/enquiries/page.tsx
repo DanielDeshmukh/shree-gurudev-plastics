@@ -56,9 +56,9 @@ const REPLY_TEMPLATES = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ComponentType<{ size?: number }> }> = {
-  new: { label: "New", color: "text-blue-700", bg: "bg-blue-100", icon: MdPending },
-  replied: { label: "Replied", color: "text-green-700", bg: "bg-green-100", icon: MdCheckCircle },
-  closed: { label: "Closed", color: "text-gray-600", bg: "bg-gray-100", icon: MdArchive },
+  new: { label: "New", color: "text-blue-400", bg: "bg-blue-500/15", icon: MdPending },
+  replied: { label: "Replied", color: "text-green-400", bg: "bg-green-500/15", icon: MdCheckCircle },
+  closed: { label: "Closed", color: "text-gray-400", bg: "bg-gray-500/15", icon: MdArchive },
 };
 
 export default function EnquiriesPage() {
@@ -129,30 +129,27 @@ export default function EnquiriesPage() {
   };
 
   const statusCounts = enquiries.reduce(
-    (acc, e) => {
-      acc[e.status] = (acc[e.status] || 0) + 1;
-      return acc;
-    },
+    (acc, e) => { acc[e.status] = (acc[e.status] || 0) + 1; return acc; },
     {} as Record<string, number>
   );
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Enquiries</h1>
-        <p className="text-sm text-gray-500 mt-1">{total} total enquiries from customers</p>
+        <h1 className="text-2xl font-bold text-gray-100">Enquiries</h1>
+        <p className="text-sm text-gray-400 mt-1">{total} total enquiries from customers</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <MdSearch size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <MdSearch size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Search by product, name, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && fetchEnquiries()}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary-500"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-700 bg-gray-800 rounded-lg text-sm text-white placeholder-gray-500 outline-none focus:border-primary-500"
           />
         </div>
         <div className="flex gap-2">
@@ -163,7 +160,7 @@ export default function EnquiriesPage() {
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                 statusFilter === s
                   ? "bg-primary-500 text-white"
-                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                  : "bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700"
               }`}
             >
               {s === "all" ? "All" : STATUS_CONFIG[s]?.label}
@@ -176,9 +173,9 @@ export default function EnquiriesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-3">
           {loading ? (
-            <div className="text-center py-12 text-gray-400">Loading...</div>
+            <div className="text-center py-12 text-gray-500">Loading...</div>
           ) : enquiries.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">No enquiries found</div>
+            <div className="rounded-xl bg-gray-900 border border-gray-800 py-12 text-center text-gray-500">No enquiries found</div>
           ) : (
             enquiries.map((enquiry) => {
               const cfg = STATUS_CONFIG[enquiry.status] || STATUS_CONFIG.new;
@@ -187,8 +184,8 @@ export default function EnquiriesPage() {
                 <div
                   key={enquiry.id}
                   onClick={() => { setSelectedEnquiry(enquiry); setShowTemplates(false); }}
-                  className={`bg-white border rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${
-                    selectedEnquiry?.id === enquiry.id ? "border-primary-400 ring-1 ring-primary-200" : "border-gray-200"
+                  className={`bg-gray-900 border rounded-xl p-4 cursor-pointer transition-all hover:bg-gray-800/80 ${
+                    selectedEnquiry?.id === enquiry.id ? "border-primary-500 ring-1 ring-primary-500/30" : "border-gray-800"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -197,20 +194,20 @@ export default function EnquiriesPage() {
                         <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${cfg.color} ${cfg.bg}`}>
                           <Icon size={11} /> {cfg.label}
                         </span>
-                        <span className="text-[11px] text-gray-400">{formatDate(enquiry.createdAt)}</span>
+                        <span className="text-[11px] text-gray-500">{formatDate(enquiry.createdAt)}</span>
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm truncate">{enquiry.productName}</h3>
-                      {enquiry.brandName && <p className="text-xs text-gray-500">{enquiry.brandName}</p>}
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">{enquiry.message}</p>
+                      <h3 className="font-semibold text-gray-100 text-sm truncate">{enquiry.productName}</h3>
+                      {enquiry.brandName && <p className="text-xs text-gray-400">{enquiry.brandName}</p>}
+                      <p className="text-xs text-gray-400 mt-1 line-clamp-2">{enquiry.message}</p>
                       {enquiry.customerName && (
-                        <p className="text-[11px] text-gray-400 mt-1">From: {enquiry.customerName}{enquiry.customerPhone ? ` (${enquiry.customerPhone})` : ""}</p>
+                        <p className="text-[11px] text-gray-500 mt-1">From: {enquiry.customerName}{enquiry.customerPhone ? ` (${enquiry.customerPhone})` : ""}</p>
                       )}
                     </div>
                     <div className="flex flex-col gap-1 shrink-0">
                       {enquiry.status === "new" && (
                         <button
                           onClick={(e) => { e.stopPropagation(); updateStatus(enquiry.id, "replied"); }}
-                          className="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md hover:bg-green-100"
+                          className="text-[10px] font-medium text-green-400 bg-green-500/15 px-2 py-1 rounded-md hover:bg-green-500/25"
                         >
                           Mark Replied
                         </button>
@@ -218,7 +215,7 @@ export default function EnquiriesPage() {
                       {enquiry.status !== "closed" && (
                         <button
                           onClick={(e) => { e.stopPropagation(); updateStatus(enquiry.id, "closed"); }}
-                          className="text-[10px] font-medium text-gray-500 bg-gray-50 px-2 py-1 rounded-md hover:bg-gray-100"
+                          className="text-[10px] font-medium text-gray-400 bg-gray-700/50 px-2 py-1 rounded-md hover:bg-gray-700"
                         >
                           Close
                         </button>
@@ -232,22 +229,22 @@ export default function EnquiriesPage() {
         </div>
 
         <div className="space-y-4">
-          {selectedEnquiry && (
+          {selectedEnquiry ? (
             <>
-              <div className="bg-white border border-gray-200 rounded-xl p-4">
-                <h3 className="font-semibold text-gray-900 text-sm mb-3">Enquiry Details</h3>
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-100 text-sm mb-3">Enquiry Details</h3>
                 <div className="space-y-2 text-xs">
-                  <div><span className="text-gray-500">Product:</span> <span className="font-medium">{selectedEnquiry.productName}</span></div>
-                  {selectedEnquiry.brandName && <div><span className="text-gray-500">Brand:</span> <span className="font-medium">{selectedEnquiry.brandName}</span></div>}
-                  {selectedEnquiry.productPrice && <div><span className="text-gray-500">Price:</span> <span className="font-medium text-primary-500">Rs.{selectedEnquiry.productPrice.toLocaleString("en-IN")}</span></div>}
-                  {selectedEnquiry.customerName && <div><span className="text-gray-500">Name:</span> <span className="font-medium">{selectedEnquiry.customerName}</span></div>}
-                  {selectedEnquiry.customerPhone && <div><span className="text-gray-500">Phone:</span> <span className="font-medium">{selectedEnquiry.customerPhone}</span></div>}
-                  <div><span className="text-gray-500">Source:</span> <span className="font-medium capitalize">{selectedEnquiry.source}</span></div>
-                  <div><span className="text-gray-500">Time:</span> <span className="font-medium">{new Date(selectedEnquiry.createdAt).toLocaleString("en-IN")}</span></div>
+                  <div><span className="text-gray-500">Product:</span> <span className="font-medium text-gray-200">{selectedEnquiry.productName}</span></div>
+                  {selectedEnquiry.brandName && <div><span className="text-gray-500">Brand:</span> <span className="font-medium text-gray-200">{selectedEnquiry.brandName}</span></div>}
+                  {selectedEnquiry.productPrice && <div><span className="text-gray-500">Price:</span> <span className="font-medium text-primary-400">Rs.{selectedEnquiry.productPrice.toLocaleString("en-IN")}</span></div>}
+                  {selectedEnquiry.customerName && <div><span className="text-gray-500">Name:</span> <span className="font-medium text-gray-200">{selectedEnquiry.customerName}</span></div>}
+                  {selectedEnquiry.customerPhone && <div><span className="text-gray-500">Phone:</span> <span className="font-medium text-gray-200">{selectedEnquiry.customerPhone}</span></div>}
+                  <div><span className="text-gray-500">Source:</span> <span className="font-medium text-gray-200 capitalize">{selectedEnquiry.source}</span></div>
+                  <div><span className="text-gray-500">Time:</span> <span className="font-medium text-gray-200">{new Date(selectedEnquiry.createdAt).toLocaleString("en-IN")}</span></div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-gray-100">
+                <div className="mt-3 pt-3 border-t border-gray-800">
                   <p className="text-[11px] text-gray-500 mb-1">Customer message:</p>
-                  <p className="text-xs text-gray-700 bg-gray-50 rounded-lg p-2 whitespace-pre-wrap">{selectedEnquiry.message}</p>
+                  <p className="text-xs text-gray-300 bg-gray-800 rounded-lg p-2 whitespace-pre-wrap">{selectedEnquiry.message}</p>
                 </div>
                 <div className="flex gap-2 mt-3">
                   {selectedEnquiry.status === "new" && (
@@ -256,20 +253,20 @@ export default function EnquiriesPage() {
                     </button>
                   )}
                   {selectedEnquiry.status !== "closed" && (
-                    <button onClick={() => updateStatus(selectedEnquiry.id, "closed")} className="flex-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 py-2 rounded-lg transition-colors">
+                    <button onClick={() => updateStatus(selectedEnquiry.id, "closed")} className="flex-1 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 py-2 rounded-lg transition-colors">
                       Close
                     </button>
                   )}
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-xl p-4">
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
                 <button
                   onClick={() => setShowTemplates(!showTemplates)}
-                  className="w-full flex items-center justify-between text-sm font-semibold text-gray-900"
+                  className="w-full flex items-center justify-between text-sm font-semibold text-gray-100"
                 >
                   Quick Reply Templates
-                  <MdFilterList size={16} className={`transition-transform ${showTemplates ? "rotate-180" : ""}`} />
+                  <MdFilterList size={16} className={`transition-transform text-gray-400 ${showTemplates ? "rotate-180" : ""}`} />
                 </button>
                 {showTemplates && (
                   <div className="mt-3 space-y-2">
@@ -277,15 +274,15 @@ export default function EnquiriesPage() {
                       const TplIcon = tpl.icon;
                       const filled = tpl.template(selectedEnquiry);
                       return (
-                        <div key={tpl.label} className="border border-gray-100 rounded-lg p-2.5 hover:bg-gray-50 transition-colors">
+                        <div key={tpl.label} className="border border-gray-700/50 rounded-lg p-2.5 hover:bg-gray-800 transition-colors">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-xs font-medium text-gray-700 flex items-center gap-1.5">
-                              <TplIcon size={13} className="text-primary-500" /> {tpl.label}
+                            <span className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
+                              <TplIcon size={13} className="text-primary-400" /> {tpl.label}
                             </span>
                             <div className="flex gap-1">
                               <button
                                 onClick={() => copyTemplate(filled)}
-                                className="p-1 text-gray-400 hover:text-primary-500 transition-colors"
+                                className="p-1 text-gray-500 hover:text-primary-400 transition-colors"
                                 title="Copy to clipboard"
                               >
                                 <MdContentCopy size={13} />
@@ -293,7 +290,7 @@ export default function EnquiriesPage() {
                               {selectedEnquiry.customerPhone && (
                                 <button
                                   onClick={() => openWhatsApp(selectedEnquiry.customerPhone!, filled)}
-                                  className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                  className="p-1 text-gray-500 hover:text-green-400 transition-colors"
                                   title="Open in WhatsApp"
                                 >
                                   <MdOpenInNew size={13} />
@@ -309,9 +306,8 @@ export default function EnquiriesPage() {
                 )}
               </div>
             </>
-          )}
-          {!selectedEnquiry && (
-            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
+          ) : (
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500 text-sm">
               Select an enquiry to view details and reply templates
             </div>
           )}
