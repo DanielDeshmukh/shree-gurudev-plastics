@@ -212,7 +212,7 @@ export default function ComparePage() {
     );
   }
 
-  const attributes = [
+  const allAttributes = [
     { label: t("Name", "नाम"), key: "name" },
     { label: t("Brand", "ब्रांड"), key: "brand" },
     { label: t("Price", "मूल्य"), key: "price" },
@@ -225,8 +225,21 @@ export default function ComparePage() {
     { label: t("Enquiry", "पूछताछ"), key: "enquiry" },
   ];
 
+  const ALWAYS_SHOW = new Set(["name", "price", "stock", "enquiry", "cart"]);
+  const hasAnyRatings = compareCount >= 2 && items.some((item) => ratings[item.id]);
+  const attributes = compareCount < 2
+    ? allAttributes
+    : allAttributes.filter((attr) => {
+        if (ALWAYS_SHOW.has(attr.key)) return true;
+        if (attr.key === "rating" || attr.key === "popularity") return hasAnyRatings;
+        return hasDifference(attr.key);
+      });
+
   const mostBoughtId = compareCount >= 2
-    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])?.id
+    ? (() => {
+        const best = items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0]);
+        return (ratings[best.id]?.totalOrdered ?? 0) > 0 ? best.id : null;
+      })()
     : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
@@ -340,10 +353,17 @@ export default function ComparePage() {
                       {differs && <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 ml-1" title={t("Values differ", "मान अलग-अलग हैं")} />}
                     </button>
                   </td>
-                  {sortedItems.map((item) => (
-                    <td key={item.id} className="py-4 px-5 border-r border-gray-100 last:border-r-0">
-                      {attr.key === "name" && (
+                  {sortedItems.map((item) => {
+                    const isMostBought = mostBoughtId === item.id;
+                    return (
+                    <td key={item.id} className={`py-4 px-5 border-r border-gray-100 last:border-r-0 ${isMostBought ? "ring-2 ring-inset ring-amber-400 bg-amber-50/30" : ""}`}>
+                       {attr.key === "name" && (
                         <div className="flex flex-col items-center gap-2">
+                          {isMostBought && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                              <MdLocalFireDepartment size={11} /> {t("MOST BOUGHT", "सबसे ज़्यादा बिका")}
+                            </span>
+                          )}
                           <button onClick={() => removeCompare(item.id)} className="text-xs text-red-500 hover:text-red-600 underline">{t("Remove", "हटाएं")}</button>
                           <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
                             {item.imageUrl ? (
@@ -426,7 +446,8 @@ export default function ComparePage() {
                         </button>
                       )}
                     </td>
-                  ))}
+                  );
+                  })}
                 </tr>
               );
               })}
@@ -435,9 +456,17 @@ export default function ComparePage() {
         </div>
 
         <div className="md:hidden space-y-4">
-          {sortedItems.map((item) => (
+          {sortedItems.map((item) => {
+            const isMostBought = mostBoughtId === item.id;
+            return (
             <SwipeableCard key={item.id} onSwipe={() => removeCompare(item.id)}>
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div className={`bg-white rounded-xl overflow-hidden ${isMostBought ? "ring-2 ring-amber-400" : "border border-gray-200"}`}>
+              {isMostBought && (
+                <div className="bg-amber-50 border-b border-amber-200 px-4 py-1.5 flex items-center gap-1.5">
+                  <MdLocalFireDepartment size={13} className="text-amber-600" />
+                  <span className="text-[11px] font-bold text-amber-700">{t("MOST BOUGHT", "सबसे ज़्यादा बिका")}</span>
+                </div>
+              )}
               <div className="flex gap-3 p-4">
                 <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-200">
                   {item.imageUrl ? (
@@ -448,15 +477,15 @@ export default function ComparePage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/product/${item.slug}`} className="font-semibold text-gray-900 hover:text-primary-500 text-sm line-clamp-1">{item.name}</Link>
-                  <p className="text-xs text-gray-500 mt-0.5">{item.brand}</p>
+                  {!hasDifference("brand") && <p className="text-xs text-gray-500 mt-0.5">{item.brand}</p>}
                   <p className={`text-base font-bold mt-1 ${item.price > 0 ? "text-primary-500" : "text-gray-400"}`}>{item.price > 0 ? `₹${item.price.toLocaleString("en-IN")}` : t("Contact for price", "मूल्य के लिए संपर्क करें")}</p>
                 </div>
                 <button onClick={() => removeCompare(item.id)} className="text-xs text-red-500 hover:text-red-600 self-start">{t("Remove", "हटाएं")}</button>
               </div>
               <div className="grid grid-cols-2 gap-px bg-gray-200 border-t border-gray-200">
-                <div className={`px-3 py-2 ${hasDifference("color") ? "bg-amber-50" : "bg-gray-50"}`}><span className="text-[10px] text-gray-500 block">{t("Color", "रंग")}{hasDifference("color") && " *"}</span><span className="text-xs text-gray-900">{item.color || "—"}</span></div>
-                <div className={`px-3 py-2 ${hasDifference("size") ? "bg-amber-50" : "bg-white"}`}><span className="text-[10px] text-gray-500 block">{t("Size", "आकार")}{hasDifference("size") && " *"}</span><span className="text-xs text-gray-900">{item.size || "—"}</span></div>
-                <div className={`px-3 py-2 ${hasDifference("category") ? "bg-amber-50" : "bg-gray-50"}`}><span className="text-[10px] text-gray-500 block">{t("Category", "श्रेणी")}{hasDifference("category") && " *"}</span><span className="text-xs text-gray-900">{item.category || "—"}</span></div>
+                {hasDifference("color") && <div className="px-3 py-2 bg-amber-50"><span className="text-[10px] text-gray-500 block">{t("Color", "रंग")} *</span><span className="text-xs text-gray-900">{item.color || "—"}</span></div>}
+                {hasDifference("size") && <div className="px-3 py-2 bg-amber-50"><span className="text-[10px] text-gray-500 block">{t("Size", "आकार")} *</span><span className="text-xs text-gray-900">{item.size || "—"}</span></div>}
+                {hasDifference("category") && <div className="px-3 py-2 bg-amber-50"><span className="text-[10px] text-gray-500 block">{t("Category", "श्रेणी")} *</span><span className="text-xs text-gray-900">{item.category || "—"}</span></div>}
                 <div className={`px-3 py-2 ${hasDifference("stock") ? "bg-amber-50" : "bg-white"}`}>
                   <span className="text-[10px] text-gray-500 block">{t("Stock", "स्टॉक")}</span>
                   <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${item.stock > 0 ? "text-green-700" : "text-red-700"}`}>
@@ -464,21 +493,18 @@ export default function ComparePage() {
                     {item.stock > 0 ? `${item.stock} ${t("in stock", "स्टॉक में")}` : t("Out", "नहीं")}
                   </span>
                 </div>
-                <div className="bg-gray-50 px-3 py-2">
-                  <span className="text-[10px] text-gray-500 block">{t("Rating", "रेटिंग")}</span>
-                  {ratings[item.id] ? (
+                {ratings[item.id] && (
+                  <div className="bg-gray-50 px-3 py-2">
+                    <span className="text-[10px] text-gray-500 block">{t("Rating", "रेटिंग")}</span>
                     <StarRating avg={ratings[item.id].avg} count={ratings[item.id].count} />
-                  ) : (
-                    <span className="text-[10px] text-gray-300">{t("No reviews", "कोई समीक्षा नहीं")}</span>
-                  )}
-                </div>
+                  </div>
+                )}
                 {ratings[item.id] && (
                   <div className="bg-white px-3 py-2">
                     <span className="text-[10px] text-gray-500 block">{t("Popularity", "लोकप्रियता")}</span>
                     <div className="flex items-center gap-1">
-                      {mostBoughtId === item.id && <MdLocalFireDepartment size={10} className="text-orange-500" />}
-                      <span className={`text-xs font-bold ${mostBoughtId === item.id ? "text-orange-600" : "text-gray-900"}`}>{ratings[item.id].totalOrdered} {t("sold", "बिके")}</span>
-                      {mostBoughtId === item.id && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1 py-0.5 rounded-full">{t("BEST", "बेस्ट")}</span>}
+                      {isMostBought && <MdLocalFireDepartment size={10} className="text-orange-500" />}
+                      <span className={`text-xs font-bold ${isMostBought ? "text-orange-600" : "text-gray-900"}`}>{ratings[item.id].totalOrdered} {t("sold", "बिके")}</span>
                     </div>
                   </div>
                 )}
@@ -509,7 +535,8 @@ export default function ComparePage() {
               </div>
               </div>
             </SwipeableCard>
-          ))}
+            );
+          })}
         </div>
       </div>
     </main>
