@@ -245,10 +245,7 @@ export default function ComparePage() {
       });
 
   const mostBoughtId = compareCount >= 2
-    ? (() => {
-        const best = items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0]);
-        return (ratings[best.id]?.totalOrdered ?? 0) > 0 ? best.id : null;
-      })()
+    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])?.id ?? null
     : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
@@ -356,12 +353,12 @@ export default function ComparePage() {
                   {sortedItems.map((item) => {
                     const isMostBought = mostBoughtId === item.id;
                     return (
-                    <td key={item.id} className={`py-4 px-5 border-r border-gray-100 last:border-r-0 ${isMostBought ? "ring-2 ring-inset ring-amber-400 bg-amber-50/30" : ""}`}>
+                    <td key={item.id} className={`py-4 px-5 border-r border-gray-100 last:border-r-0 ${isMostBought ? "bg-amber-50" : ""}`} style={isMostBought ? { boxShadow: "inset 0 0 0 2px #f59e0b" } : undefined}>
                        {attr.key === "name" && (
                         <div className="flex flex-col items-center gap-2">
                           {isMostBought && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-                              <MdLocalFireDepartment size={11} /> {t("MOST BOUGHT", "सबसे ज़्यादा बिका")}
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-gradient-to-r from-amber-100 to-amber-200 px-3 py-1 rounded-full shadow-sm border border-amber-300">
+                              <MdLocalFireDepartment size={13} className="text-amber-600" /> {t("MOST BOUGHT", "सबसे ज़्यादा बिका")}
                             </span>
                           )}
                           <button onClick={() => removeCompare(item.id)} className="text-xs text-red-500 hover:text-red-600 underline">{t("Remove", "हटाएं")}</button>
