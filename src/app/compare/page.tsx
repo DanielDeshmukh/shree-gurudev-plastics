@@ -74,23 +74,33 @@ function PriceRangeBar({ items }: { items: { name: string; price: number }[] }) 
   const range = max - min;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-      <p className="text-xs text-gray-500 mb-3 font-medium">{priced.length} {priced.length === 2 ? "products" : "products"} - Price Range</p>
-      <div className="relative h-8 bg-gray-100 rounded-full overflow-hidden">
-        <div className="absolute inset-y-0 bg-gradient-to-r from-green-400 to-amber-400 rounded-full" style={{ left: 0, right: 0 }} />
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-5 mb-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-semibold text-gray-700">{priced.length} products compared</p>
+        <div className="flex items-center gap-4 text-xs">
+          <span className="text-green-600 font-semibold">Rs.{min.toLocaleString("en-IN")}</span>
+          <span className="text-gray-300">—</span>
+          <span className="text-amber-600 font-semibold">Rs.{max.toLocaleString("en-IN")}</span>
+        </div>
+      </div>
+      <div className="relative">
+        <div className="h-3 bg-gradient-to-r from-green-400 via-emerald-400 to-amber-400 rounded-full shadow-inner" />
         {priced.map((item) => {
           const pos = ((item.price - min) / range) * 100;
           return (
-            <div key={item.name} className="absolute top-0 h-full flex flex-col items-center" style={{ left: `${pos}%`, transform: "translateX(-50%)" }}>
-              <div className="w-0.5 h-full bg-gray-900 opacity-30" />
-              <span className="absolute -bottom-5 text-[10px] font-medium text-gray-600 whitespace-nowrap">{item.name.slice(0, 12)} - {item.price.toLocaleString("en-IN")}</span>
+            <div key={item.name} className="absolute top-0 flex flex-col items-center" style={{ left: `${pos}%`, transform: "translateX(-50%)" }}>
+              <div className="w-3.5 h-3.5 rounded-full bg-white border-[2.5px] border-gray-800 shadow-md -mt-[3px] relative z-10" />
+              <div className="mt-2 bg-white border border-gray-200 rounded-lg px-2.5 py-1 shadow-sm text-center">
+                <p className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{item.name}</p>
+                <p className="text-[11px] font-bold text-gray-900">Rs.{item.price.toLocaleString("en-IN")}</p>
+              </div>
             </div>
           );
         })}
       </div>
-      <div className="flex justify-between mt-8 text-xs text-gray-400">
-        <span>Cheapest: {min.toLocaleString("en-IN")}</span>
-        <span>Most expensive: {max.toLocaleString("en-IN")}</span>
+      <div className="flex justify-between mt-16 text-[11px] text-gray-400 font-medium">
+        <span>Cheapest</span>
+        <span>Most expensive</span>
       </div>
     </div>
   );
@@ -291,10 +301,6 @@ export default function ComparePage() {
 
         {compareCount >= 2 && (
           <>
-            <p className="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
-              {t("Amber dot indicates values differ across products", "नारंगी बिंदु दर्शाता है कि मान अलग-अलग हैं")}
-            </p>
             <PriceRangeBar items={items} />
             <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -347,7 +353,6 @@ export default function ComparePage() {
                       ) : (
                         <span className="text-gray-300"><MdArrowUpward size={14} /></span>
                       )}
-                      {differs && <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 ml-1" title={t("Values differ", "मान अलग-अलग हैं")} />}
                     </button>
                   </td>
                   {sortedItems.map((item) => {
