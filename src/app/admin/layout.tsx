@@ -25,6 +25,7 @@ import {
   MdPaid,
   MdMenu,
   MdClose,
+  MdHelpOutline,
 } from "react-icons/md";
 
 const navLinks = [
@@ -45,6 +46,7 @@ const navLinks = [
   { href: "/admin/bundles", label: "Product Bundles", icon: MdCardGiftcard },
   { href: "/admin/customers", label: "Customers", icon: MdPeople },
   { href: "/admin/followup", label: "WhatsApp Follow-up", icon: MdChat },
+  { href: "/admin/enquiries", label: "Enquiries", icon: MdHelpOutline },
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
   { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
   { href: "/admin/payments", label: "Payments", icon: MdPaid },

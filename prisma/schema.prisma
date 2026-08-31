@@ -459,3 +459,22 @@ model Setting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model Enquiry {
+  id          Int      @id @default(autoincrement())
+  productId   Int?
+  productName String
+  productUrl  String?
+  customerName String?
+  customerPhone String?
+  message     String
+  source      String   @default("whatsapp")
+  status      String   @default("new")
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([productId])
+}
