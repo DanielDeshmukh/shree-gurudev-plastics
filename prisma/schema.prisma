@@ -54,6 +54,7 @@ model Product {
   recurringOrders RecurringOrder[]
   purchaseOrders  PurchaseOrder[]
   bundleItems BundleItem[]
+  enquiries   Enquiry[]
 
   @@index([brandId])
   @@index([category])
@@ -461,18 +462,20 @@ model Setting {
 }
 
 model Enquiry {
-  id          Int      @id @default(autoincrement())
-  productId   Int?
-  productName String
-  productUrl  String?
+  id           Int      @id @default(autoincrement())
+  productId    Int?
+  productName  String
+  productUrl   String?
   customerName String?
   customerPhone String?
-  message     String
-  source      String   @default("whatsapp")
-  status      String   @default("new")
-  note        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  message      String
+  source       String   @default("whatsapp")
+  status       String   @default("new")
+  note         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product Product? @relation(fields: [productId], references: [id])
 
   @@index([status])
   @@index([createdAt])

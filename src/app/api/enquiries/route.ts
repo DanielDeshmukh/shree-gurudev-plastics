@@ -10,21 +10,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "productName and message required" }, { status: 400 });
     }
 
-    const result = await db.execute({
-      sql: `INSERT INTO Enquiry (productId, productName, productUrl, customerName, customerPhone, message, source, status, createdAt, updatedAt)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'new', datetime('now'), datetime('now'))`,
-      args: [
-        productId ?? null,
+    const result = await db.enquiry.create({
+      data: {
+        productId: productId ?? null,
         productName,
-        productUrl ?? null,
-        customerName ?? null,
-        customerPhone ?? null,
+        productUrl: productUrl ?? null,
+        customerName: customerName ?? null,
+        customerPhone: customerPhone ?? null,
         message,
-        source ?? "whatsapp",
-      ],
+        source: source ?? "whatsapp",
+        status: "new",
+      },
     });
 
-    return NextResponse.json({ success: true, id: Number(result.lastInsertRowid) });
+    return NextResponse.json({ success: true, id: result.id });
   } catch {
     return NextResponse.json({ error: "Failed to log enquiry" }, { status: 500 });
   }

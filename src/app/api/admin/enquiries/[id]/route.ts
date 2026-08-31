@@ -10,28 +10,17 @@ export async function PATCH(
     const body = await request.json();
     const { status, note } = body;
 
-    const updates: string[] = [];
-    const args: (string | number)[] = [];
+    const data: Record<string, unknown> = {};
+    if (status) data.status = status;
+    if (note !== undefined) data.note = note;
 
-    if (status) {
-      updates.push("status = ?");
-      args.push(status);
-    }
-    if (note !== undefined) {
-      updates.push("note = ?");
-      args.push(note);
-    }
-
-    if (updates.length === 0) {
+    if (Object.keys(data).length === 0) {
       return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
     }
 
-    updates.push("updatedAt = datetime('now')");
-    args.push(Number(id));
-
-    await db.execute({
-      sql: `UPDATE Enquiry SET ${updates.join(", ")} WHERE id = ?`,
-      args,
+    await db.enquiry.update({
+      where: { id: Number(id) },
+      data,
     });
 
     return NextResponse.json({ success: true });
