@@ -35,6 +35,10 @@ function renderCompare() {
 }
 
 describe("CompareContext", () => {
+  beforeEach(() => {
+    localStorage.removeItem("sgp_compare");
+  });
+
   it("starts empty", () => {
     renderCompare();
     expect(screen.getByTestId("count").textContent).toBe("0");

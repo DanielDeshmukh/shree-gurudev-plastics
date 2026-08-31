@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from "react";
 import { useToast } from "@/components/Toast";
 
 export type CompareItem = {
@@ -27,9 +27,41 @@ type CompareContextType = {
 
 const CompareContext = createContext<CompareContextType | undefined>(undefined);
 
+const STORAGE_KEY = "sgp_compare";
+
+function loadFromStorage(): CompareItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.slice(0, 4) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CompareProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CompareItem[]>([]);
+  const [items, setItems] = useState<CompareItem[]>(loadFromStorage);
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {}
+  }, [items]);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY) return;
+      try {
+        const parsed = JSON.parse(e.newValue || "[]");
+        if (Array.isArray(parsed)) setItems(parsed.slice(0, 4));
+      } catch {}
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const toggleCompare = useCallback((item: CompareItem) => {
     setItems((prev) => {
