@@ -119,7 +119,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-gray-800 text-center py-4 text-sm text-gray-500">
-        Made with <MdFavorite className="inline text-red-500 align-middle" /> By Daniel Deshmukh
+        © {new Date().getFullYear()} {BUSINESS_NAME}. All rights reserved. | Made with <MdFavorite className="inline text-red-500 align-middle" /> By Daniel Deshmukh
       </div>
     </footer>
   );
