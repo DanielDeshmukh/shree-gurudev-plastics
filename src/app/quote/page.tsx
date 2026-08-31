@@ -285,7 +285,7 @@ export default function QuotePage() {
               value={form.brand}
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder={t("e.g. Aristo, Milton, KG Plast", "à¤œà¥ˆà¤¸à¥‡ Aristo, Milton, KG Plast")}
+              placeholder={t("e.g. Aristo, Milton, Mango Chairs", "जैसे Aristo, Milton, Mango Chairs")}
             />
           </div>
 

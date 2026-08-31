@@ -50,7 +50,6 @@ const ACTIVE_BRAND_SLUGS = ["mango-chairs", "reego", "aristo"];
 
 const KNOWN_BRANDS: Record<string, { name: string }> = {
   "aristo": { name: "Aristo" },
-  "kg-plast": { name: "KG Plast" },
   "rajdhani": { name: "Rajdhani" },
   "milton": { name: "Milton" },
   "borosil": { name: "Borosil" },

@@ -18,7 +18,6 @@ const productCategories = [
 
 const brands = [
   { name: "Aristo", href: "/brand/aristo" },
-  { name: "KG Plast", href: "/brand/kg-plast" },
   { name: "Mango Chairs", href: "/brand/mango-chairs" },
   { name: "Reego", href: "/brand/reego" },
   { name: "Rajdhani", href: "/brand/rajdhani" },

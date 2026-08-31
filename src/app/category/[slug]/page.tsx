@@ -15,7 +15,7 @@ const categoryMeta: Record<string, { title: string; description: string; keyword
     faqs: [
       { question: "What types of plastic chairs do you sell?", answer: "We stock armless chairs, baby chairs, premium chairs, medium back chairs, economical chairs, HoReCa chairs, armrest chairs, executive chairs, and more from brands like Mango, Aristo, and Reego." },
       { question: "Do you offer bulk discounts on chairs?", answer: "Yes, Shree Gurudev Plastics offers competitive bulk pricing on all plastic chairs. Contact us on WhatsApp at +91 85520 84251 for bulk order quotes." },
-      { question: "Which brands of chairs do you stock?", answer: "We stock Mango Chairs, Aristo, Reego, KG Plast, and other leading plastic chair brands at our Bhayander store." },
+      { question: "Which brands of chairs do you stock?", answer: "We stock Mango Chairs, Aristo, Reego, and other leading plastic chair brands at our Bhayander store." },
       { question: "Do you deliver chairs in Mumbai?", answer: "Yes, we deliver plastic chairs across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar." },
     ],
   },

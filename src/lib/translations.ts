@@ -63,7 +63,7 @@ export const translations = {
     descriptionReq: { en: "Product Description / Requirements *", hi: "उत्पादन विवरण / आवश्यकताएं *" },
     descPlaceholder: { en: "Describe the products you need — colors, sizes, specifications, or any other requirements", hi: "आपको कौन से उत्पादन चाहिए — रंग, आकार, विनिर्देश, या अन्य आवश्यकताएं लिखें" },
     brand: { en: "Preferred Brand", hi: "पसंदीदा ब्रांड" },
-    brandPlaceholder: { en: "e.g. Aristo, Milton, KG Plast", hi: "जैसे Aristo, Milton, KG Plast" },
+    brandPlaceholder: { en: "e.g. Aristo, Milton, Mango Chairs", hi: "जैसे Aristo, Milton, Mango Chairs" },
     location: { en: "Delivery Location", hi: "डिलीवरी स्थान" },
     locationPlaceholder: { en: "City or area for delivery", hi: "डिलीवरी के लिए शहर या क्षेत्र" },
     deliveryDate: { en: "Expected Delivery Date", hi: "अपेक्षित डिलीवरी तिथि" },

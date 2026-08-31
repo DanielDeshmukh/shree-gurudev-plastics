@@ -25,7 +25,7 @@ const productCategories = [
 const homeFaqs = [
   { question: "Do you offer bulk pricing on plastic products?", answer: "Yes, Shree Gurudev Plastics is a wholesale distributor. We offer competitive bulk pricing for retailers, businesses, event organizers, and individual bulk buyers. Contact us on WhatsApp for bulk quotes." },
   { question: "Which areas do you deliver to?", answer: "We deliver across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar. Contact us for delivery details and minimum order requirements." },
-  { question: "What brands do you stock?", answer: "We stock Aristo, KG Plast, Mango Chairs, Rajdhani, Cosmos, Milton, Borosil, Signoraware, and other leading plastic product brands." },
+  { question: "What brands do you stock?", answer: "We stock Aristo, Mango Chairs, Rajdhani, Cosmos, Milton, Borosil, Signoraware, and other leading plastic product brands." },
   { question: "What types of plastic products do you sell?", answer: "We sell plastic chairs, tables, stools, buckets, containers, storage boxes, kitchenware, baskets, trays, and more — all from trusted brands at wholesale prices." },
   { question: "How can I place an order?", answer: "You can browse our products online and contact us via WhatsApp at +91 85520 84251 to place orders or get quotes. We respond quickly to all inquiries." },
 ];
@@ -133,7 +133,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { title: "Wholesale Prices", desc: "As a bulk distributor, we offer the best wholesale prices on all plastic products. Save more when you buy in bulk from us." },
-              { title: "Top Brands Only", desc: "We stock only trusted brands — Aristo, KG Plast, Mango Chairs, Rajdhani, Milton, Borosil, and more. Quality guaranteed." },
+              { title: "Top Brands Only", desc: "We stock only trusted brands — Aristo, Mango Chairs, Rajdhani, Milton, Borosil, and more. Quality guaranteed." },
               { title: "Wide Delivery Area", desc: "We deliver across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar. Fast and reliable delivery." },
             ].map((item) => (
               <div key={item.title} className="bg-white rounded-xl p-6 border border-gray-200">

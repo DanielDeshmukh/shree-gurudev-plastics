@@ -35,7 +35,7 @@ export const BUSINESS_KEYWORDS = [
   "wholesale plastic furniture", "bulk plastic containers", "bulk plastic chairs",
   "plastic products online", "buy plastic products online", "cheap plastic products",
   "best plastic chairs", "durable plastic furniture", "quality plastic products",
-  "Aristo plastic", "KG Plast", "Mango Chairs", "Rajdhani plastic", "Cosmos plastic",
+  "Aristo plastic", "Mango Chairs", "Rajdhani plastic", "Cosmos plastic",
   "Borosil plastic", "Milton plastic", "Signoraware plastic",
   "plastic chair price list", "wholesale plastic bucket rate", "bulk order plastic items",
   "plastic products for shop", "shop fitting supplies Mumbai", "plastic goods for resale",

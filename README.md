@@ -2,7 +2,7 @@
 
 # Shree Gurudev Plastics
 
-Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. Browse 1,361+ products from Aristo, KG Plast, and Mango Chairs — chairs, tables, buckets, containers, storage, kitchenware, and accessories.
+Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. Browse 1,361+ products from Aristo and Mango Chairs — chairs, tables, buckets, containers, storage, kitchenware, and accessories.
 
 ---
 
@@ -26,7 +26,7 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 | **Location** | Naigaon, Bhayander, Maharashtra, India |
 | **Warehouse** | 5,000 sq ft |
 | **Products** | 1,361+ color variants across 3 brand catalogs |
-| **Brands** | Aristo, KG Plast, Mango Chairs |
+| **Brands** | Aristo, Mango Chairs |
 | **WhatsApp** | [+91 85520 84251](https://wa.me/918552084251) |
 | **Business Model** | Wholesale distributor, bulk seller, monthly subscription |
 | **Built in** | 16 days |
@@ -97,7 +97,7 @@ WhatsApp Business API (via wa.me)
 |---------|-------------|
 | **Dashboard** | Revenue stats, order counts, customer metrics, low stock alerts |
 | **Product Management** | CRUD products with images, categories, pricing tiers, MOQ, stock levels |
-| **Brand Management** | Manage brand catalogs (Aristo, KG Plast, Mango Chairs) |
+| **Brand Management** | Manage brand catalogs (Aristo, Mango Chairs) |
 | **Order Management** | View, update, and track all customer orders |
 | **GST Invoice** | Auto-generated invoices with CGST/SGST/IGST, HSN codes, format `SGP/YYMM/NNNN` |
 | **Tiered Pricing** | 4 tiers (Retailer/Dealer/Distributor/Bulk) with auto-calculation based on customer history |
