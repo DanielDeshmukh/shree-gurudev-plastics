@@ -8,10 +8,15 @@ export async function logEnquiry(data: {
   source?: string;
 }) {
   try {
-    await fetch("/api/enquiries", {
+    const res = await fetch("/api/enquiries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-  } catch {}
+    if (!res.ok) {
+      console.error("[logEnquiry] API returned", res.status, await res.text().catch(() => ""));
+    }
+  } catch (e) {
+    console.error("[logEnquiry] failed:", e);
+  }
 }

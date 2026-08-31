@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, id: result.id });
-  } catch {
+  } catch (e) {
+    console.error("[api/enquiries] POST failed:", e);
     return NextResponse.json({ error: "Failed to log enquiry" }, { status: 500 });
   }
 }
