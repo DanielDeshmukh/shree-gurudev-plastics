@@ -14,12 +14,24 @@ export async function GET(request: NextRequest) {
       select: { productId: true, rating: true },
     });
 
-    const ratings: Record<number, { avg: number; count: number }> = {};
+    const orderItems = await db.orderItem.groupBy({
+      by: ["productId"],
+      where: { productId: { in: productIds } },
+      _sum: { quantity: true },
+    });
+    const orderMap: Record<number, number> = {};
+    for (const oi of orderItems) {
+      orderMap[oi.productId] = oi._sum.quantity ?? 0;
+    }
+
+    const ratings: Record<number, { avg: number; count: number; totalOrdered: number }> = {};
     for (const id of productIds) {
       const productReviews = reviews.filter((r) => r.productId === id);
       if (productReviews.length > 0) {
         const avg = productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length;
-        ratings[id] = { avg: Math.round(avg * 10) / 10, count: productReviews.length };
+        ratings[id] = { avg: Math.round(avg * 10) / 10, count: productReviews.length, totalOrdered: orderMap[id] ?? 0 };
+      } else {
+        ratings[id] = { avg: 0, count: 0, totalOrdered: orderMap[id] ?? 0 };
       }
     }
 
