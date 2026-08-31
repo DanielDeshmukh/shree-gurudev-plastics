@@ -616,7 +616,7 @@ function ProductsPageInner() {
                           {product.color && <span className="truncate">{product.color}</span>}
                           {product.size && <span>• {product.size}</span>}
                         </div>
-                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">₹{product.price}</p>
+                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">{product.price > 0 ? `\u20B9${product.price.toLocaleString("en-IN")}` : "Price on request"}</p>
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
                         <button
                           onClick={() => {
