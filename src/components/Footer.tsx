@@ -50,6 +50,7 @@ export default function Footer() {
     { name: t(translations.common.aboutUs.en, translations.common.aboutUs.hi), href: "/about" },
     { name: t(translations.common.contact.en, translations.common.contact.hi), href: "/contact" },
     { name: t(translations.common.requestQuote.en, translations.common.requestQuote.hi), href: "/quote" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
   ];
 
   return (
