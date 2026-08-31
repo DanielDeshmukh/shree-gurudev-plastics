@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
       db.enquiry.count({ where }),
       db.enquiry.findMany({
         where,
-        orderBy: { createdAt: "desc" },
         take: limit,
         skip: offset,
         include: {
@@ -35,6 +34,8 @@ export async function GET(request: NextRequest) {
         },
       }),
     ]);
+
+    enquiries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const mapped = enquiries.map((e) => ({
       ...e,

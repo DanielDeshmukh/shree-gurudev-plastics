@@ -79,9 +79,11 @@ export default function EnquiriesPage() {
       if (search) params.set("search", search);
       const res = await fetch(`/api/admin/enquiries?${params}`, { credentials: "include" });
       const data = await res.json();
+      if (!res.ok) console.error("[enquiries] GET failed:", data);
       setEnquiries(data.enquiries || []);
       setTotal(data.total || 0);
-    } catch {
+    } catch (e) {
+      console.error("[enquiries] fetch error:", e);
       toast("Failed to load enquiries", "error");
     }
     setLoading(false);
