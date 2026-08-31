@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { MdFavorite } from "react-icons/md";
 import { BUSINESS_NAME, PHONE_DISPLAY, PHONE, ADDRESS, SITE_URL } from "@/lib/seo";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
@@ -118,7 +119,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-gray-800 text-center py-4 text-sm text-gray-500">
-        © {new Date().getFullYear()} {BUSINESS_NAME}. {t(translations.footer.rights.en, translations.footer.rights.hi)}. Plastic products distributor and bulk seller in Bhayander, Mumbai.
+        Made with <MdFavorite className="inline text-red-500 align-middle" /> By Daniel Deshmukh
       </div>
     </footer>
   );
