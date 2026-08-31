@@ -306,6 +306,29 @@ export default function PrivacyPolicyPage() {
                 </div>
               </section>
 
+              <section>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 font-heading border-b border-gray-100 pb-2">15. Contact Development Team</h2>
+                <p className="text-[15px] leading-[1.85] mb-4">
+                  For any website-related corrections, technical issues, or feedback regarding this website, please contact the development team:
+                </p>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-6 space-y-2 border border-gray-200">
+                  <p className="text-[15px] font-semibold font-heading">Daniel Deshmukh</p>
+                  <p className="text-[15px]">
+                    Email:{" "}
+                    <Link href="mailto:deshmukhdaniel2005@gmail.com" className="text-primary-600 hover:text-primary-700 underline decoration-primary-300 underline-offset-2 transition-colors">
+                      deshmukhdaniel2005@gmail.com
+                    </Link>
+                  </p>
+                  <p className="text-[15px]">Phone: +91 85520 84251</p>
+                  <p className="text-[15px]">
+                    Portfolio:{" "}
+                    <Link href="https://danieldeshmukh.netlify.app/" target="_blank" className="text-primary-600 hover:text-primary-700 underline decoration-primary-300 underline-offset-2 transition-colors">
+                      danieldeshmukh.netlify.app
+                    </Link>
+                  </p>
+                </div>
+              </section>
+
             </div>
 
             <div className="mt-14 pt-8 border-t border-gray-200 text-center">
