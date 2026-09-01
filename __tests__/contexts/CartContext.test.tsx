@@ -57,7 +57,7 @@ describe("CartContext", () => {
     renderCart();
     await userEvent.click(screen.getByText("Add Chair"));
     await userEvent.click(screen.getByText("Add Table"));
-    expect(screen.getByTestId("price").textContent).toBe("1274");
+    expect(screen.getByTestId("price").textContent).toBe("1235");
   });
 
   it("removes items", async () => {

@@ -11,32 +11,21 @@ import {
 
 describe("pricing", () => {
   describe("getTierForQuantity", () => {
-    it("returns individual for small quantities", () => {
-      expect(getTierForQuantity(0)).toBe("individual");
+    it("returns individual for < 10", () => {
       expect(getTierForQuantity(1)).toBe("individual");
+      expect(getTierForQuantity(5)).toBe("individual");
       expect(getTierForQuantity(9)).toBe("individual");
     });
 
-    it("returns retailer for 10-49 items", () => {
+    it("returns retailer for 10-99", () => {
       expect(getTierForQuantity(10)).toBe("retailer");
-      expect(getTierForQuantity(25)).toBe("retailer");
-      expect(getTierForQuantity(49)).toBe("retailer");
+      expect(getTierForQuantity(50)).toBe("retailer");
+      expect(getTierForQuantity(99)).toBe("retailer");
     });
 
-    it("returns dealer for 50-99 items", () => {
-      expect(getTierForQuantity(50)).toBe("dealer");
-      expect(getTierForQuantity(75)).toBe("dealer");
-      expect(getTierForQuantity(99)).toBe("dealer");
-    });
-
-    it("returns distributor for 100-499 items", () => {
-      expect(getTierForQuantity(100)).toBe("distributor");
-      expect(getTierForQuantity(250)).toBe("distributor");
-      expect(getTierForQuantity(499)).toBe("distributor");
-    });
-
-    it("returns bulk for 500+ items", () => {
-      expect(getTierForQuantity(500)).toBe("bulk");
+    it("returns bulk for 100+", () => {
+      expect(getTierForQuantity(100)).toBe("bulk");
+      expect(getTierForQuantity(250)).toBe("bulk");
       expect(getTierForQuantity(1000)).toBe("bulk");
     });
   });
@@ -45,67 +34,63 @@ describe("pricing", () => {
     const product = {
       price: 1000,
       retailerPrice: 900,
-      dealerPrice: 800,
-      distributorPrice: 700,
-      bulkPrice: 600,
+      dealerPrice: 0,
+      distributorPrice: 0,
+      bulkPrice: 750,
     };
 
-    it("returns base price for individual", () => {
-      expect(getTierPrice(product, "individual")).toBe(980);
+    it("returns 5% off for individual", () => {
+      expect(getTierPrice(product, "individual")).toBe(950);
     });
 
-    it("returns retailer price", () => {
+    it("returns retailer price (10% off)", () => {
       expect(getTierPrice(product, "retailer")).toBe(900);
     });
 
-    it("returns dealer price", () => {
-      expect(getTierPrice(product, "dealer")).toBe(800);
+    it("returns bulk price (25% off)", () => {
+      expect(getTierPrice(product, "bulk")).toBe(750);
     });
 
-    it("returns distributor price", () => {
-      expect(getTierPrice(product, "distributor")).toBe(700);
-    });
-
-    it("returns bulk price", () => {
-      expect(getTierPrice(product, "bulk")).toBe(600);
-    });
-
-    it("falls back to base price when tier price is 0", () => {
+    it("falls back to calculated price when retailer price is 0", () => {
       const p = { ...product, retailerPrice: 0 };
-      expect(getTierPrice(p, "retailer")).toBe(980);
+      expect(getTierPrice(p, "retailer")).toBe(900);
     });
 
-    it("falls back chain for bulk", () => {
-      const p = { ...product, bulkPrice: 0, distributorPrice: 0 };
-      expect(getTierPrice(p, "bulk")).toBe(800);
+    it("falls back to calculated price when bulk price is 0", () => {
+      const p = { ...product, bulkPrice: 0 };
+      expect(getTierPrice(p, "bulk")).toBe(750);
+    });
+
+    it("returns 0 for zero price product", () => {
+      const p = { ...product, price: 0 };
+      expect(getTierPrice(p, "individual")).toBe(0);
     });
   });
 
   describe("getTierDiscount", () => {
     it("calculates discount percentage", () => {
-      expect(getTierDiscount({ price: 1000 }, 800)).toBe(20);
+      const p = { price: 1000 };
+      expect(getTierDiscount(p, 950)).toBe(5);
+      expect(getTierDiscount(p, 900)).toBe(10);
+      expect(getTierDiscount(p, 750)).toBe(25);
     });
 
-    it("returns 0 for zero base price", () => {
-      expect(getTierDiscount({ price: 0 }, 800)).toBe(0);
-    });
-
-    it("returns 0 when no discount", () => {
-      expect(getTierDiscount({ price: 1000 }, 1000)).toBe(0);
+    it("returns 0 for zero price", () => {
+      expect(getTierDiscount({ price: 0 }, 0)).toBe(0);
     });
   });
 
   describe("getNextTier", () => {
-    it("returns retailer as next tier from individual", () => {
+    it("returns retailer as next from individual", () => {
       const next = getNextTier("individual");
       expect(next?.tier).toBe("retailer");
       expect(next?.minQty).toBe(10);
     });
 
-    it("returns dealer as next from retailer", () => {
+    it("returns bulk as next from retailer", () => {
       const next = getNextTier("retailer");
-      expect(next?.tier).toBe("dealer");
-      expect(next?.minQty).toBe(50);
+      expect(next?.tier).toBe("bulk");
+      expect(next?.minQty).toBe(100);
     });
 
     it("returns null for bulk (highest tier)", () => {
@@ -114,19 +99,17 @@ describe("pricing", () => {
   });
 
   describe("constants", () => {
-    it("has all tier labels", () => {
+    it("has correct tier labels", () => {
       expect(TIER_LABELS.individual).toBe("Individual");
       expect(TIER_LABELS.retailer).toBe("Retailer");
-      expect(TIER_LABELS.dealer).toBe("Dealer");
-      expect(TIER_LABELS.distributor).toBe("Distributor");
       expect(TIER_LABELS.bulk).toBe("Bulk Buyer");
     });
 
-    it("has all tier descriptions", () => {
-      expect(Object.keys(TIER_DESCRIPTIONS)).toHaveLength(5);
+    it("has 3 tier descriptions", () => {
+      expect(Object.keys(TIER_DESCRIPTIONS)).toHaveLength(3);
     });
 
-    it("has thresholds sorted ascending", () => {
+    it("thresholds are in ascending order", () => {
       for (let i = 1; i < TIER_THRESHOLDS.length; i++) {
         expect(TIER_THRESHOLDS[i].minQty).toBeGreaterThanOrEqual(
           TIER_THRESHOLDS[i - 1].minQty

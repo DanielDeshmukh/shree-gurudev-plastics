@@ -13,6 +13,8 @@ interface Customer {
   tier: string;
   totalOrders: number;
   totalSpent: number;
+  totalQty: number;
+  calculatedTier: string;
   lastOrderAt: string | null;
   createdAt: string;
   orders: { id: number; total: number; status: string; createdAt: string }[];
@@ -102,55 +104,57 @@ export default function CustomersPage() {
               <tr className="border-b border-gray-800 text-gray-400">
                 <th className="px-4 py-3 font-medium">Customer</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
-                <th className="px-4 py-3 font-medium">Tier</th>
+                <th className="px-4 py-3 font-medium">Tier (Auto)</th>
+                <th className="px-4 py-3 font-medium">Items Bought</th>
                 <th className="px-4 py-3 font-medium">Orders</th>
                 <th className="px-4 py-3 font-medium">Total Spent</th>
                 <th className="px-4 py-3 font-medium">Last Order</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
-              {filtered.map((customer) => (
-                <tr key={customer.id} className="text-gray-300">
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="font-medium">{customer.name}</p>
-                      {customer.email && (
-                        <p className="text-xs text-gray-500">{customer.email}</p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">{customer.phone}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={customer.tier}
-                      onChange={(e) => handleTierChange(customer.id, e.target.value)}
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium outline-none border-none cursor-pointer ${
-                        customer.tier === "bulk" ? "bg-purple-500/10 text-purple-400" :
-                        customer.tier === "distributor" ? "bg-blue-500/10 text-blue-400" :
-                        customer.tier === "dealer" ? "bg-green-500/10 text-green-400" :
+              {filtered.map((customer) => {
+                const tier = customer.calculatedTier || customer.tier;
+                return (
+                  <tr key={customer.id} className="text-gray-300">
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="font-medium">{customer.name}</p>
+                        {customer.email && (
+                          <p className="text-xs text-gray-500">{customer.email}</p>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">{customer.phone}</td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        tier === "bulk" ? "bg-purple-500/10 text-purple-400" :
+                        tier === "retailer" ? "bg-green-500/10 text-green-400" :
                         "bg-gray-500/10 text-gray-400"
-                      }`}
-                    >
-                      {(Object.keys(TIER_LABELS) as CustomerTier[]).map((t) => (
-                        <option key={t} value={t}>{TIER_LABELS[t]}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
-                      {customer.totalOrders}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 font-medium">
-                    ₹{customer.totalSpent.toLocaleString("en-IN")}
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {customer.lastOrderAt
-                      ? new Date(customer.lastOrderAt).toLocaleDateString("en-IN")
-                      : "—"}
-                  </td>
-                </tr>
-              ))}
+                      }`}>
+                        {TIER_LABELS[tier as CustomerTier] || "Individual"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-medium text-orange-400">
+                        {customer.totalQty}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
+                        {customer.totalOrders}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      ₹{customer.totalSpent.toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500">
+                      {customer.lastOrderAt
+                        ? new Date(customer.lastOrderAt).toLocaleDateString("en-IN")
+                        : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
