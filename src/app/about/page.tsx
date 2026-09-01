@@ -116,7 +116,7 @@ export default function AboutPage() {
             {[
               { title: "Competitive Prices", desc: "As a bulk distributor, we offer the best wholesale prices on all plastic products." },
               { title: "Top Brands", desc: "We stock only trusted brands — Aristo, Mango Chairs, Reego. Quality guaranteed." },
-              { title: "Wide Selection", desc: "500+ products across furniture, containers, storage, kitchen, and accessories." },
+              { title: "Wide Selection", desc: "1360+ products across furniture, containers, storage, kitchen, and accessories." },
               { title: "Fast Delivery", desc: "Quick delivery across Bhayander, Naigaon, Vasai, Virar, Mumbai, and Thane." },
               { title: "Quality Products", desc: "Durable, long-lasting plastic products made from premium materials." },
               { title: "Trusted by Thousands", desc: "Thousands of happy customers trust us for their plastic product needs." },

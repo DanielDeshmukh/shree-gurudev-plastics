@@ -83,8 +83,8 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
       <section className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { value: "500+", label: "Products" },
-            { value: "10+", label: "Trusted Brands" },
+            { value: "1360+", label: "Products" },
+            { value: "3", label: "Trusted Brands" },
             { value: "1000+", label: "Happy Customers" },
             { value: "7+", label: "Cities Served" },
           ].map((stat) => (
@@ -118,7 +118,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             className="block bg-primary-50 border border-primary-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
           >
             <h3 className="text-xl font-bold text-primary-600 group-hover:text-primary-700 transition-colors">{t("All Products", "सभी उत्पादन")}</h3>
-            <p className="text-gray-500 mt-2 text-sm">Browse our complete catalog of 500+ plastic products</p>
+            <p className="text-gray-500 mt-2 text-sm">Browse our complete catalog of 1360+ plastic products</p>
             <span className="inline-block mt-4 text-primary-500 font-medium group-hover:underline">{t("View All →", "सभी देखें →")}</span>
           </Link>
         </div>
