@@ -81,13 +81,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 async function getRelatedProducts(brandId: number, excludeId: number, category: string) {
   try {
+    const reegoBrand = await db.brand.findUnique({ where: { slug: "reego" }, select: { id: true } });
+    const excludeBrandIds = reegoBrand ? [brandId, reegoBrand.id] : [brandId];
     const sameBrand = await db.product.findMany({
       where: { brandId, id: { not: excludeId }, isActive: true },
       include: { brand: true },
       take: 4,
     });
     const sameCategory = await db.product.findMany({
-      where: { category, id: { not: excludeId }, brandId: { not: brandId }, isActive: true },
+      where: { category, id: { not: excludeId }, brandId: { notIn: excludeBrandIds }, isActive: true },
       include: { brand: true },
       take: 4,
     });
