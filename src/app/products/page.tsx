@@ -208,24 +208,26 @@ function FilterSidebar({
               </div>
             </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-2" key={`price-inputs-${sliderMin}-${sliderMax}`}>
             <input
               ref={minRef}
               type="number"
-              placeholder={`Min {"\u20B9"}${Math.round(sliderMin)}`}
+              placeholder="Min"
               defaultValue={sliderMin}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              onBlur={() => handlePriceApply()}
             />
             <input
               ref={maxRef}
               type="number"
-              placeholder={`Max {"\u20B9"}${Math.round(sliderMax)}`}
+              placeholder="Max"
               defaultValue={sliderMax}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              onBlur={() => handlePriceApply()}
             />
           </div>
           <button
-            onClick={handlePriceApply}
+            onClick={() => handlePriceApply(priceRange[0], priceRange[1])}
             className="w-full text-sm bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium"
           >
             {t("Apply Price", "मूल्य लागू करें")}
@@ -354,6 +356,10 @@ function ProductsPageInner() {
       );
     }
 
+    if (priceApplied) {
+      results = results.filter((p) => p.price >= userMin && p.price <= userMax);
+    }
+
     switch (sort) {
       case "price-asc": results = [...results].sort((a, b) => a.price - b.price); break;
       case "price-desc": results = [...results].sort((a, b) => b.price - a.price); break;
@@ -365,7 +371,7 @@ function ProductsPageInner() {
     }
 
     return results;
-  }, [allProducts, search, sort]);
+  }, [allProducts, search, sort, priceApplied, userMin, userMax]);
 
   const totalPages = Math.ceil(filteredProducts.length / LIMIT);
   const paginatedProducts = filteredProducts.slice((page - 1) * LIMIT, page * LIMIT);
