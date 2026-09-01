@@ -12,6 +12,8 @@ function slugify(text: string): string {
     .substring(0, 80);
 }
 
+const COMING_SOON_BRAND_SLUGS = ["reego"];
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -37,10 +39,20 @@ export async function GET(request: NextRequest) {
 
     where.isActive = true;
 
+    // Exclude coming soon brands from public listings
     if (brand) {
-      // Normalize slug: hyphens to underscores to match DB format
-      const normalizedBrand = brand.replace(/-/g, "_");
-      where.brand = { slug: normalizedBrand };
+      const normalized = brand.replace(/-/g, "_");
+      if (COMING_SOON_BRAND_SLUGS.includes(normalized)) {
+        return NextResponse.json({
+          products: [],
+          pagination: { page: 1, limit: 0, total: 0, totalPages: 0 },
+          priceRange: { min: 0, max: 0 },
+          categories: [],
+        });
+      }
+      where.brand = { slug: normalized };
+    } else {
+      where.brand = { slug: { notIn: COMING_SOON_BRAND_SLUGS } };
     }
 
     if (search) {

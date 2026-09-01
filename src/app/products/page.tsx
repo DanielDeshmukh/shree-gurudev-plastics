@@ -294,11 +294,11 @@ function ProductsPageInner() {
 
   const LIMIT = 24;
 
-  // Fetch brands once
+  // Fetch brands once (exclude coming soon)
   useEffect(() => {
     fetch("/api/brands")
       .then((r) => r.json())
-      .then((data) => setBrands(data.brands || []))
+      .then((data) => setBrands((data.brands || []).filter((b: any) => b.slug !== "reego")))
       .catch(() => setBrands([]));
   }, []);
 
