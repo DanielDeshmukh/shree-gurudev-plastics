@@ -20,9 +20,6 @@ const brands = [
   { name: "Aristo", href: "/brand/aristo" },
   { name: "Mango Chairs", href: "/brand/mango-chairs" },
   { name: "Reego", href: "/brand/reego" },
-  { name: "Rajdhani", href: "/brand/rajdhani" },
-  { name: "Milton", href: "/brand/milton" },
-  { name: "Borosil", href: "/brand/borosil" },
 ];
 
 const serviceAreas = [

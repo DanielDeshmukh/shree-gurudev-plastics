@@ -28,7 +28,7 @@ const faqs = [
   { question: "Where is Shree Gurudev Plastics located?", answer: `Shree Gurudev Plastics is located in ${ADDRESS}. We serve customers across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar.` },
   { question: "What products does Shree Gurudev Plastics sell?", answer: "We are a plastic products distributor selling plastic chairs, tables, stools, buckets, containers, storage boxes, kitchenware, baskets, trays, and more from top brands." },
   { question: "Do you offer bulk or wholesale pricing?", answer: "Yes, we are a bulk seller and wholesale distributor. We offer competitive pricing for retailers, businesses, event organizers, and individual bulk buyers." },
-  { question: "What brands do you distribute?", answer: "We distribute products from Aristo, Mango Chairs, Rajdhani, Cosmos, Milton, Borosil, Signoraware, and other leading plastic brands." },
+  { question: "What brands do you distribute?", answer: "We distribute products from Aristo, Mango Chairs, and Reego — leading plastic brands in India." },
   { question: "Do you deliver across Mumbai?", answer: "Yes, we deliver across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane, and Palghar. Contact us on WhatsApp for delivery details." },
 ];
 const faqSchema = getFAQSchema(faqs);
@@ -70,8 +70,8 @@ export default function AboutPage() {
                 has made us a preferred name in the plastic products industry.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                We stock products from top brands like Aristo, Mango Chairs, Rajdhani, Milton, Borosil,
-                Signoraware, and more. Whether you need a single plastic chair or thousands of containers for your
+                We stock products from top brands like Aristo, Mango Chairs, and Reego.
+                Whether you need a single plastic chair or thousands of containers for your
                 business, {BUSINESS_NAME} is your one-stop destination for all plastic products in the Mumbai region.
               </p>
             </div>
@@ -115,7 +115,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               { title: "Competitive Prices", desc: "As a bulk distributor, we offer the best wholesale prices on all plastic products." },
-              { title: "Top Brands", desc: "We stock only trusted brands — Aristo, Mango Chairs, Milton, and more." },
+              { title: "Top Brands", desc: "We stock only trusted brands — Aristo, Mango Chairs, Reego. Quality guaranteed." },
               { title: "Wide Selection", desc: "500+ products across furniture, containers, storage, kitchen, and accessories." },
               { title: "Fast Delivery", desc: "Quick delivery across Bhayander, Naigaon, Vasai, Virar, Mumbai, and Thane." },
               { title: "Quality Products", desc: "Durable, long-lasting plastic products made from premium materials." },
