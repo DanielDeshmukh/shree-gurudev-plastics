@@ -9,7 +9,7 @@ import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
 import ShareButton from "@/components/ShareButton";
 import { useState, useMemo } from "react";
-import { getTierForQuantity, getTierPrice, getTierDiscount, TIER_LABELS, getNextTier } from "@/lib/pricing";
+import { getTierPrice, getTierDiscount } from "@/lib/pricing";
 
 type SiblingColor = {
   id: number;
@@ -33,7 +33,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
   const categorySlug = encodeURIComponent(product.category || "");
   const images = product.images || [];
   const [activeIdx, setActiveIdx] = useState(0);
-  const [qty, setQty] = useState(10);
+  const [qty, setQty] = useState(1);
 
   const displaySrc = images[activeIdx]?.imageUrl || product.imageUrl;
 
@@ -44,11 +44,6 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
     distributorPrice: product.distributorPrice || 0,
     bulkPrice: product.bulkPrice || 0,
   }), [product]);
-
-  const currentTier = useMemo(() => getTierForQuantity(qty), [qty]);
-  const tierPrice = useMemo(() => getTierPrice(tierProduct, currentTier), [tierProduct, currentTier]);
-  const discount = useMemo(() => getTierDiscount(tierProduct, tierPrice), [tierProduct, tierPrice]);
-  const nextTier = useMemo(() => getNextTier(currentTier), [currentTier]);
 
   const allColors: { id: number; slug: string; color: string; imageUrl: string | null; isCurrent: boolean }[] = useMemo(() => {
     const current = { id: product.id, slug: product.slug, color: product.color || "", imageUrl: product.imageUrl, isCurrent: true };
@@ -249,21 +244,17 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
         )}
 
         {product.price > 0 ? (
-          <div className="mt-4 mb-4">
+          <div className="mt-4 mb-4 space-y-2">
             <div className="flex items-baseline gap-2 flex-wrap">
-              {discount > 0 && (
-                <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
-              )}
-              <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{tierPrice.toLocaleString("en-IN")}</span>
-              {discount > 0 && (
-                <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Save {discount}%</span>
-              )}
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">{TIER_LABELS[currentTier]}</span>
+              <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+              <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{getTierPrice(tierProduct, "individual").toLocaleString("en-IN")}</span>
+              <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Save {getTierDiscount(tierProduct, getTierPrice(tierProduct, "individual"))}%</span>
             </div>
-            {nextTier && (
-              <p className="text-xs text-gray-400 mt-1">Buy {nextTier.minQty}+ for {nextTier.label} pricing ({getTierDiscount(tierProduct, getTierPrice(tierProduct, nextTier.tier))}% off)</p>
-            )}
-            <p className="text-gray-500 text-sm mt-1">Inclusive of all taxes.</p>
+            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+              <span className="bg-gray-100 px-2 py-1 rounded-full">Retailer (10+): {"\u20B9"}{getTierPrice(tierProduct, "retailer").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "retailer"))}% off)</span></span>
+              <span className="bg-gray-100 px-2 py-1 rounded-full">Bulk (100+): {"\u20B9"}{getTierPrice(tierProduct, "bulk").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "bulk"))}% off)</span></span>
+            </div>
+            <p className="text-gray-500 text-sm">Inclusive of all taxes.</p>
           </div>
         ) : (
           <p className="text-3xl font-bold text-primary-500 mt-4 mb-4">Price on request</p>

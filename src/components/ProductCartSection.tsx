@@ -24,7 +24,7 @@ type ProductCartSectionProps = {
 };
 
 export default function ProductCartSection({ id, name, color, size, price, retailerPrice, dealerPrice, distributorPrice, bulkPrice, imageUrl, brand, stock, qty, setQty }: ProductCartSectionProps) {
-  const { addItem, openCart } = useCart();
+  const { addItem, updateQuantity, openCart } = useCart();
   const outOfStock = stock !== undefined && stock <= 0;
 
   const product = useMemo(() => ({
@@ -42,6 +42,7 @@ export default function ProductCartSection({ id, name, color, size, price, retai
   const handleAdd = () => {
     if (outOfStock) return;
     addItem({ id, name, color, size, price: tierPrice, mrp: price, retailerPrice: product.retailerPrice, dealerPrice: product.dealerPrice, distributorPrice: product.distributorPrice, bulkPrice: product.bulkPrice, imageUrl, brand, stock });
+    updateQuantity(id, qty, color || undefined);
     openCart();
   };
 
