@@ -44,19 +44,27 @@ export function getTierPrice(
   },
   tier: CustomerTier
 ): number {
+  const base = product.price;
+  let raw: number;
   switch (tier) {
     case "bulk":
-      return product.bulkPrice || product.distributorPrice || product.dealerPrice || product.retailerPrice || product.price;
+      raw = product.bulkPrice || product.distributorPrice || product.dealerPrice || product.retailerPrice || base;
+      break;
     case "distributor":
-      return product.distributorPrice || product.dealerPrice || product.retailerPrice || product.price;
+      raw = product.distributorPrice || product.dealerPrice || product.retailerPrice || base;
+      break;
     case "dealer":
-      return product.dealerPrice || product.retailerPrice || product.price;
+      raw = product.dealerPrice || product.retailerPrice || base;
+      break;
     case "retailer":
-      return product.retailerPrice || product.price;
+      raw = product.retailerPrice || base;
+      break;
     case "individual":
     default:
-      return product.price;
+      raw = base;
   }
+  // Tier price should never exceed the base MRP
+  return raw > 0 && raw < base ? raw : base;
 }
 
 export function getTierDiscount(
