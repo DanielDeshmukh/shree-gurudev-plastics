@@ -11,8 +11,8 @@ function TestCart() {
       <span data-testid="count">{totalItems}</span>
       <span data-testid="price">{totalPrice}</span>
       <span data-testid="open">{isCartOpen ? "open" : "closed"}</span>
-      <button onClick={() => addItem({ id: 1, name: "Chair", color: "Blue", size: "L", price: 500, imageUrl: "/img.jpg" })}>Add Chair</button>
-      <button onClick={() => addItem({ id: 2, name: "Table", color: "Red", size: "M", price: 800, imageUrl: "/table.jpg" })}>Add Table</button>
+      <button onClick={() => addItem({ id: 1, name: "Chair", color: "Blue", size: "L", price: 500, mrp: 500, retailerPrice: 0, dealerPrice: 0, distributorPrice: 0, bulkPrice: 0, imageUrl: "/img.jpg" })}>Add Chair</button>
+      <button onClick={() => addItem({ id: 2, name: "Table", color: "Red", size: "M", price: 800, mrp: 800, retailerPrice: 0, dealerPrice: 0, distributorPrice: 0, bulkPrice: 0, imageUrl: "/table.jpg" })}>Add Table</button>
       <button onClick={() => removeItem(1)}>Remove Chair</button>
       <button onClick={() => updateQuantity(2, 3)}>Update Table Qty</button>
       <button onClick={clearCart}>Clear</button>
@@ -57,7 +57,7 @@ describe("CartContext", () => {
     renderCart();
     await userEvent.click(screen.getByText("Add Chair"));
     await userEvent.click(screen.getByText("Add Table"));
-    expect(screen.getByTestId("price").textContent).toBe("1300");
+    expect(screen.getByTestId("price").textContent).toBe("1274");
   });
 
   it("removes items", async () => {

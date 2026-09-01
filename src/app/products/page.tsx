@@ -620,26 +620,26 @@ function ProductsPageInner() {
                         <div className="mt-1.5 md:mt-2">
                           {product.price > 0 ? (
                             (() => {
+                              const individualPrice = getTierPrice(product, "individual");
+                              const individualDiscount = getTierDiscount(product, individualPrice);
                               const retailerPrice = getTierPrice(product, "retailer");
-                              const discount = getTierDiscount(product, retailerPrice);
+                              const retailerDiscount = getTierDiscount(product, retailerPrice);
                               return (
                                 <div className="space-y-0.5">
-                                  {discount > 0 && (
+                                  {individualDiscount > 0 && (
                                     <p className="text-xs text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</p>
                                   )}
                                   <div className="flex items-center gap-2">
                                     <p className="text-base md:text-lg font-bold text-primary-500">
-                                      {"\u20B9"}{(discount > 0 ? retailerPrice : product.price).toLocaleString("en-IN")}
+                                      {"\u20B9"}{(individualDiscount > 0 ? individualPrice : product.price).toLocaleString("en-IN")}
                                     </p>
-                                    {discount > 0 && (
+                                    {individualDiscount > 0 && (
                                       <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-                                        Save {discount}%
+                                        {individualDiscount}% Off
                                       </span>
                                     )}
                                   </div>
-                                  {discount > 0 && (
-                                    <p className="text-[10px] text-gray-400">Buy 10+ at {"\u20B9"}{retailerPrice.toLocaleString("en-IN")}</p>
-                                  )}
+
                                 </div>
                               );
                             })()
@@ -650,7 +650,7 @@ function ProductsPageInner() {
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
                         <button
                           onClick={() => {
-                            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name });
+                            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, mrp: product.price, retailerPrice: product.retailerPrice || 0, dealerPrice: product.dealerPrice || 0, distributorPrice: product.distributorPrice || 0, bulkPrice: product.bulkPrice || 0, imageUrl: product.imageUrl || "", brand: product.brand?.name });
                             openCart();
                           }}
                           className="mt-2 md:mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"

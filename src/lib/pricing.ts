@@ -9,11 +9,11 @@ export const TIER_LABELS: Record<CustomerTier, string> = {
 };
 
 export const TIER_DESCRIPTIONS: Record<CustomerTier, string> = {
-  individual: "Standard pricing for small orders",
-  retailer: "Discounted pricing for 10+ items",
-  dealer: "Special pricing for 50+ items",
-  distributor: "Preferred rates for 100+ items",
-  bulk: "Best pricing for 500+ items",
+  individual: "2% off for everyone",
+  retailer: "5% off for 10+ items",
+  dealer: "10% off for 50+ items",
+  distributor: "15% off for 100+ items",
+  bulk: "20% off for 500+ items",
 };
 
 export const TIER_THRESHOLDS: { tier: CustomerTier; minQty: number }[] = [
@@ -23,6 +23,14 @@ export const TIER_THRESHOLDS: { tier: CustomerTier; minQty: number }[] = [
   { tier: "distributor", minQty: 100 },
   { tier: "bulk", minQty: 500 },
 ];
+
+export const TIER_DISCOUNTS: Record<CustomerTier, number> = {
+  individual: 0.02,
+  retailer: 0.05,
+  dealer: 0.10,
+  distributor: 0.15,
+  bulk: 0.20,
+};
 
 export function getTierForQuantity(totalQuantity: number): CustomerTier {
   let tier: CustomerTier = "individual";
@@ -45,6 +53,14 @@ export function getTierPrice(
   tier: CustomerTier
 ): number {
   const base = product.price;
+  if (base <= 0) return 0;
+
+  // Individual always gets 2% off MRP
+  if (tier === "individual") {
+    return Math.round(base * 0.98);
+  }
+
+  // For higher tiers, use DB price but never above MRP
   let raw: number;
   switch (tier) {
     case "bulk":
@@ -59,12 +75,11 @@ export function getTierPrice(
     case "retailer":
       raw = product.retailerPrice || base;
       break;
-    case "individual":
     default:
       raw = base;
   }
-  // Tier price should never exceed the base MRP
-  return raw > 0 && raw < base ? raw : base;
+  // Never return a price higher than MRP, never lower than 0
+  return raw > 0 && raw < base ? raw : Math.round(base * 0.98);
 }
 
 export function getTierDiscount(

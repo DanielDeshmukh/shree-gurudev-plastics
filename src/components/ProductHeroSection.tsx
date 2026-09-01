@@ -9,6 +9,7 @@ import ProductCartSection from "@/components/ProductCartSection";
 import CompareButton from "@/components/CompareButton";
 import ShareButton from "@/components/ShareButton";
 import { useState, useMemo } from "react";
+import { getTierForQuantity, getTierPrice, getTierDiscount, TIER_LABELS, getNextTier } from "@/lib/pricing";
 
 type SiblingColor = {
   id: number;
@@ -32,8 +33,22 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
   const categorySlug = encodeURIComponent(product.category || "");
   const images = product.images || [];
   const [activeIdx, setActiveIdx] = useState(0);
+  const [qty, setQty] = useState(10);
 
   const displaySrc = images[activeIdx]?.imageUrl || product.imageUrl;
+
+  const tierProduct = useMemo(() => ({
+    price: product.price,
+    retailerPrice: product.retailerPrice || 0,
+    dealerPrice: product.dealerPrice || 0,
+    distributorPrice: product.distributorPrice || 0,
+    bulkPrice: product.bulkPrice || 0,
+  }), [product]);
+
+  const currentTier = useMemo(() => getTierForQuantity(qty), [qty]);
+  const tierPrice = useMemo(() => getTierPrice(tierProduct, currentTier), [tierProduct, currentTier]);
+  const discount = useMemo(() => getTierDiscount(tierProduct, tierPrice), [tierProduct, tierPrice]);
+  const nextTier = useMemo(() => getNextTier(currentTier), [currentTier]);
 
   const allColors: { id: number; slug: string; color: string; imageUrl: string | null; isCurrent: boolean }[] = useMemo(() => {
     const current = { id: product.id, slug: product.slug, color: product.color || "", imageUrl: product.imageUrl, isCurrent: true };
@@ -233,8 +248,26 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           <p className="text-gray-600 leading-relaxed mt-2">{product.description}</p>
         )}
 
-        <p className="text-3xl font-bold text-primary-500 mt-4 mb-1">{product.price > 0 ? `\u20B9${product.price}` : "Price on request"}</p>
-        <p className="text-gray-500 text-sm mb-4">Inclusive of all taxes. Bulk pricing available.</p>
+        {product.price > 0 ? (
+          <div className="mt-4 mb-4">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              {discount > 0 && (
+                <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+              )}
+              <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{tierPrice.toLocaleString("en-IN")}</span>
+              {discount > 0 && (
+                <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Save {discount}%</span>
+              )}
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">{TIER_LABELS[currentTier]}</span>
+            </div>
+            {nextTier && (
+              <p className="text-xs text-gray-400 mt-1">Buy {nextTier.minQty}+ for {nextTier.label} pricing ({getTierDiscount(tierProduct, getTierPrice(tierProduct, nextTier.tier))}% off)</p>
+            )}
+            <p className="text-gray-500 text-sm mt-1">Inclusive of all taxes.</p>
+          </div>
+        ) : (
+          <p className="text-3xl font-bold text-primary-500 mt-4 mb-4">Price on request</p>
+        )}
 
         <div className="mb-4">
           <p className="text-sm font-medium text-gray-700 mb-2">Check Delivery Availability</p>
@@ -268,6 +301,8 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           imageUrl={product.imageUrl || ""}
           brand={brand?.name}
           stock={product.stock}
+          qty={qty}
+          setQty={setQty}
         />
         <CompareButton
           product={{

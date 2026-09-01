@@ -437,7 +437,7 @@ export default function ComparePage() {
                       {attr.key === "cart" && (
                         <button
                           onClick={() => {
-                            addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
+                            addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, mrp: item.price, retailerPrice: 0, dealerPrice: 0, distributorPrice: 0, bulkPrice: 0, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
                             openCart();
                           }}
                           disabled={item.stock <= 0}
@@ -514,7 +514,7 @@ export default function ComparePage() {
               <div className="p-3 border-t border-gray-200 space-y-2">
                 <button
                   onClick={() => {
-                    addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
+                    addItem({ id: item.id, name: item.name, color: item.color, size: item.size, price: item.price, mrp: item.price, retailerPrice: 0, dealerPrice: 0, distributorPrice: 0, bulkPrice: 0, imageUrl: item.imageUrl, brand: item.brand, stock: item.stock });
                     openCart();
                   }}
                   disabled={item.stock <= 0}

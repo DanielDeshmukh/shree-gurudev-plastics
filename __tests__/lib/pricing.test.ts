@@ -51,7 +51,7 @@ describe("pricing", () => {
     };
 
     it("returns base price for individual", () => {
-      expect(getTierPrice(product, "individual")).toBe(1000);
+      expect(getTierPrice(product, "individual")).toBe(980);
     });
 
     it("returns retailer price", () => {
@@ -72,7 +72,7 @@ describe("pricing", () => {
 
     it("falls back to base price when tier price is 0", () => {
       const p = { ...product, retailerPrice: 0 };
-      expect(getTierPrice(p, "retailer")).toBe(1000);
+      expect(getTierPrice(p, "retailer")).toBe(980);
     });
 
     it("falls back chain for bulk", () => {

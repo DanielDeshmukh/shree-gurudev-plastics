@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from "react";
+import { getTierForQuantity, getTierPrice } from "@/lib/pricing";
 
 const CART_STORAGE_KEY = "sgp_cart";
 
@@ -10,6 +11,11 @@ export type CartItem = {
   color: string;
   size: string;
   price: number;
+  mrp: number;
+  retailerPrice: number;
+  dealerPrice: number;
+  distributorPrice: number;
+  bulkPrice: number;
   imageUrl: string;
   brand?: string;
   quantity: number;
@@ -70,6 +76,19 @@ function cartKey(id: number, color: string) {
   return `${id}__${color || ""}`;
 }
 
+function recalcItemPrice(item: CartItem): CartItem {
+  const tier = getTierForQuantity(item.quantity);
+  const product = {
+    price: item.mrp || item.price,
+    retailerPrice: item.retailerPrice || 0,
+    dealerPrice: item.dealerPrice || 0,
+    distributorPrice: item.distributorPrice || 0,
+    bulkPrice: item.bulkPrice || 0,
+  };
+  const newPrice = getTierPrice(product, tier);
+  return { ...item, price: newPrice };
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -111,11 +130,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const maxQty = product.stock !== undefined ? product.stock : MAX_QUANTITY;
       if (existing) {
         const newQty = Math.min(existing.quantity + 1, maxQty);
+        const updated = { ...existing, quantity: newQty, stock: product.stock };
         return prev.map((item) =>
-          cartKey(item.id, item.color) === key ? { ...item, quantity: newQty, stock: product.stock } : item
+          cartKey(item.id, item.color) === key ? recalcItemPrice(updated) : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      const newItem = { ...product, quantity: 1 };
+      return [...prev, recalcItemPrice(newItem)];
     });
   }, []);
 
@@ -132,13 +153,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (color) return prev.filter((i) => cartKey(i.id, i.color) !== cartKey(id, color));
         return prev.filter((i) => i.id !== id);
       }
-      const maxQty = prev.find((i) => (color ? cartKey(i.id, i.color) === cartKey(id, color) : i.id === id))?.stock ?? MAX_QUANTITY;
+      const key = color ? cartKey(id, color) : null;
+      const maxQty = prev.find((i) => (key ? cartKey(i.id, i.color) === key : i.id === id))?.stock ?? MAX_QUANTITY;
       const clamped = Math.min(quantity, maxQty);
-      if (color) {
-        const key = cartKey(id, color);
-        return prev.map((i) => (cartKey(i.id, i.color) === key ? { ...i, quantity: clamped } : i));
-      }
-      return prev.map((i) => (i.id === id ? { ...i, quantity: clamped } : i));
+      return prev.map((i) => {
+        const matches = key ? cartKey(i.id, i.color) === key : i.id === id;
+        if (!matches) return i;
+        return recalcItemPrice({ ...i, quantity: clamped });
+      });
     });
   }, []);
 

@@ -17,6 +17,11 @@ export default function WishlistPage() {
       color: item.color,
       size: item.size,
       price: item.price,
+      mrp: item.price,
+      retailerPrice: 0,
+      dealerPrice: 0,
+      distributorPrice: 0,
+      bulkPrice: 0,
       imageUrl: item.imageUrl,
       brand: item.brand,
     });

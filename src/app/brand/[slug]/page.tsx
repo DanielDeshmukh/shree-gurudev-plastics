@@ -7,6 +7,7 @@ import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { apiFetch } from "@/lib/api-fetch";
 import { PHONE } from "@/lib/seo";
+import { getTierPrice, getTierDiscount } from "@/lib/pricing";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -176,13 +177,33 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
                   </div>
-                  <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
+                   <p className="text-lg font-bold text-primary-500 mt-2">
+                     {(() => {
+                       const individualPrice = getTierPrice(product, "individual");
+                       const individualDiscount = getTierDiscount(product, individualPrice);
+                       if (individualDiscount > 0) {
+                         return (
+                           <span className="flex items-center gap-1.5">
+                             <span className="line-through text-gray-400 text-sm">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+                             {"\u20B9"}{individualPrice.toLocaleString("en-IN")}
+                             <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">{individualDiscount}% Off</span>
+                           </span>
+                         );
+                       }
+                       return `{"\u20B9"}${product.price.toLocaleString("en-IN")}`;
+                     })()}
+                   </p>
                   <AddToCartButton
                     id={product.id}
                     name={product.name}
                     color={product.color || ""}
                     size={product.size || ""}
                     price={product.price}
+                    mrp={product.price}
+                    retailerPrice={product.retailerPrice || 0}
+                    dealerPrice={product.dealerPrice || 0}
+                    distributorPrice={product.distributorPrice || 0}
+                    bulkPrice={product.bulkPrice || 0}
                     imageUrl={product.imageUrl || ""}
                     brand={brand?.name}
                     stock={product.stock}

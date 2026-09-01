@@ -13,6 +13,7 @@ import FestivalHero from "@/components/FestivalHero";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 import { useFestivalStatus } from "@/lib/useFestivalStatus";
+import { getTierPrice, getTierDiscount } from "@/lib/pricing";
 
 const productCategories = [
   { name: "Plastic Chairs", category: "Chairs", slug: "chairs", desc: "Armless, Premium, Medium Back, Baby & HoReCa chairs" },
@@ -220,7 +221,22 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                     {product.color && <span>{product.color}</span>}
                     {product.size && <span>• {product.size}</span>}
                   </div>
-                   <p className="text-lg font-bold text-primary-500 mt-2">₹{product.price}</p>
+                   <p className="text-lg font-bold text-primary-500 mt-2">
+                     {(() => {
+                       const individualPrice = getTierPrice(product, "individual");
+                       const individualDiscount = getTierDiscount(product, individualPrice);
+                       if (individualDiscount > 0) {
+                         return (
+                           <span className="flex items-center gap-1.5">
+                             <span className="line-through text-gray-400 text-sm">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+                             {"\u20B9"}{individualPrice.toLocaleString("en-IN")}
+                             <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">{individualDiscount}% Off</span>
+                           </span>
+                         );
+                       }
+                       return `{"\u20B9"}${product.price.toLocaleString("en-IN")}`;
+                     })()}
+                   </p>
                    {product.brand?.name && <p className="text-xs text-gray-400 mt-1">{product.brand.name}</p>}
                     <AddToCartButton
                       id={product.id}
@@ -228,6 +244,11 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
                       color={product.color || ""}
                       size={product.size || ""}
                       price={product.price}
+                      mrp={product.price}
+                      retailerPrice={product.retailerPrice || 0}
+                      dealerPrice={product.dealerPrice || 0}
+                      distributorPrice={product.distributorPrice || 0}
+                      bulkPrice={product.bulkPrice || 0}
                       imageUrl={product.imageUrl || ""}
                       brand={product.brand?.name}
                       stock={product.stock}
