@@ -4,7 +4,7 @@ import { SITE_URL, BUSINESS_NAME, CITY, PHONE, ADDRESS, getFAQSchema } from "@/l
 
 export const metadata: Metadata = {
   title: "Service Areas & Locations | Plastic Products Dealer in Bhayander, Mumbai",
-  description: `${BUSINESS_NAME} delivers plastic products across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane & Palghar. Same-day delivery in Bhayander & Naigaon. Free delivery above â‚¹5,000. Wholesale plastic chairs, tables, buckets, containers.`,
+  description: `${BUSINESS_NAME} delivers plastic products across Bhayander, Naigaon, Vasai, Virar, Mumbai, Thane & Palghar. Same-day delivery in Bhayander & Naigaon. Free delivery above ₹5,000. Wholesale plastic chairs, tables, buckets, containers.`,
   keywords: [
     "plastic products dealer Bhayander", "plastic distributor Bhayander", "plastic products Naigaon",
     "plastic wholesale Vasai", "plastic supplier Virar", "plastic products Mumbai",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/locations` },
   openGraph: {
     title: `${BUSINESS_NAME} | Service Areas - Bhayander, Naigaon, Vasai, Virar, Mumbai`,
-    description: "Delivering premium plastic products across Mumbai region. Same-day delivery in Bhayander & Naigaon. Free delivery above â‚¹5,000.",
+    description: "Delivering premium plastic products across Mumbai region. Same-day delivery in Bhayander & Naigaon. Free delivery above ₹5,000.",
     url: `${SITE_URL}/locations`,
     siteName: BUSINESS_NAME,
     locale: "en_IN",
@@ -33,7 +33,7 @@ const areas = [
   {
     name: "Naigaon",
     isHQ: false,
-    description: "Same-day delivery available. Full product range delivered to your doorstep. No shipping charges on orders above â‚¹5,000.",
+    description: "Same-day delivery available. Full product range delivered to your doorstep. No shipping charges on orders above ₹5,000.",
   },
   {
     name: "Vasai",
@@ -74,7 +74,7 @@ const benefits = [
   },
   {
     title: "No Shipping Charges for Local Orders",
-    description: "Free delivery for orders above â‚¹5,000 in Bhayander and Naigaon. Save money when you buy locally instead of ordering online.",
+    description: "Free delivery for orders above ₹5,000 in Bhayander and Naigaon. Save money when you buy locally instead of ordering online.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -112,7 +112,7 @@ const faqs = [
   },
   {
     question: "Is there free delivery?",
-    answer: "Free delivery for orders above â‚¹5,000 in Bhayander and Naigaon. Contact us for delivery charges and free delivery thresholds in other areas.",
+    answer: "Free delivery for orders above ₹5,000 in Bhayander and Naigaon. Contact us for delivery charges and free delivery thresholds in other areas.",
   },
   {
     question: "Can I visit your warehouse?",
