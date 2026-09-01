@@ -47,7 +47,7 @@ async function getProductsByBrand(slug: string) {
   }
 }
 
-const ACTIVE_BRAND_SLUGS = ["mango-chairs", "reego", "aristo"];
+const ACTIVE_BRAND_SLUGS = ["mango-chairs", "aristo"];
 
 const KNOWN_BRANDS: Record<string, { name: string }> = {
   "aristo": { name: "Aristo" },
