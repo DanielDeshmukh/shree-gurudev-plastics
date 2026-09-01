@@ -5,16 +5,13 @@ import AddToCartButton from "@/components/AddToCartButton";
 import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
-import { apiFetch } from "@/lib/api-fetch";
+import { db } from "@/lib/db";
 import { PHONE } from "@/lib/seo";
 import { getTierPrice, getTierDiscount } from "@/lib/pricing";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const res = await apiFetch("/api/brands");
-  const data = await res.json();
-  const brands = data.brands || [];
-  const brand = brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug);
+  const brand = await getBrand(slug);
   const brandName = brand?.name || KNOWN_BRANDS[slug]?.name;
   if (!brandName) return { title: "Brand Not Found" };
   return {
@@ -26,11 +23,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 async function getBrand(slug: string) {
   try {
-    const res = await apiFetch("/api/brands");
-    if (!res.ok) return null;
-    const data = await res.json();
-    const brands = data.brands || [];
-    return brands.find((b: any) => b.slug === slug || b.name.toLowerCase().replace(/\s+/g, "-") === slug) || null;
+    const brand = await db.brand.findFirst({
+      where: { slug },
+      include: { _count: { select: { products: true } } },
+    });
+    if (brand) return brand;
+    // Fallback: match by name-based slug
+    return await db.brand.findFirst({
+      where: { slug: slug.replace(/-/g, "_") },
+      include: { _count: { select: { products: true } } },
+    });
   } catch {
     return null;
   }
@@ -38,10 +40,23 @@ async function getBrand(slug: string) {
 
 async function getProductsByBrand(slug: string) {
   try {
-    const res = await apiFetch(`/api/products?brand=${slug}`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.products || [];
+    const brand = await db.brand.findFirst({ where: { slug } });
+    if (!brand) return [];
+    const products = await db.product.findMany({
+      where: { brandId: brand.id, isActive: true },
+      include: { brand: true },
+    });
+    // Group by name
+    const grouped = new Map<string, any>();
+    for (const p of products) {
+      const key = p.name;
+      if (!grouped.has(key)) {
+        grouped.set(key, { ...p, colors: [{ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock }] });
+      } else {
+        grouped.get(key)!.colors.push({ id: p.id, slug: p.slug, color: p.color, imageUrl: p.imageUrl, price: p.price, stock: p.stock });
+      }
+    }
+    return Array.from(grouped.values());
   } catch {
     return [];
   }
@@ -61,7 +76,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
 
   // Fallback to known brands if not in database
   if (!brand && KNOWN_BRANDS[slug]) {
-    brand = { name: KNOWN_BRANDS[slug].name, slug, _count: { products: 0 } };
+    brand = { id: 0, name: KNOWN_BRANDS[slug].name, slug, logo: null, _count: { products: 0 } };
   }
 
   if (!brand) {
