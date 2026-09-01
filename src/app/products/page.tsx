@@ -163,7 +163,7 @@ function FilterSidebar({
           {sliderMin < sliderMax && (
             <div className="relative pt-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-gray-500">?{Math.round(sliderMin)}</span>
+                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(sliderMin)}</span>
                 <div className="flex-1 h-1 bg-gray-200 rounded relative">
                   <div
                     className="absolute h-1 bg-primary-400 rounded"
@@ -173,7 +173,7 @@ function FilterSidebar({
                     }}
                   />
                 </div>
-                <span className="text-xs text-gray-500">?{Math.round(sliderMax)}</span>
+                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(sliderMax)}</span>
               </div>
               <input
                 type="range"
@@ -207,14 +207,14 @@ function FilterSidebar({
             <input
               ref={minRef}
               type="number"
-              placeholder={`Min ?${Math.round(sliderMin)}`}
+              placeholder={`Min {"\u20B9"}${Math.round(sliderMin)}`}
               defaultValue={sliderMin}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
             <input
               ref={maxRef}
               type="number"
-              placeholder={`Max ?${Math.round(sliderMax)}`}
+              placeholder={`Max {"\u20B9"}${Math.round(sliderMax)}`}
               defaultValue={sliderMax}
               className="w-1/2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
@@ -253,7 +253,6 @@ function ProductsPageInner() {
   const [dbCategories, setDbCategories] = useState<CategoryHierarchy[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(searchParams.get("subCategory") || "");
 
-  // Sync filter state from URL params on every navigation
   useEffect(() => {
     setSelectedBrand(searchParams.get("brand") || "");
     setSelectedCategory(searchParams.get("category") || "");
@@ -267,8 +266,8 @@ function ProductsPageInner() {
   const sortOptions = [
     { value: "newest", label: t("Newest", "नवीनतम") },
     { value: "oldest", label: t("Oldest", "पुराने") },
-    { value: "price-asc", label: "Price ↑" },
-    { value: "price-desc", label: "Price ↓" },
+    { value: "price-asc", label: "Price (Low to High)" },
+    { value: "price-desc", label: "Price (High to Low)" },
     { value: "name-asc", label: "Name A-Z" },
     { value: "name-desc", label: "Name Z-A" },
   ];
@@ -294,7 +293,6 @@ function ProductsPageInner() {
 
   const LIMIT = 24;
 
-  // Fetch brands once (exclude coming soon)
   useEffect(() => {
     fetch("/api/brands")
       .then((r) => r.json())
@@ -302,7 +300,6 @@ function ProductsPageInner() {
       .catch(() => setBrands([]));
   }, []);
 
-  // Fetch categories from a single unfiltered call (once)
   useEffect(() => {
     fetch(`/api/products?limit=1`)
       .then((r) => r.json())
@@ -319,7 +316,6 @@ function ProductsPageInner() {
       .catch(() => {});
   }, []);
 
-  // Server-side filtered fetch - re-fetches when filters change
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -340,7 +336,6 @@ function ProductsPageInner() {
       });
   }, [selectedBrand, selectedCategory, selectedSubCategory]);
 
-  // Client-side search only (on the already server-filtered results)
   const filteredProducts = useMemo(() => {
     let results = allProducts;
 
@@ -374,7 +369,6 @@ function ProductsPageInner() {
     setPage(1);
   }, [search, sort]);
 
-  // Sync filters to URL
   useEffect(() => {
     const params = new URLSearchParams();
     if (selectedBrand) params.set("brand", selectedBrand);
@@ -453,7 +447,7 @@ function ProductsPageInner() {
   }
   if (priceApplied && (userMin > sliderMin || userMax < sliderMax)) {
     activeFilters.push({
-      label: `?${Math.round(userMin)} - ?${Math.round(userMax)}`,
+      label: `{"\u20B9"}${Math.round(userMin)} - {"\u20B9"}${Math.round(userMax)}`,
       onRemove: resetPrice,
     });
   }
@@ -574,7 +568,7 @@ function ProductsPageInner() {
                     className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium inline-flex items-center gap-2"
                   >
                     <MdLocalShipping className="w-4 h-4" />
-                    Browse Mango Products
+                    Browse Products
                   </Link>
                   <a
                     href={`https://wa.me/${PHONE}`}
@@ -615,15 +609,13 @@ function ProductsPageInner() {
                         </div>
                         <div className="flex gap-1 md:gap-2 mt-1 text-xs md:text-sm text-gray-500">
                           {product.color && <span className="truncate">{product.color}</span>}
-                          {product.size && <span>� {product.size}</span>}
+                          {product.size && <span>{"\u00B7"} {product.size}</span>}
                         </div>
                         <div className="mt-1.5 md:mt-2">
                           {product.price > 0 ? (
                             (() => {
                               const individualPrice = getTierPrice(product, "individual");
                               const individualDiscount = getTierDiscount(product, individualPrice);
-                              const retailerPrice = getTierPrice(product, "retailer");
-                              const retailerDiscount = getTierDiscount(product, retailerPrice);
                               return (
                                 <div className="space-y-0.5">
                                   {individualDiscount > 0 && (
@@ -639,7 +631,6 @@ function ProductsPageInner() {
                                       </span>
                                     )}
                                   </div>
-
                                 </div>
                               );
                             })()
