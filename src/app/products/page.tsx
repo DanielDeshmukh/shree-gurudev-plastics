@@ -161,46 +161,51 @@ function FilterSidebar({
         <h3 className="font-bold text-gray-900 mb-3">{t("Price Range", "मूल्य सीमा")}</h3>
         <div className="space-y-3">
           {sliderMin < sliderMax && (
-            <div className="relative pt-1">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(sliderMin)}</span>
-                <div className="flex-1 h-1 bg-gray-200 rounded relative">
-                  <div
-                    className="absolute h-1 bg-primary-400 rounded"
-                    style={{
-                      left: `${((priceRange[0] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
-                      right: `${100 - ((priceRange[1] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
-                    }}
-                  />
-                </div>
-                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(sliderMax)}</span>
+            <div className="mt-1 mb-2">
+              <div className="flex justify-between mb-2">
+                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(priceRange[0])}</span>
+                <span className="text-xs text-gray-500">{"\u20B9"}{Math.round(priceRange[1])}</span>
               </div>
-              <input
-                type="range"
-                min={Math.floor(sliderMin)}
-                max={Math.ceil(sliderMax)}
-                value={priceRange[0]}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  if (val <= priceRange[1]) setPriceRange([val, priceRange[1]]);
-                }}
-                onMouseUp={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
-                onTouchEnd={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
-                className="w-full h-2 appearance-none bg-transparent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-0"
-              />
-              <input
-                type="range"
-                min={Math.floor(sliderMin)}
-                max={Math.ceil(sliderMax)}
-                value={priceRange[1]}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  if (val >= priceRange[0]) setPriceRange([priceRange[0], val]);
-                }}
-                onMouseUp={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
-                onTouchEnd={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
-                className="w-full h-2 appearance-none bg-transparent cursor-pointer -mt-1 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-0"
-              />
+              <div className="relative h-5 flex items-center">
+                <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
+                <div
+                  className="absolute h-1.5 bg-primary-500 rounded-full"
+                  style={{
+                    left: `${((priceRange[0] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
+                    right: `${100 - ((priceRange[1] - sliderMin) / (sliderMax - sliderMin)) * 100}%`,
+                  }}
+                />
+                <input
+                  type="range"
+                  min={Math.floor(sliderMin)}
+                  max={Math.ceil(sliderMax)}
+                  value={priceRange[0]}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    if (val <= priceRange[1]) setPriceRange([val, priceRange[1]]);
+                  }}
+                  onMouseUp={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
+                  onTouchEnd={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
+                  className="absolute inset-0 w-full h-full appearance-none bg-transparent cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:bg-transparent"
+                />
+                <input
+                  type="range"
+                  min={Math.floor(sliderMin)}
+                  max={Math.ceil(sliderMax)}
+                  value={priceRange[1]}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    if (val >= priceRange[0]) setPriceRange([priceRange[0], val]);
+                  }}
+                  onMouseUp={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
+                  onTouchEnd={() => { handlePriceApply(priceRange[0], priceRange[1]); }}
+                  className="absolute inset-0 w-full h-full appearance-none bg-transparent cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:bg-transparent"
+                />
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-[10px] text-gray-400">{"\u20B9"}{Math.round(sliderMin)}</span>
+                <span className="text-[10px] text-gray-400">{"\u20B9"}{Math.round(sliderMax)}</span>
+              </div>
             </div>
           )}
           <div className="flex gap-2">
