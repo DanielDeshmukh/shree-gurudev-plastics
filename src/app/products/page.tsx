@@ -11,6 +11,7 @@ import ProductTags from "@/components/ProductTags";
 import { useLanguage } from "@/context/LanguageContext";
 import { MdStore, MdLocalShipping } from "react-icons/md";
 import { PHONE } from "@/lib/seo";
+import { getTierPrice, getTierDiscount, TIER_LABELS, type CustomerTier } from "@/lib/pricing";
 
 type CategoryHierarchy = { name: string; subCategories: string[] };
 
@@ -616,7 +617,36 @@ function ProductsPageInner() {
                           {product.color && <span className="truncate">{product.color}</span>}
                           {product.size && <span>• {product.size}</span>}
                         </div>
-                        <p className="text-base md:text-lg font-bold text-primary-500 mt-1.5 md:mt-2">{product.price > 0 ? `\u20B9${product.price.toLocaleString("en-IN")}` : "Price on request"}</p>
+                        <div className="mt-1.5 md:mt-2">
+                          {product.price > 0 ? (
+                            (() => {
+                              const retailerPrice = getTierPrice(product, "retailer");
+                              const discount = getTierDiscount(product, retailerPrice);
+                              return (
+                                <div className="space-y-0.5">
+                                  {discount > 0 && (
+                                    <p className="text-xs text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</p>
+                                  )}
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-base md:text-lg font-bold text-primary-500">
+                                      {"\u20B9"}{(discount > 0 ? retailerPrice : product.price).toLocaleString("en-IN")}
+                                    </p>
+                                    {discount > 0 && (
+                                      <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                                        Save {discount}%
+                                      </span>
+                                    )}
+                                  </div>
+                                  {discount > 0 && (
+                                    <p className="text-[10px] text-gray-400">Buy 10+ at {"\u20B9"}{retailerPrice.toLocaleString("en-IN")}</p>
+                                  )}
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            <p className="text-base md:text-lg font-bold text-primary-500">Price on request</p>
+                          )}
+                        </div>
                         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
                         <button
                           onClick={() => {

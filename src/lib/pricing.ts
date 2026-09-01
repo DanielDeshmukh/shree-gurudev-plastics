@@ -1,6 +1,7 @@
-export type CustomerTier = "retailer" | "dealer" | "distributor" | "bulk";
+export type CustomerTier = "individual" | "retailer" | "dealer" | "distributor" | "bulk";
 
 export const TIER_LABELS: Record<CustomerTier, string> = {
+  individual: "Individual",
   retailer: "Retailer",
   dealer: "Dealer",
   distributor: "Distributor",
@@ -8,23 +9,25 @@ export const TIER_LABELS: Record<CustomerTier, string> = {
 };
 
 export const TIER_DESCRIPTIONS: Record<CustomerTier, string> = {
-  retailer: "Standard retail pricing",
-  dealer: "Discounted dealer pricing",
-  distributor: "Preferred distributor rates",
-  bulk: "Best bulk pricing",
+  individual: "Standard pricing for small orders",
+  retailer: "Discounted pricing for 10+ items",
+  dealer: "Special pricing for 50+ items",
+  distributor: "Preferred rates for 100+ items",
+  bulk: "Best pricing for 500+ items",
 };
 
-export const TIER_THRESHOLDS: { tier: CustomerTier; minOrders: number; minSpent: number }[] = [
-  { tier: "retailer", minOrders: 0, minSpent: 0 },
-  { tier: "dealer", minOrders: 5, minSpent: 10000 },
-  { tier: "distributor", minOrders: 15, minSpent: 50000 },
-  { tier: "bulk", minOrders: 30, minSpent: 150000 },
+export const TIER_THRESHOLDS: { tier: CustomerTier; minQty: number }[] = [
+  { tier: "individual", minQty: 0 },
+  { tier: "retailer", minQty: 10 },
+  { tier: "dealer", minQty: 50 },
+  { tier: "distributor", minQty: 100 },
+  { tier: "bulk", minQty: 500 },
 ];
 
-export function calculateTier(totalOrders: number, totalSpent: number): CustomerTier {
-  let tier: CustomerTier = "retailer";
+export function getTierForQuantity(totalQuantity: number): CustomerTier {
+  let tier: CustomerTier = "individual";
   for (const t of TIER_THRESHOLDS) {
-    if (totalOrders >= t.minOrders && totalSpent >= t.minSpent) {
+    if (totalQuantity >= t.minQty) {
       tier = t.tier;
     }
   }
@@ -49,8 +52,10 @@ export function getTierPrice(
     case "dealer":
       return product.dealerPrice || product.retailerPrice || product.price;
     case "retailer":
-    default:
       return product.retailerPrice || product.price;
+    case "individual":
+    default:
+      return product.price;
   }
 }
 
@@ -60,4 +65,11 @@ export function getTierDiscount(
 ): number {
   if (product.price === 0) return 0;
   return Math.round(((product.price - tierPrice) / product.price) * 100);
+}
+
+export function getNextTier(currentTier: CustomerTier): { tier: CustomerTier; minQty: number; label: string } | null {
+  const idx = TIER_THRESHOLDS.findIndex((t) => t.tier === currentTier);
+  if (idx < 0 || idx >= TIER_THRESHOLDS.length - 1) return null;
+  const next = TIER_THRESHOLDS[idx + 1];
+  return { tier: next.tier, minQty: next.minQty, label: TIER_LABELS[next.tier] };
 }

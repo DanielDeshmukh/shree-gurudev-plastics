@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useCart } from "@/context/CartContext";
 import { PHONE } from "@/lib/seo";
 import { logEnquiry } from "@/lib/log-enquiry";
+import { getTierForQuantity, getTierPrice, getTierDiscount, TIER_LABELS, getNextTier, type CustomerTier } from "@/lib/pricing";
 
 type ProductCartSectionProps = {
   id: number;
@@ -11,19 +12,36 @@ type ProductCartSectionProps = {
   color: string;
   size: string;
   price: number;
+  retailerPrice?: number;
+  dealerPrice?: number;
+  distributorPrice?: number;
+  bulkPrice?: number;
   imageUrl: string;
   brand?: string;
   stock?: number;
 };
 
-export default function ProductCartSection({ id, name, color, size, price, imageUrl, brand, stock }: ProductCartSectionProps) {
+export default function ProductCartSection({ id, name, color, size, price, retailerPrice, dealerPrice, distributorPrice, bulkPrice, imageUrl, brand, stock }: ProductCartSectionProps) {
   const { addItem, openCart } = useCart();
   const [enquiryQty, setEnquiryQty] = useState(10);
   const outOfStock = stock !== undefined && stock <= 0;
 
+  const product = useMemo(() => ({
+    price,
+    retailerPrice: retailerPrice || 0,
+    dealerPrice: dealerPrice || 0,
+    distributorPrice: distributorPrice || 0,
+    bulkPrice: bulkPrice || 0,
+  }), [price, retailerPrice, dealerPrice, distributorPrice, bulkPrice]);
+
+  const currentTier: CustomerTier = useMemo(() => getTierForQuantity(enquiryQty), [enquiryQty]);
+  const tierPrice = useMemo(() => getTierPrice(product, currentTier), [product, currentTier]);
+  const discount = useMemo(() => getTierDiscount(product, tierPrice), [product, tierPrice]);
+  const nextTier = useMemo(() => getNextTier(currentTier), [currentTier]);
+
   const handleAdd = () => {
     if (outOfStock) return;
-    addItem({ id, name, color, size, price, imageUrl, brand, stock });
+    addItem({ id, name, color, size, price: tierPrice, imageUrl, brand, stock });
     openCart();
   };
 
@@ -33,7 +51,9 @@ export default function ProductCartSection({ id, name, color, size, price, image
       brand && `Brand: ${brand}`,
       color && `Color: ${color}`,
       size && `Size: ${size}`,
-      `Price: ₹${price}`,
+      `MRP: Rs.${price}`,
+      discount > 0 && `Tier: ${TIER_LABELS[currentTier]} (${discount}% off)`,
+      `Price: Rs.${tierPrice}`,
       `Quantity: ${enquiryQty} pcs`,
     ].filter(Boolean).join("\n");
 
@@ -44,6 +64,31 @@ export default function ProductCartSection({ id, name, color, size, price, image
 
   return (
     <div className="space-y-3">
+      {price > 0 && (
+        <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Price</span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">
+              {TIER_LABELS[currentTier]}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            {discount > 0 && (
+              <span className="text-sm text-gray-400 line-through">{"\u20B9"}{price.toLocaleString("en-IN")}</span>
+            )}
+            <span className="text-xl font-bold text-primary-600">{"\u20B9"}{tierPrice.toLocaleString("en-IN")}</span>
+            {discount > 0 && (
+              <span className="text-xs font-semibold text-green-600">Save {discount}%</span>
+            )}
+          </div>
+          {nextTier && (
+            <p className="text-[11px] text-gray-400">
+              Buy {nextTier.minQty}+ for {TIER_LABELS[nextTier.tier]} pricing
+            </p>
+          )}
+        </div>
+      )}
+
       <button
         onClick={handleAdd}
         disabled={outOfStock}

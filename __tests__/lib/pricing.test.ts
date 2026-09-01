@@ -1,37 +1,43 @@
 import { describe, it, expect } from "vitest";
 import {
-  calculateTier,
+  getTierForQuantity,
   getTierPrice,
   getTierDiscount,
+  getNextTier,
   TIER_THRESHOLDS,
   TIER_LABELS,
   TIER_DESCRIPTIONS,
 } from "@/lib/pricing";
 
 describe("pricing", () => {
-  describe("calculateTier", () => {
-    it("returns retailer for new customer", () => {
-      expect(calculateTier(0, 0)).toBe("retailer");
+  describe("getTierForQuantity", () => {
+    it("returns individual for small quantities", () => {
+      expect(getTierForQuantity(0)).toBe("individual");
+      expect(getTierForQuantity(1)).toBe("individual");
+      expect(getTierForQuantity(9)).toBe("individual");
     });
 
-    it("returns dealer when thresholds met", () => {
-      expect(calculateTier(5, 10000)).toBe("dealer");
+    it("returns retailer for 10-49 items", () => {
+      expect(getTierForQuantity(10)).toBe("retailer");
+      expect(getTierForQuantity(25)).toBe("retailer");
+      expect(getTierForQuantity(49)).toBe("retailer");
     });
 
-    it("returns distributor when thresholds met", () => {
-      expect(calculateTier(15, 50000)).toBe("distributor");
+    it("returns dealer for 50-99 items", () => {
+      expect(getTierForQuantity(50)).toBe("dealer");
+      expect(getTierForQuantity(75)).toBe("dealer");
+      expect(getTierForQuantity(99)).toBe("dealer");
     });
 
-    it("returns bulk when thresholds met", () => {
-      expect(calculateTier(30, 150000)).toBe("bulk");
+    it("returns distributor for 100-499 items", () => {
+      expect(getTierForQuantity(100)).toBe("distributor");
+      expect(getTierForQuantity(250)).toBe("distributor");
+      expect(getTierForQuantity(499)).toBe("distributor");
     });
 
-    it("returns retailer when only orders met but not spent", () => {
-      expect(calculateTier(5, 5000)).toBe("retailer");
-    });
-
-    it("returns highest qualifying tier", () => {
-      expect(calculateTier(50, 200000)).toBe("bulk");
+    it("returns bulk for 500+ items", () => {
+      expect(getTierForQuantity(500)).toBe("bulk");
+      expect(getTierForQuantity(1000)).toBe("bulk");
     });
   });
 
@@ -43,6 +49,10 @@ describe("pricing", () => {
       distributorPrice: 700,
       bulkPrice: 600,
     };
+
+    it("returns base price for individual", () => {
+      expect(getTierPrice(product, "individual")).toBe(1000);
+    });
 
     it("returns retailer price", () => {
       expect(getTierPrice(product, "retailer")).toBe(900);
@@ -85,8 +95,27 @@ describe("pricing", () => {
     });
   });
 
+  describe("getNextTier", () => {
+    it("returns retailer as next tier from individual", () => {
+      const next = getNextTier("individual");
+      expect(next?.tier).toBe("retailer");
+      expect(next?.minQty).toBe(10);
+    });
+
+    it("returns dealer as next from retailer", () => {
+      const next = getNextTier("retailer");
+      expect(next?.tier).toBe("dealer");
+      expect(next?.minQty).toBe(50);
+    });
+
+    it("returns null for bulk (highest tier)", () => {
+      expect(getNextTier("bulk")).toBeNull();
+    });
+  });
+
   describe("constants", () => {
     it("has all tier labels", () => {
+      expect(TIER_LABELS.individual).toBe("Individual");
       expect(TIER_LABELS.retailer).toBe("Retailer");
       expect(TIER_LABELS.dealer).toBe("Dealer");
       expect(TIER_LABELS.distributor).toBe("Distributor");
@@ -94,13 +123,13 @@ describe("pricing", () => {
     });
 
     it("has all tier descriptions", () => {
-      expect(Object.keys(TIER_DESCRIPTIONS)).toHaveLength(4);
+      expect(Object.keys(TIER_DESCRIPTIONS)).toHaveLength(5);
     });
 
     it("has thresholds sorted ascending", () => {
       for (let i = 1; i < TIER_THRESHOLDS.length; i++) {
-        expect(TIER_THRESHOLDS[i].minOrders).toBeGreaterThanOrEqual(
-          TIER_THRESHOLDS[i - 1].minOrders
+        expect(TIER_THRESHOLDS[i].minQty).toBeGreaterThanOrEqual(
+          TIER_THRESHOLDS[i - 1].minQty
         );
       }
     });

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
-import { calculateTier } from "@/lib/pricing";
 
 export async function PUT(
   request: NextRequest,
@@ -15,13 +14,10 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
+    const { tier } = body;
 
-    let tier = body.tier;
     if (!tier) {
-      const customer = await db.customer.findUnique({ where: { id: parseInt(id) } });
-      if (customer) {
-        tier = calculateTier(customer.totalOrders, customer.totalSpent);
-      }
+      return NextResponse.json({ error: "tier is required" }, { status: 400 });
     }
 
     const customer = await db.customer.update({
@@ -30,7 +26,7 @@ export async function PUT(
     });
 
     return NextResponse.json({ customer });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update tier" }, { status: 500 });
   }
 }

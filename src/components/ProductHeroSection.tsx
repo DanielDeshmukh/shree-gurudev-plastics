@@ -261,6 +261,10 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           color={product.color || ""}
           size={product.size || ""}
           price={product.price}
+          retailerPrice={product.retailerPrice}
+          dealerPrice={product.dealerPrice}
+          distributorPrice={product.distributorPrice}
+          bulkPrice={product.bulkPrice}
           imageUrl={product.imageUrl || ""}
           brand={brand?.name}
           stock={product.stock}
