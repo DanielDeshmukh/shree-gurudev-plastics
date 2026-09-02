@@ -78,7 +78,7 @@ function CustomerAuthProviderInner({ children }: { children: React.ReactNode }) 
       const res = await fetch("/api/auth/phone", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ phone, userId: user?.userId }),
       });
       const data = await res.json();
       if (data.success) {
@@ -89,7 +89,7 @@ function CustomerAuthProviderInner({ children }: { children: React.ReactNode }) 
       }
       return { success: false, error: data.error };
     },
-    []
+    [user?.userId]
   );
 
   return (
