@@ -1,35 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-config";
 import { db } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // Try getServerSession first (more reliable)
+  const session = await getServerSession(authOptions);
+  let userId = (session as any)?.userId as number | undefined;
 
-  let userId = token?.userId as number | undefined;
+  // Fallback to getToken
+  if (!userId) {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    userId = token?.userId as number | undefined;
 
-  if (!userId && token?.googleId) {
-    try {
-      const dbUser = await db.customerUser.findUnique({
-        where: { googleId: token.googleId as string },
-      });
-      if (dbUser) userId = dbUser.id;
-    } catch (e) {
-      console.error("Phone API: googleId lookup failed:", e);
+    if (!userId && token?.googleId) {
+      try {
+        const dbUser = await db.customerUser.findUnique({
+          where: { googleId: token.googleId as string },
+        });
+        if (dbUser) userId = dbUser.id;
+      } catch (e) {
+        console.error("Phone API: googleId lookup failed:", e);
+      }
     }
-  }
 
-  if (!userId && token?.email) {
-    try {
-      const dbUser = await db.customerUser.findUnique({
-        where: { email: token.email as string },
-      });
-      if (dbUser) userId = dbUser.id;
-    } catch (e) {
-      console.error("Phone API: email lookup failed:", e);
+    if (!userId && token?.email) {
+      try {
+        const dbUser = await db.customerUser.findUnique({
+          where: { email: token.email as string },
+        });
+        if (dbUser) userId = dbUser.id;
+      } catch (e) {
+        console.error("Phone API: email lookup failed:", e);
+      }
     }
   }
 
   if (!userId) {
+    console.error("[Phone API] No userId. Session:", JSON.stringify(session), "Token lookup failed");
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
