@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCustomerAuth } from "@/context/CustomerAuthContext";
 
 const SKIP_KEY = "sgp_phone_prompt_skipped";
 
 export default function PhonePromptModal() {
   const { showPhonePrompt, setShowPhonePrompt, updatePhone, user } = useCustomerAuth();
+  const pathname = usePathname();
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (!showPhonePrompt) return null;
+  if (!showPhonePrompt || pathname.startsWith("/admin")) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
