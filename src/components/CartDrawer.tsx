@@ -3,11 +3,13 @@
 import { useRouter } from "next/navigation";
 import BlurImage from "@/components/BlurImage";
 import { useCart } from "@/context/CartContext";
+import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import { PHONE } from "@/lib/seo";
 import { logEnquiry } from "@/lib/log-enquiry";
 
 export default function CartDrawer() {
   const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice, isCartOpen, closeCart } = useCart();
+  const { user } = useCustomerAuth();
   const router = useRouter();
 
   const handleSendEnquiry = () => {
@@ -21,7 +23,7 @@ export default function CartDrawer() {
       .join("\n\n");
 
     const message = `Namaste!\n\nI am interested in the following products:\n\n${productList}\n\n------------------------------\nTotal: Rs.${totalPrice.toLocaleString("en-IN")}\n\nKindly share the best prices and confirm availability.\n\nThank you!`;
-    logEnquiry({ productName: `${items.length} items from cart`, message, source: "whatsapp" });
+    logEnquiry({ productName: `${items.length} items from cart`, message, source: "whatsapp", customerName: user?.name, customerPhone: user?.phone });
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 

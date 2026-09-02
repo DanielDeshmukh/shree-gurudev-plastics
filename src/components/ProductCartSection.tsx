@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useCart } from "@/context/CartContext";
+import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import { PHONE } from "@/lib/seo";
 import { logEnquiry } from "@/lib/log-enquiry";
 import { getTierForQuantity, getTierPrice, getTierDiscount, TIER_LABELS } from "@/lib/pricing";
@@ -25,6 +26,7 @@ type ProductCartSectionProps = {
 
 export default function ProductCartSection({ id, name, color, size, price, retailerPrice, dealerPrice, distributorPrice, bulkPrice, imageUrl, brand, stock, qty, setQty }: ProductCartSectionProps) {
   const { addItem, updateQuantity, openCart } = useCart();
+  const { user } = useCustomerAuth();
   const outOfStock = stock !== undefined && stock <= 0;
 
   const product = useMemo(() => ({
@@ -59,7 +61,7 @@ export default function ProductCartSection({ id, name, color, size, price, retai
     ].filter(Boolean).join("\n");
 
     const message = `Namaste!\n\nI am interested in the following product:\n\n${details}\n\nKindly share the best price, availability, and delivery details.\n\nThank you!`;
-    logEnquiry({ productId: id, productName: name, message, source: "whatsapp" });
+    logEnquiry({ productId: id, productName: name, message, source: "whatsapp", customerName: user?.name, customerPhone: user?.phone });
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
