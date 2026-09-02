@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, sqliteNow, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-config";
 import { validate, createOrderSchema } from "@/lib/validation";
 import crypto from "crypto";
 
@@ -32,12 +34,18 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Please sign in to place an order" }, { status: 401 });
+    }
+
     const body = await request.json();
     const validation = validate(createOrderSchema, body);
     if (!validation.success) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
     const { customer, phone, deliveryMethod, address, notes, items, paymentMethod } = validation.data;
+    const customerId = body.customerId || (session as any).userId || null;
 
     // Generate unique 10-digit public ID
     let publicId: string;
@@ -92,35 +100,52 @@ export async function POST(request: NextRequest) {
       }
 
       // 3. Create or update customer
-      let customerId: number | undefined;
+      let finalCustomerId: number | null = customerId || null;
       const total = validatedItems.reduce(
         (sum, item) => sum + item.quantity * item.price, 0
       );
 
-      const existingCustomer = await tx.customer.findUnique({ where: { phone } });
-      if (existingCustomer) {
-        await tx.customer.update({
-          where: { id: existingCustomer.id },
-          data: {
-            totalOrders: existingCustomer.totalOrders + 1,
-            totalSpent: existingCustomer.totalSpent + total,
-            lastOrderAt: sqliteNow(),
-            address: address || existingCustomer.address,
-          },
-        });
-        customerId = existingCustomer.id;
+      // Use provided customerId (from logged-in user) or fall back to phone lookup
+      if (!finalCustomerId) {
+        const existingCustomer = await tx.customer.findUnique({ where: { phone } });
+        if (existingCustomer) {
+          await tx.customer.update({
+            where: { id: existingCustomer.id },
+            data: {
+              totalOrders: existingCustomer.totalOrders + 1,
+              totalSpent: existingCustomer.totalSpent + total,
+              lastOrderAt: sqliteNow(),
+              address: address || existingCustomer.address,
+            },
+          });
+          finalCustomerId = existingCustomer.id;
+        } else {
+          const newCustomer = await tx.customer.create({
+            data: {
+              name: customer,
+              phone,
+              address: address || null,
+              totalOrders: 1,
+              totalSpent: total,
+              lastOrderAt: sqliteNow(),
+            },
+          });
+          finalCustomerId = newCustomer.id;
+        }
       } else {
-        const newCustomer = await tx.customer.create({
-          data: {
-            name: customer,
-            phone,
-            address: address || null,
-            totalOrders: 1,
-            totalSpent: total,
-            lastOrderAt: sqliteNow(),
-          },
-        });
-        customerId = newCustomer.id;
+        // Update existing customer record
+        const existingCustomer = await tx.customer.findUnique({ where: { id: finalCustomerId } });
+        if (existingCustomer) {
+          await tx.customer.update({
+            where: { id: finalCustomerId },
+            data: {
+              totalOrders: existingCustomer.totalOrders + 1,
+              totalSpent: existingCustomer.totalSpent + total,
+              lastOrderAt: sqliteNow(),
+              address: address || existingCustomer.address,
+            },
+          });
+        }
       }
 
       // 5. Create order with items and status history
@@ -140,7 +165,7 @@ export async function POST(request: NextRequest) {
           notes: notes || null,
           total,
           trackingToken,
-          customerId: customerId || null,
+          customerId: finalCustomerId,
           items: {
             create: validatedItems.map((item) => ({
               productId: item.productId,

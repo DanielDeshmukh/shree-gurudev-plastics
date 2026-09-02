@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import Link from "next/link";
 import BlurImage from "@/components/BlurImage";
 import RazorpayCheckout from "@/components/RazorpayCheckout";
@@ -24,6 +25,7 @@ const STORE_ADDRESS = "Shree Gurudev Plastics, Bhayander (West), Maharashtra";
 
 export default function CheckoutPage() {
   const { items, totalPrice, festivalDiscountPct, festivalDiscountAmount, finalPrice, clearCart } = useCart();
+  const { user, loading: authLoading, login } = useCustomerAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +43,16 @@ export default function CheckoutPage() {
     area: "Bhayander",
     notes: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || user.name || "",
+        phone: prev.phone || user.phone || "",
+      }));
+    }
+  }, [user]);
 
   const isDelivery = form.deliveryMethod === "delivery";
 
@@ -78,6 +90,7 @@ export default function CheckoutPage() {
           paymentMethod: form.paymentMethod,
           address: fullAddress,
           notes: form.notes.trim() || null,
+          customerId: user?.userId || null,
           items: items.map((item) => ({
             productId: item.id,
             quantity: item.quantity,
@@ -172,6 +185,44 @@ export default function CheckoutPage() {
           >
             Browse Products
           </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 max-w-md w-full text-center">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500">Checking account...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign in required</h1>
+          <p className="text-gray-500 mb-6">Please sign in with your Google account to place an order.</p>
+          <button
+            onClick={login}
+            className="inline-flex items-center gap-2 bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-600 transition-colors"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
+            </svg>
+            Sign in with Google
+          </button>
+          <p className="text-xs text-gray-400 mt-4">Your account is needed for order tracking and support.</p>
         </div>
       </main>
     );
