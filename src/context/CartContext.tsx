@@ -12,6 +12,7 @@ export type CartItem = {
   size: string;
   price: number;
   mrp: number;
+  offerPrice?: number;
   retailerPrice: number;
   dealerPrice: number;
   distributorPrice: number;
@@ -77,6 +78,9 @@ function cartKey(id: number, color: string) {
 }
 
 function recalcItemPrice(item: CartItem): CartItem {
+  if (item.offerPrice) {
+    return { ...item, price: item.offerPrice };
+  }
   const tier = getTierForQuantity(item.quantity);
   const product = {
     price: item.mrp || item.price,

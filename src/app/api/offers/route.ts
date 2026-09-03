@@ -6,15 +6,18 @@ export async function GET(request: NextRequest) {
     const festivalSlug = request.nextUrl.searchParams.get("festival");
     const now = new Date();
 
+    if (!festivalSlug) {
+      return NextResponse.json({ offers: [] });
+    }
+
     const where: Record<string, unknown> = {
       isActive: true,
+      festivalSlug,
       OR: [
         { deadline: null },
         { deadline: { gt: now } },
       ],
     };
-
-    if (festivalSlug) where.festivalSlug = festivalSlug;
 
     const offers = await db.offer.findMany({
       where,

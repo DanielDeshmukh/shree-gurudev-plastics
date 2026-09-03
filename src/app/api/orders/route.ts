@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
             available: dbProduct.stock,
           });
         }
-        return { ...item, price: dbProduct.price, color: dbProduct.color };
+        return { ...item, price: item.price || dbProduct.price, color: dbProduct.color };
       });
 
       if (stockIssues.length > 0) {

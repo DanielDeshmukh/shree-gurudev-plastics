@@ -319,6 +319,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           stock={product.stock}
           qty={qty}
           setQty={setQty}
+          offerPrice={bestOffer ? Math.round(product.price * (1 - bestOffer.discountPct / 100)) : undefined}
         />
         <CompareButton
           product={{

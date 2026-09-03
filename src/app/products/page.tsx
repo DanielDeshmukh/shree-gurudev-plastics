@@ -366,7 +366,8 @@ function ProductCard({ product, offers }: { product: any; offers: ActiveOffer[] 
         {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
         <button
           onClick={() => {
-            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, mrp: product.price, retailerPrice: product.retailerPrice || 0, dealerPrice: product.dealerPrice || 0, distributorPrice: product.distributorPrice || 0, bulkPrice: product.bulkPrice || 0, imageUrl: product.imageUrl || "", brand: product.brand?.name });
+            const offerPx = bestOffer ? Math.round(product.price * (1 - bestOffer.discountPct / 100)) : undefined;
+            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, mrp: product.price, offerPrice: offerPx, retailerPrice: product.retailerPrice || 0, dealerPrice: product.dealerPrice || 0, distributorPrice: product.distributorPrice || 0, bulkPrice: product.bulkPrice || 0, imageUrl: product.imageUrl || "", brand: product.brand?.name });
             openCart();
           }}
           className={`mt-2 md:mt-3 block w-full text-center py-2 rounded-lg text-sm font-medium transition-colors ${hasFestival ? "festival-gradient text-white hover:opacity-90 festival-cta" : "bg-primary-500 text-white hover:bg-primary-600"}`}

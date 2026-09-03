@@ -10,6 +10,7 @@ export const createOrderSchema = z.object({
   items: z.array(z.object({
     productId: z.number().int().positive(),
     quantity: z.number().int().min(1).max(10000),
+    price: z.number().positive().optional(),
   })).min(1).max(100),
 }).refine(
   (data) => {

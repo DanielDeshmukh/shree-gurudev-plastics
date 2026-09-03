@@ -85,7 +85,15 @@ export default function CartDrawer() {
                         {item.color && item.size && <span>•</span>}
                         {item.size && <span>{item.size}</span>}
                       </div>
-                      <p className="text-sm font-bold text-primary-500 mt-1">₹{item.price}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {item.offerPrice && item.mrp > item.price && (
+                          <span className="text-xs text-gray-400 line-through">₹{item.mrp.toLocaleString("en-IN")}</span>
+                        )}
+                        <p className="text-sm font-bold text-primary-500">₹{item.price.toLocaleString("en-IN")}</p>
+                        {item.offerPrice && (
+                          <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">OFFER</span>
+                        )}
+                      </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg">
                           <button

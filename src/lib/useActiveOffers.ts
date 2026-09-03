@@ -18,8 +18,13 @@ export function useActiveOffers(festivalSlug?: string | null) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!festivalSlug) {
+      setOffers([]);
+      setLoading(false);
+      return;
+    }
     const params = new URLSearchParams();
-    if (festivalSlug) params.set("festival", festivalSlug);
+    params.set("festival", festivalSlug);
 
     fetch(`/api/offers?${params}`)
       .then((r) => r.json())
