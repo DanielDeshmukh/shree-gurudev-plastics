@@ -10,7 +10,6 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
 import { ToastProvider } from "@/components/Toast";
-import PhonePromptModal from "@/components/PhonePromptModal";
 import { SITE_URL, BUSINESS_NAME, ALL_KEYWORDS, getLocalBusinessSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -81,7 +80,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <PublicShell>
                         <MaintenanceGuard>{children}</MaintenanceGuard>
                       </PublicShell>
-                      <PhonePromptModal />
                       <SWRegister />
                     </ToastProvider>
                   </WishlistProvider>

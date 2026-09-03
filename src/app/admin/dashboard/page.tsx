@@ -283,28 +283,27 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {analytics.salesTimeline.length > 0 && (
             <div className="rounded-xl bg-gray-900 border border-gray-800 p-5">
-              <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Sales Timeline (30 days)</h3>
+              <h3 className="mb-4 text-sm font-semibold text-gray-300 uppercase tracking-wide">Orders Timeline (30 days)</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={analytics.salesTimeline}>
                   <defs>
-                    <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F97316" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#F97316" stopOpacity={0} />
+                    <linearGradient id="ordersGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="date" tick={{ fill: "#9CA3AF", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
-                  <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                  <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} allowDecimals={false} />
                   <Tooltip
                     contentStyle={tooltipStyle}
                     formatter={(value: number, name: string) => [
-                      name === "revenue" ? `₹${value.toLocaleString("en-IN")}` : value,
-                      name === "revenue" ? "Revenue" : "Orders",
+                      value,
+                      name === "orders" ? "Orders" : "Revenue",
                     ]}
                     labelFormatter={(label) => `Date: ${label}`}
                   />
-                  <Area type="monotone" dataKey="revenue" stroke="#F97316" strokeWidth={2} fill="url(#revenueGrad)" />
-                  <Line type="monotone" dataKey="orders" stroke="#3B82F6" strokeWidth={2} dot={false} />
+                  <Area type="monotone" dataKey="orders" stroke="#3B82F6" strokeWidth={2} fill="url(#ordersGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
