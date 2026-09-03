@@ -11,6 +11,7 @@ import FestivalGarland from "@/components/FestivalGarland";
 export default function PublicShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
+  const isHome = pathname === "/";
 
   if (isAdmin) {
     return <>{children}</>;
@@ -20,7 +21,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
     <>
       <FestivalBar />
       <Navbar />
-      <FestivalGarland />
+      {isHome && <FestivalGarland />}
       {children}
       <Footer />
       <CartDrawer />
