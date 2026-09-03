@@ -38,7 +38,7 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
   const [activeIdx, setActiveIdx] = useState(0);
   const [qty, setQty] = useState(1);
   const festivalStatus = useFestivalStatus();
-  const { offers } = useActiveOffers(festivalStatus?.slug);
+  const { offers } = useActiveOffers(festivalStatus?.slug, festivalStatus?.enabled);
   const bestOffer = getBestOffer(product.id, offers);
 
   const displaySrc = images[activeIdx]?.imageUrl || product.imageUrl;

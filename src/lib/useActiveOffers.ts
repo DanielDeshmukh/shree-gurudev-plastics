@@ -13,12 +13,12 @@ export type ActiveOffer = {
   productCount: number;
 };
 
-export function useActiveOffers(festivalSlug?: string | null) {
+export function useActiveOffers(festivalSlug?: string | null, enabled?: boolean) {
   const [offers, setOffers] = useState<ActiveOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!festivalSlug) {
+    if (!festivalSlug || !enabled) {
       setOffers([]);
       setLoading(false);
       return;
@@ -31,7 +31,7 @@ export function useActiveOffers(festivalSlug?: string | null) {
       .then((d) => setOffers(d.offers || []))
       .catch(() => setOffers([]))
       .finally(() => setLoading(false));
-  }, [festivalSlug]);
+  }, [festivalSlug, enabled]);
 
   return { offers, loading };
 }

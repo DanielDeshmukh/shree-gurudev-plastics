@@ -480,7 +480,7 @@ function ProductsPageInner() {
   const minRef = useRef<HTMLInputElement>(null);
   const maxRef = useRef<HTMLInputElement>(null);
   const festivalStatus = useFestivalStatus();
-  const { offers } = useActiveOffers(festivalStatus?.slug);
+  const { offers } = useActiveOffers(festivalStatus?.slug, festivalStatus?.enabled);
 
   const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>(() => {
     const offerParam = searchParams.get("offer");
