@@ -3,9 +3,20 @@
 import { useState, useEffect, use } from "react";
 import OfferForm from "@/components/OfferForm";
 
+type OfferInitial = {
+  title: string;
+  description: string;
+  discountPct: number;
+  deadline: string;
+  isActive: boolean;
+  festivalSlug: string;
+  scopeType: string;
+  productIds: number[];
+};
+
 export default function EditOfferPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [initial, setInitial] = useState(null);
+  const [initial, setInitial] = useState<OfferInitial | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

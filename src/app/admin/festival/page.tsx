@@ -22,7 +22,7 @@ export default function FestivalSettingsPage() {
   const [bannerMessage, setBannerMessage] = useState("");
   const [endDate, setEndDate] = useState("");
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
-  const [festivalOffers, setFestivalOffers] = useState<{ id: number; title: string; discountPct: number; isActive: boolean; productCount: number }[]>([]);
+  const [festivalOffers, setFestivalOffers] = useState<{ id: number; title: string; discountPct: number; isActive: boolean; productCount: number; festivalSlug: string | null }[]>([]);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
