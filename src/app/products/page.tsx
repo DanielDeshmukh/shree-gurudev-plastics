@@ -37,6 +37,9 @@ function FilterSidebar({
   resetPrice,
   resetAll,
   t,
+  offers,
+  selectedOfferIds,
+  toggleOffer,
 }: any) {
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
 
@@ -240,6 +243,28 @@ function FilterSidebar({
           </button>
         </div>
       </div>
+
+      {offers && offers.length > 0 && (
+        <div>
+          <h3 className="font-bold text-gray-900 mb-3">{t("Festival Offers", "त्योहार ऑफ़र")}</h3>
+          <div className="space-y-2">
+            {offers.map((offer: any) => (
+              <label key={offer.id} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedOfferIds.includes(offer.id)}
+                  onChange={() => toggleOffer(offer.id)}
+                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-700 truncate group-hover:text-gray-900">{offer.title}</p>
+                  <p className="text-xs text-orange-500 font-medium">{offer.discountPct}% OFF</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button onClick={resetAll} className="w-full text-xs text-gray-500 hover:text-red-500 transition-colors">
         {t("Reset All Filters", "सभी फ़िल्टर रीसेट करें")}
@@ -456,6 +481,39 @@ function ProductsPageInner() {
   const festivalStatus = useFestivalStatus();
   const { offers } = useActiveOffers(festivalStatus?.slug);
 
+  const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>(() => {
+    const offerParam = searchParams.get("offer");
+    if (offerParam) return offerParam.split(",").map(Number);
+    const festivalParam = searchParams.get("festival");
+    if (festivalParam && offers.length > 0) {
+      return offers.filter(o => o.festivalSlug === festivalParam).map(o => o.id);
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    const festivalParam = searchParams.get("festival");
+    if (festivalParam && offers.length > 0 && selectedOfferIds.length === 0) {
+      const matching = offers.filter(o => o.festivalSlug === festivalParam).map(o => o.id);
+      if (matching.length > 0) setSelectedOfferIds(matching);
+    }
+  }, [searchParams, offers]);
+
+  const toggleOffer = (id: number) => {
+    setSelectedOfferIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const offerProductIds = useMemo(() => {
+    if (selectedOfferIds.length === 0) return null;
+    const ids = new Set<number>();
+    for (const offer of offers) {
+      if (selectedOfferIds.includes(offer.id)) {
+        offer.productIds.forEach(id => ids.add(id));
+      }
+    }
+    return ids;
+  }, [selectedOfferIds, offers]);
+
   const LIMIT = 24;
 
   useEffect(() => {
@@ -504,6 +562,10 @@ function ProductsPageInner() {
   const filteredProducts = useMemo(() => {
     let results = allProducts;
 
+    if (offerProductIds) {
+      results = results.filter((p) => offerProductIds.has(p.id));
+    }
+
     if (search.trim()) {
       const query = search.trim().toLowerCase();
       results = results.filter((p) =>
@@ -529,7 +591,7 @@ function ProductsPageInner() {
     }
 
     return results;
-  }, [allProducts, search, sort, priceApplied, userMin, userMax]);
+  }, [allProducts, search, sort, priceApplied, userMin, userMax, offerProductIds]);
 
   const totalPages = Math.ceil(filteredProducts.length / LIMIT);
   const paginatedProducts = filteredProducts.slice((page - 1) * LIMIT, page * LIMIT);
@@ -576,6 +638,7 @@ function ProductsPageInner() {
     setSelectedBrand("");
     setSelectedCategory("");
     setSelectedSubCategory("");
+    setSelectedOfferIds([]);
     setSort("newest");
     setUserMin(sliderMin);
     setUserMax(sliderMax);
@@ -620,11 +683,21 @@ function ProductsPageInner() {
       onRemove: resetPrice,
     });
   }
+  for (const offerId of selectedOfferIds) {
+    const offer = offers.find((o: any) => o.id === offerId);
+    if (offer) {
+      activeFilters.push({
+        label: `${offer.title} (${offer.discountPct}% OFF)`,
+        onRemove: () => toggleOffer(offerId),
+      });
+    }
+  }
 
   const filterSidebarProps = {
     brands, selectedBrand, setSelectedBrand, categories: displayCategories, selectedCategory,
     setSelectedCategory, selectedSubCategory, setSelectedSubCategory, sliderMin, sliderMax, priceRange, setPriceRange,
     minRef, maxRef, handlePriceApply, resetPrice, resetAll, t,
+    offers, selectedOfferIds, toggleOffer,
   };
 
   return (

@@ -43,7 +43,7 @@ export default function FestivalHero({ slug, bannerMessage, discountPct, endDate
         )}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/products?tag=festival"
+            href={`/products?festival=${slug}`}
             className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors"
           >
             Shop Festival Collection
