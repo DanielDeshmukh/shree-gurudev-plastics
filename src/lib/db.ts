@@ -73,3 +73,20 @@ export function normalizeResult<T>(data: T): T {
   }
   return data;
 }
+
+export async function recomputeCustomerStats(customerId: number) {
+  const orders = await basePrisma.order.findMany({
+    where: { customerId },
+    select: { total: true, createdAt: true },
+  });
+  const totalOrders = orders.length;
+  const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+  const lastOrderAt = orders.length > 0
+    ? orders.reduce((max, o) => o.createdAt > max ? o.createdAt : max, orders[0].createdAt)
+    : null;
+  await basePrisma.customer.update({
+    where: { id: customerId },
+    data: { totalOrders, totalSpent, lastOrderAt },
+  });
+  return { totalOrders, totalSpent, lastOrderAt };
+}

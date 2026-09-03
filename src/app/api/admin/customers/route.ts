@@ -22,7 +22,6 @@ export async function GET() {
           },
         },
       },
-      orderBy: { lastOrderAt: "desc" },
     });
 
     const enriched = customers.map((c) => {
@@ -31,7 +30,18 @@ export async function GET() {
         0
       );
       const calculatedTier = getTierForQuantity(totalQty);
-      return { ...c, totalQty, calculatedTier };
+      const totalOrders = c.orders.length;
+      const totalSpent = c.orders.reduce((sum, o) => sum + o.total, 0);
+      const lastOrderAt = c.orders.length > 0
+        ? c.orders.reduce((latest, o) => o.createdAt > latest ? o.createdAt : latest, c.orders[0].createdAt)
+        : null;
+      return { ...c, totalQty, calculatedTier, totalOrders, totalSpent, lastOrderAt };
+    });
+
+    enriched.sort((a, b) => {
+      if (!a.lastOrderAt) return 1;
+      if (!b.lastOrderAt) return -1;
+      return b.lastOrderAt > a.lastOrderAt ? 1 : -1;
     });
 
     return NextResponse.json({ customers: enriched });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sqliteNow } from "@/lib/db";
+import { db, sqliteNow, recomputeCustomerStats } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
 const STATUS_MAP: Record<string, string> = {
@@ -111,6 +111,11 @@ const VALID_STATUSES = [
       },
     });
 
+    // Recompute customer stats if total or status changed
+    if (order.customerId && (body.total !== undefined || body.status !== undefined)) {
+      await recomputeCustomerStats(order.customerId).catch(() => {});
+    }
+
     // Sync linked invoice status with payment status
     if (body.paymentStatus !== undefined && order) {
       const invoiceStatus = body.paymentStatus === "paid" ? "paid" : "draft";
@@ -200,6 +205,10 @@ export async function DELETE(
     await db.order.delete({
       where: { id: parseInt(id) },
     });
+
+    if (order.customerId) {
+      await recomputeCustomerStats(order.customerId).catch(() => {});
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

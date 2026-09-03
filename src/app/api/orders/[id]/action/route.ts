@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sqliteNow } from "@/lib/db";
+import { db, sqliteNow, recomputeCustomerStats } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { SITE_URL } from "@/lib/seo";
 
@@ -89,6 +89,10 @@ export async function POST(
         where: { id: orderId },
         data: { status: "cancelled", notes: `Cancelled: ${cancelReason}` },
       });
+
+      if (order.customerId) {
+        await recomputeCustomerStats(order.customerId).catch(() => {});
+      }
 
       await db.orderStatusHistory.create({
         data: { orderId, status: "Cancelled", note: cancelReason, timestamp: sqliteNow() },

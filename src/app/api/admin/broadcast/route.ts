@@ -46,15 +46,23 @@ export async function GET() {
         id: true,
         name: true,
         phone: true,
-        totalOrders: true,
-        totalSpent: true,
         tier: true,
+        orders: { select: { total: true } },
       },
       orderBy: { name: "asc" },
     });
 
+    const enriched = customers.map((c) => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      tier: c.tier,
+      totalOrders: c.orders.length,
+      totalSpent: c.orders.reduce((sum, o) => sum + o.total, 0),
+    }));
+
     return NextResponse.json({
-      customers,
+      customers: enriched,
       templates: Object.keys(FESTIVAL_TEMPLATES),
     });
   } catch {
