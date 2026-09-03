@@ -49,6 +49,28 @@ function FilterSidebar({
 
   return (
     <div className="space-y-6 overflow-y-auto">
+      {offers && offers.length > 0 && (
+        <div>
+          <h3 className="font-bold text-gray-900 mb-3">{t("Festival Offers", "त्योहार ऑफ़र")}</h3>
+          <div className="space-y-2">
+            {offers.map((offer: any) => (
+              <label key={offer.id} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedOfferIds.includes(offer.id)}
+                  onChange={() => toggleOffer(offer.id)}
+                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-700 truncate group-hover:text-gray-900">{offer.title}</p>
+                  <p className="text-xs text-orange-500 font-medium">{offer.discountPct}% OFF</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <h3 className="font-bold text-gray-900 mb-3">{t("Brands", "ब्रांड")}</h3>
         <ul className="space-y-1">
@@ -243,28 +265,6 @@ function FilterSidebar({
           </button>
         </div>
       </div>
-
-      {offers && offers.length > 0 && (
-        <div>
-          <h3 className="font-bold text-gray-900 mb-3">{t("Festival Offers", "त्योहार ऑफ़र")}</h3>
-          <div className="space-y-2">
-            {offers.map((offer: any) => (
-              <label key={offer.id} className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={selectedOfferIds.includes(offer.id)}
-                  onChange={() => toggleOffer(offer.id)}
-                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-700 truncate group-hover:text-gray-900">{offer.title}</p>
-                  <p className="text-xs text-orange-500 font-medium">{offer.discountPct}% OFF</p>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
 
       <button onClick={resetAll} className="w-full text-xs text-gray-500 hover:text-red-500 transition-colors">
         {t("Reset All Filters", "सभी फ़िल्टर रीसेट करें")}
