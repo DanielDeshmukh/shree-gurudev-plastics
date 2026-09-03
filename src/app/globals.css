@@ -129,6 +129,21 @@ body {
   animation: slide-up 0.25s ease-out;
 }
 
+/* Festival card accent border */
+.festival-card-accent {
+  border-top: 2px solid var(--festival-primary);
+}
+
+/* Festival CTA pulse */
+@keyframes festival-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.festival-cta {
+  animation: festival-pulse 2s ease-in-out infinite;
+}
+
 /* Recharts pie chart label colors */
 .recharts-pie-label-list text {
   fill: #D1D5DB !important;

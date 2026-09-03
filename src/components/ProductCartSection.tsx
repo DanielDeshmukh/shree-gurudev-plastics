@@ -6,6 +6,7 @@ import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import { PHONE } from "@/lib/seo";
 import { logEnquiry } from "@/lib/log-enquiry";
 import { getTierForQuantity, getTierPrice, getTierDiscount, TIER_LABELS } from "@/lib/pricing";
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
 
 type ProductCartSectionProps = {
   id: number;
@@ -27,6 +28,8 @@ type ProductCartSectionProps = {
 export default function ProductCartSection({ id, name, color, size, price, retailerPrice, dealerPrice, distributorPrice, bulkPrice, imageUrl, brand, stock, qty, setQty }: ProductCartSectionProps) {
   const { addItem, updateQuantity, openCart } = useCart();
   const { user } = useCustomerAuth();
+  const status = useFestivalStatus();
+  const hasFestival = status?.enabled;
   const outOfStock = stock !== undefined && stock <= 0;
 
   const product = useMemo(() => ({
@@ -73,7 +76,9 @@ export default function ProductCartSection({ id, name, color, size, price, retai
         className={`inline-flex items-center justify-center gap-2 font-semibold px-8 py-3 rounded-lg transition-colors text-lg w-full ${
           outOfStock
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-primary-500 text-white hover:bg-primary-600"
+            : hasFestival
+              ? "festival-gradient text-white hover:opacity-90 festival-cta"
+              : "bg-primary-500 text-white hover:bg-primary-600"
         }`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

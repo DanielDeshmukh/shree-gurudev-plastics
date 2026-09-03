@@ -10,6 +10,7 @@ import CompareButton from "@/components/CompareButton";
 import ShareButton from "@/components/ShareButton";
 import { useState, useMemo } from "react";
 import { getTierPrice, getTierDiscount } from "@/lib/pricing";
+import FestivalOfferStrip from "@/components/FestivalOfferStrip";
 
 type SiblingColor = {
   id: number;
@@ -242,6 +243,8 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
         {product.description && (
           <p className="text-gray-600 leading-relaxed mt-2">{product.description}</p>
         )}
+
+        <FestivalOfferStrip />
 
         {product.price > 0 ? (
           <div className="mt-4 mb-4 space-y-2">

@@ -22,7 +22,7 @@ export function useFestivalStatus() {
     };
     window.addEventListener("storage", onStorage);
 
-    const interval = setInterval(fetchStatus, 30_000);
+    const interval = setInterval(fetchStatus, 8_000);
 
     return () => {
       window.removeEventListener("storage", onStorage);

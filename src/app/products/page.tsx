@@ -9,9 +9,11 @@ import CompareButton from "@/components/CompareButton";
 import WishlistButton from "@/components/WishlistButton";
 import ProductTags from "@/components/ProductTags";
 import { useLanguage } from "@/context/LanguageContext";
-import { MdStore, MdLocalShipping } from "react-icons/md";
+import { MdStore, MdLocalShipping, MdClose } from "react-icons/md";
 import { PHONE } from "@/lib/seo";
 import { getTierPrice, getTierDiscount, TIER_LABELS, type CustomerTier } from "@/lib/pricing";
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
+import FestivalBadge from "@/components/FestivalBadge";
 
 type CategoryHierarchy = { name: string; subCategories: string[] };
 
@@ -240,6 +242,126 @@ function FilterSidebar({
 
       <button onClick={resetAll} className="w-full text-xs text-gray-500 hover:text-red-500 transition-colors">
         {t("Reset All Filters", "सभी फ़िल्टर रीसेट करें")}
+      </button>
+    </div>
+  );
+}
+
+function ProductCard({ product }: { product: any }) {
+  const { addItem, openCart } = useCart();
+  const { t } = useLanguage();
+  const status = useFestivalStatus();
+  const hasFestival = status?.enabled;
+
+  return (
+    <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${hasFestival ? "festival-card-accent" : ""}`}>
+      <Link href={`/product/${product.slug}`}>
+        <div className="relative aspect-square bg-gray-100">
+          <FestivalBadge />
+          {product.imageUrl ? (
+            <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">{t("No Image", "कोई फ़ोटो नहीं")}</div>
+          )}
+        </div>
+      </Link>
+      <div className="p-3 md:p-4">
+        <ProductTags tags={product.tags || ""} />
+        <div className="flex items-start justify-between gap-1 md:gap-2">
+          <Link href={`/product/${product.slug}`}>
+            <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1 text-sm md:text-base">{product.name}</h3>
+          </Link>
+          <WishlistButton product={{ id: product.id, slug: product.slug, name: product.name, imageUrl: product.imageUrl || "", price: product.price, color: product.color || "", size: product.size || "", brand: product.brand?.name }} />
+        </div>
+        <div className="flex gap-1 md:gap-2 mt-1 text-xs md:text-sm text-gray-500">
+          {product.color && <span className="truncate">{product.color}</span>}
+          {product.size && <span>{"\u00B7"} {product.size}</span>}
+        </div>
+        <div className="mt-1.5 md:mt-2">
+          {product.price > 0 ? (
+            (() => {
+              const individualPrice = getTierPrice(product, "individual");
+              const individualDiscount = getTierDiscount(product, individualPrice);
+              return (
+                <div className="space-y-0.5">
+                  {individualDiscount > 0 && (
+                    <p className="text-xs text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</p>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <p className="text-base md:text-lg font-bold text-primary-500">
+                      {"\u20B9"}{(individualDiscount > 0 ? individualPrice : product.price).toLocaleString("en-IN")}
+                    </p>
+                    {individualDiscount > 0 && (
+                      <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                        {individualDiscount}% Off
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })()
+          ) : (
+            <p className="text-base md:text-lg font-bold text-primary-500">Price on request</p>
+          )}
+        </div>
+        {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
+        <button
+          onClick={() => {
+            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, mrp: product.price, retailerPrice: product.retailerPrice || 0, dealerPrice: product.dealerPrice || 0, distributorPrice: product.distributorPrice || 0, bulkPrice: product.bulkPrice || 0, imageUrl: product.imageUrl || "", brand: product.brand?.name });
+            openCart();
+          }}
+          className={`mt-2 md:mt-3 block w-full text-center py-2 rounded-lg text-sm font-medium transition-colors ${hasFestival ? "festival-gradient text-white hover:opacity-90 festival-cta" : "bg-primary-500 text-white hover:bg-primary-600"}`}
+        >
+          {t("Add to Cart", "कार्ट में जोड़ें")}
+        </button>
+        <div className="hidden sm:block">
+          <CompareButton product={{ id: product.id, slug: product.slug, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name, stock: product.stock ?? 0, category: product.category || "" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FestivalBanner() {
+  const status = useFestivalStatus();
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    const hidden = sessionStorage.getItem("products_festival_banner_dismissed");
+    if (hidden) setDismissed(true);
+  }, []);
+
+  if (!status?.enabled || dismissed) return null;
+
+  const FESTIVAL_LABELS: Record<string, string> = {
+    ganesh_chaturthi: "Ganesh Chaturthi Special",
+    diwali: "Diwali Dhamaka",
+    holi: "Holi Festival Deals",
+    navratri: "Navratri Festive Offers",
+    christmas: "Christmas Special",
+    new_year: "New Year Mega Sale",
+  };
+
+  return (
+    <div className="festival-gradient rounded-lg px-4 py-3 mb-4 md:mb-6 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <span className="text-white font-bold text-sm md:text-base">
+          {FESTIVAL_LABELS[status.slug] || "Festival Special"}
+        </span>
+        {status.discountPct > 0 && (
+          <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+            {status.discountPct}% OFF
+          </span>
+        )}
+      </div>
+      <button
+        onClick={() => {
+          setDismissed(true);
+          sessionStorage.setItem("products_festival_banner_dismissed", "1");
+        }}
+        className="text-white/60 hover:text-white shrink-0"
+      >
+        <MdClose size={18} />
       </button>
     </div>
   );
@@ -477,6 +599,8 @@ function ProductsPageInner() {
           <p className="text-xs md:text-sm text-gray-500">{filteredProducts.length} products</p>
         </div>
 
+        <FestivalBanner />
+
         <div className="flex flex-wrap items-center gap-2 mb-4 md:mb-6">
           <input
             type="text"
@@ -600,70 +724,7 @@ function ProductsPageInner() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {paginatedProducts.map((product: any) => (
-                    <div key={product.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                      <Link href={`/product/${product.slug}`}>
-                        <div className="relative aspect-square bg-gray-100">
-                          {product.imageUrl ? (
-                            <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">{t("No Image", "कोई फ़ोटो नहीं")}</div>
-                          )}
-                        </div>
-                      </Link>
-                      <div className="p-3 md:p-4">
-                        <ProductTags tags={product.tags || ""} />
-                        <div className="flex items-start justify-between gap-1 md:gap-2">
-                          <Link href={`/product/${product.slug}`}>
-                            <h3 className="font-semibold text-gray-900 hover:text-primary-500 transition-colors line-clamp-1 text-sm md:text-base">{product.name}</h3>
-                          </Link>
-                          <WishlistButton product={{ id: product.id, slug: product.slug, name: product.name, imageUrl: product.imageUrl || "", price: product.price, color: product.color || "", size: product.size || "", brand: product.brand?.name }} />
-                        </div>
-                        <div className="flex gap-1 md:gap-2 mt-1 text-xs md:text-sm text-gray-500">
-                          {product.color && <span className="truncate">{product.color}</span>}
-                          {product.size && <span>{"\u00B7"} {product.size}</span>}
-                        </div>
-                        <div className="mt-1.5 md:mt-2">
-                          {product.price > 0 ? (
-                            (() => {
-                              const individualPrice = getTierPrice(product, "individual");
-                              const individualDiscount = getTierDiscount(product, individualPrice);
-                              return (
-                                <div className="space-y-0.5">
-                                  {individualDiscount > 0 && (
-                                    <p className="text-xs text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</p>
-                                  )}
-                                  <div className="flex items-center gap-2">
-                                    <p className="text-base md:text-lg font-bold text-primary-500">
-                                      {"\u20B9"}{(individualDiscount > 0 ? individualPrice : product.price).toLocaleString("en-IN")}
-                                    </p>
-                                    {individualDiscount > 0 && (
-                                      <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-                                        {individualDiscount}% Off
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            <p className="text-base md:text-lg font-bold text-primary-500">Price on request</p>
-                          )}
-                        </div>
-                        {product.brand?.name && <p className="text-[10px] md:text-xs text-gray-400 mt-0.5 md:mt-1">{product.brand.name}</p>}
-                        <button
-                          onClick={() => {
-                            addItem({ id: product.id, name: product.name, color: product.color || "", size: product.size || "", price: product.price, mrp: product.price, retailerPrice: product.retailerPrice || 0, dealerPrice: product.dealerPrice || 0, distributorPrice: product.distributorPrice || 0, bulkPrice: product.bulkPrice || 0, imageUrl: product.imageUrl || "", brand: product.brand?.name });
-                            openCart();
-                          }}
-                          className="mt-2 md:mt-3 block w-full text-center bg-primary-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
-                        >
-                          {t("Add to Cart", "कार्ट में जोड़ें")}
-                        </button>
-                        <div className="hidden sm:block">
-                          <CompareButton product={{ id: product.id, slug: product.slug, name: product.name, color: product.color || "", size: product.size || "", price: product.price, imageUrl: product.imageUrl || "", brand: product.brand?.name, stock: product.stock ?? 0, category: product.category || "" }} />
-                        </div>
-                      </div>
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
