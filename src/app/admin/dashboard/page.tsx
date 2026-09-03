@@ -48,6 +48,8 @@ const tooltipStyle = {
   borderRadius: "8px",
   color: "#F3F4F6",
   fontSize: 13,
+  itemStyle: { color: "#F3F4F6" },
+  labelStyle: { color: "#9CA3AF" },
 };
 
 const statIcons = [MdInventory, MdReceipt, MdTrendingUp, MdCategory, MdPeople, MdWarning];
@@ -222,7 +224,9 @@ export default function DashboardPage() {
                   innerRadius={55}
                   outerRadius={90}
                   paddingAngle={3}
-                  label={({ status, count }) => `${status} (${count})`}
+                    label={({ status, count }) => (
+                      <text fill="#D1D5DB" fontSize={12}>{`${status} (${count})`}</text>
+                    )}
                 >
                   {data.orderStatusData.map((entry) => (
                     <Cell key={entry.status} fill={STATUS_COLORS[entry.status] || "#6B7280"} />
@@ -323,7 +327,9 @@ export default function DashboardPage() {
                     innerRadius={50}
                     outerRadius={85}
                     paddingAngle={3}
-                    label={({ category, count }) => `${category} (${count})`}
+                    label={({ category, count }) => (
+                      <text fill="#D1D5DB" fontSize={12}>{`${category} (${count})`}</text>
+                    )}
                   >
                     {analytics.categoryData.map((_, i) => (
                       <Cell key={i} fill={BRAND_COLORS[i % BRAND_COLORS.length]} />

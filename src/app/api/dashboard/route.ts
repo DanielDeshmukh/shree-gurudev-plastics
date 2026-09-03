@@ -29,8 +29,9 @@ export async function GET() {
       db.order.aggregate({ _sum: { total: true } }).catch(() => ({ _sum: { total: 0 } })),
       db.order.findMany({
         take: 5,
+        orderBy: { createdAt: "desc" },
         include: { items: { include: { product: true } } },
-      }).then(r => r.sort((a, b) => new Date(normalizeDate(b.createdAt)).getTime() - new Date(normalizeDate(a.createdAt)).getTime())).catch(() => []),
+      }).catch(() => []),
       db.orderItem.groupBy({
         by: ["productId"],
         _count: { id: true },
