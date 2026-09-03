@@ -59,7 +59,7 @@ export default function OfferForm({ offerId, initial }: OfferFormProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [searching, setSearching] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
+  const [brands, setBrands] = useState<{ name: string; slug: string }[]>([]);
 
   const fetchProducts = useCallback(async () => {
     setSearching(true);
@@ -75,7 +75,11 @@ export default function OfferForm({ offerId, initial }: OfferFormProps) {
 
       if (!categoryFilter && !brandFilter) {
         const cats = [...new Set((data.products || []).map((p: Product) => p.category))].sort() as string[];
-        const brs = [...new Set((data.products || []).map((p: Product) => p.brand?.name).filter(Boolean))].sort() as string[];
+        const brMap = new Map<string, string>();
+        (data.products || []).forEach((p: Product) => {
+          if (p.brand?.name) brMap.set(p.brand.name, (p.brand as any).slug || p.brand.name);
+        });
+        const brs = [...brMap.entries()].map(([name, slug]) => ({ name, slug })).sort((a, b) => a.name.localeCompare(b.name));
         setCategories(cats);
         setBrands(brs);
       }
@@ -201,7 +205,7 @@ export default function OfferForm({ offerId, initial }: OfferFormProps) {
           <select value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)}
             className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-green-500">
             <option value="">All Brands</option>
-            {brands.map((b) => <option key={b} value={b}>{b}</option>)}
+            {brands.map((b) => <option key={b.slug} value={b.slug}>{b.name}</option>)}
           </select>
         </div>
 
