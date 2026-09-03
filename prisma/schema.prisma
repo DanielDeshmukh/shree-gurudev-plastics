@@ -55,6 +55,7 @@ model Product {
   purchaseOrders  PurchaseOrder[]
   bundleItems BundleItem[]
   enquiries   Enquiry[]
+  offerItems  OfferProduct[]
 
   @@index([brandId])
   @@index([category])
@@ -479,5 +480,35 @@ model Enquiry {
 
   @@index([status])
   @@index([createdAt])
+  @@index([productId])
+}
+
+model Offer {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  discountPct Float
+  deadline    DateTime?
+  isActive    Boolean  @default(true)
+  festivalSlug String?
+  scopeType   String   @default("all")
+  scopeValue  String?
+  products    OfferProduct[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([festivalSlug])
+  @@index([isActive])
+}
+
+model OfferProduct {
+  id        Int     @id @default(autoincrement())
+  offerId   Int
+  productId Int
+  offer     Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, productId])
+  @@index([offerId])
   @@index([productId])
 }

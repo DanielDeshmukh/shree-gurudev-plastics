@@ -13,6 +13,7 @@ import { MdStore, MdLocalShipping, MdClose } from "react-icons/md";
 import { PHONE } from "@/lib/seo";
 import { getTierPrice, getTierDiscount, TIER_LABELS, type CustomerTier } from "@/lib/pricing";
 import { useFestivalStatus } from "@/lib/useFestivalStatus";
+import { useActiveOffers, getBestOffer, type ActiveOffer } from "@/lib/useActiveOffers";
 import FestivalBadge from "@/components/FestivalBadge";
 
 type CategoryHierarchy = { name: string; subCategories: string[] };
@@ -247,17 +248,37 @@ function FilterSidebar({
   );
 }
 
-function ProductCard({ product }: { product: any }) {
+function OfferCountdown({ deadline }: { deadline: string }) {
+  const [timeLeft, setTimeLeft] = useState("");
+  useEffect(() => {
+    const update = () => {
+      const diff = new Date(deadline).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft("Offer ended"); return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      setTimeLeft(`${d}d ${h}h ${m}m left`);
+    };
+    update();
+    const iv = setInterval(update, 60000);
+    return () => clearInterval(iv);
+  }, [deadline]);
+  if (!timeLeft) return null;
+  return <p className="text-[10px] text-orange-500 font-medium">{timeLeft}</p>;
+}
+
+function ProductCard({ product, offers }: { product: any; offers: ActiveOffer[] }) {
   const { addItem, openCart } = useCart();
   const { t } = useLanguage();
   const status = useFestivalStatus();
   const hasFestival = status?.enabled;
+  const bestOffer = getBestOffer(product.id, offers);
 
   return (
     <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${hasFestival ? "festival-card-accent" : ""}`}>
       <Link href={`/product/${product.slug}`}>
         <div className="relative aspect-square bg-gray-100">
-          <FestivalBadge />
+          <FestivalBadge discountPct={bestOffer?.discountPct} title={bestOffer?.title} />
           {product.imageUrl ? (
             <BlurImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
           ) : (
@@ -280,6 +301,19 @@ function ProductCard({ product }: { product: any }) {
         <div className="mt-1.5 md:mt-2">
           {product.price > 0 ? (
             (() => {
+              if (bestOffer) {
+                const offerPrice = Math.round(product.price * (1 - bestOffer.discountPct / 100));
+                return (
+                  <div className="space-y-0.5">
+                    <p className="text-xs text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-base md:text-lg font-bold text-primary-500">{"\u20B9"}{offerPrice.toLocaleString("en-IN")}</p>
+                      <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">{bestOffer.discountPct}% OFF</span>
+                    </div>
+                    {bestOffer.deadline && <OfferCountdown deadline={bestOffer.deadline} />}
+                  </div>
+                );
+              }
               const individualPrice = getTierPrice(product, "individual");
               const individualDiscount = getTierDiscount(product, individualPrice);
               return (
@@ -419,6 +453,8 @@ function ProductsPageInner() {
   const [priceApplied, setPriceApplied] = useState(false);
   const minRef = useRef<HTMLInputElement>(null);
   const maxRef = useRef<HTMLInputElement>(null);
+  const festivalStatus = useFestivalStatus();
+  const { offers } = useActiveOffers(festivalStatus?.slug);
 
   const LIMIT = 24;
 
@@ -724,7 +760,7 @@ function ProductsPageInner() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {paginatedProducts.map((product: any) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard key={product.id} product={product} offers={offers} />
                   ))}
                 </div>
 

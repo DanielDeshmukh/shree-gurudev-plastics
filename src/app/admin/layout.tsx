@@ -22,6 +22,7 @@ import {
   MdChat,
   MdCampaign,
   MdCelebration,
+  MdDiscount,
   MdPaid,
   MdMenu,
   MdClose,
@@ -49,6 +50,7 @@ const navLinks = [
   { href: "/admin/enquiries", label: "Enquiries", icon: MdHelpOutline },
   { href: "/admin/broadcast", label: "Festival Broadcast", icon: MdCampaign },
   { href: "/admin/festival", label: "Festival Settings", icon: MdCelebration },
+  { href: "/admin/offers", label: "Offers", icon: MdDiscount },
   { href: "/admin/payments", label: "Payments", icon: MdPaid },
 ];
 

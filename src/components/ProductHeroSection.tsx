@@ -10,6 +10,8 @@ import CompareButton from "@/components/CompareButton";
 import ShareButton from "@/components/ShareButton";
 import { useState, useMemo } from "react";
 import { getTierPrice, getTierDiscount } from "@/lib/pricing";
+import { useFestivalStatus } from "@/lib/useFestivalStatus";
+import { useActiveOffers, getBestOffer } from "@/lib/useActiveOffers";
 import FestivalOfferStrip from "@/components/FestivalOfferStrip";
 
 type SiblingColor = {
@@ -35,6 +37,9 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
   const images = product.images || [];
   const [activeIdx, setActiveIdx] = useState(0);
   const [qty, setQty] = useState(1);
+  const festivalStatus = useFestivalStatus();
+  const { offers } = useActiveOffers(festivalStatus?.slug);
+  const bestOffer = getBestOffer(product.id, offers);
 
   const displaySrc = images[activeIdx]?.imageUrl || product.imageUrl;
 
@@ -244,19 +249,36 @@ export default function ProductHeroSection({ product, brand, colorCount, sibling
           <p className="text-gray-600 leading-relaxed mt-2">{product.description}</p>
         )}
 
-        <FestivalOfferStrip />
+        <FestivalOfferStrip offer={bestOffer} />
 
         {product.price > 0 ? (
           <div className="mt-4 mb-4 space-y-2">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
-              <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{getTierPrice(tierProduct, "individual").toLocaleString("en-IN")}</span>
-              <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Save {getTierDiscount(tierProduct, getTierPrice(tierProduct, "individual"))}%</span>
-            </div>
-            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-              <span className="bg-gray-100 px-2 py-1 rounded-full">Retailer (10+): {"\u20B9"}{getTierPrice(tierProduct, "retailer").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "retailer"))}% off)</span></span>
-              <span className="bg-gray-100 px-2 py-1 rounded-full">Bulk (100+): {"\u20B9"}{getTierPrice(tierProduct, "bulk").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "bulk"))}% off)</span></span>
-            </div>
+            {bestOffer ? (
+              <>
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+                  <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{Math.round(product.price * (1 - bestOffer.discountPct / 100)).toLocaleString("en-IN")}</span>
+                  <span className="text-sm font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">{bestOffer.discountPct}% OFF</span>
+                </div>
+                {bestOffer.deadline && (
+                  <p className="text-xs text-orange-500 font-medium">
+                    Offer ends: {new Date(bestOffer.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="text-lg text-gray-400 line-through">{"\u20B9"}{product.price.toLocaleString("en-IN")}</span>
+                  <span className="text-3xl font-bold text-primary-500">{"\u20B9"}{getTierPrice(tierProduct, "individual").toLocaleString("en-IN")}</span>
+                  <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Save {getTierDiscount(tierProduct, getTierPrice(tierProduct, "individual"))}%</span>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                  <span className="bg-gray-100 px-2 py-1 rounded-full">Retailer (10+): {"\u20B9"}{getTierPrice(tierProduct, "retailer").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "retailer"))}% off)</span></span>
+                  <span className="bg-gray-100 px-2 py-1 rounded-full">Bulk (100+): {"\u20B9"}{getTierPrice(tierProduct, "bulk").toLocaleString("en-IN")} <span className="text-green-600 font-medium">({getTierDiscount(tierProduct, getTierPrice(tierProduct, "bulk"))}% off)</span></span>
+                </div>
+              </>
+            )}
             <p className="text-gray-500 text-sm">Inclusive of all taxes.</p>
           </div>
         ) : (

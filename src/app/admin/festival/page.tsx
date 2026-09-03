@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MdCelebration, MdSave } from "react-icons/md";
+import Link from "next/link";
+import { MdCelebration, MdSave, MdDiscount, MdAdd } from "react-icons/md";
 
 const FESTIVALS = [
   { slug: "ganesh_chaturthi", name: "Ganesh Chaturthi", color: "text-orange-400" },
@@ -21,6 +22,7 @@ export default function FestivalSettingsPage() {
   const [bannerMessage, setBannerMessage] = useState("");
   const [endDate, setEndDate] = useState("");
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [festivalOffers, setFestivalOffers] = useState<{ id: number; title: string; discountPct: number; isActive: boolean; productCount: number }[]>([]);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -42,6 +44,11 @@ export default function FestivalSettingsPage() {
       })
       .catch(() => showToast("Failed to load settings", "error"))
       .finally(() => setLoading(false));
+
+    fetch("/api/admin/offers", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setFestivalOffers(d.offers || []))
+      .catch(() => {});
   }, []);
 
   const handleSave = async () => {
@@ -82,6 +89,7 @@ export default function FestivalSettingsPage() {
   }
 
   const selectedFestival = FESTIVALS.find((f) => f.slug === slug);
+  const linkedOffers = festivalOffers.filter((o) => o.festivalSlug === slug);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -166,6 +174,36 @@ export default function FestivalSettingsPage() {
           />
           <p className="text-xs text-gray-500 mt-1">Festival mode automatically disables after this date.</p>
         </div>
+
+        {selectedFestival && (
+          <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium text-white flex items-center gap-2">
+                <MdDiscount className="text-green-400" /> Linked Offers
+              </p>
+              <Link href="/admin/offers/new" className="text-xs bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 flex items-center gap-1">
+                <MdAdd size={14} /> New Offer
+              </Link>
+            </div>
+            {linkedOffers.length === 0 ? (
+              <p className="text-xs text-gray-500">No offers linked to this festival. Create one and select &quot;{selectedFestival.name}&quot; as the festival.</p>
+            ) : (
+              <div className="space-y-2">
+                {linkedOffers.map((offer) => (
+                  <div key={offer.id} className="flex items-center justify-between bg-gray-900 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${offer.isActive ? "bg-green-400" : "bg-gray-500"}`} />
+                      <span className="text-sm text-white">{offer.title}</span>
+                      <span className="text-xs bg-orange-600/20 text-orange-400 px-2 py-0.5 rounded-full">{offer.discountPct}% OFF</span>
+                      <span className="text-xs text-gray-500">{offer.productCount} products</span>
+                    </div>
+                    <Link href={`/admin/offers/${offer.id}`} className="text-xs text-blue-400 hover:text-blue-300">Edit</Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {selectedFestival && (
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
