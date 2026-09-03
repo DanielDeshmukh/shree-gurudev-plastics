@@ -21,7 +21,7 @@ export async function GET() {
       ordersLast30Days,
       ordersLast7Days,
       categoryCounts,
-      topCustomers,
+      allOrdersForCustomers,
     ] = await Promise.all([
       db.order.count().catch(() => 0),
       db.product.count().catch(() => 0),
@@ -40,12 +40,27 @@ export async function GET() {
         _count: { id: true },
         orderBy: { _count: { id: "desc" } },
       }).catch(() => []),
-      db.customer.findMany({
-        orderBy: { totalSpent: "desc" },
-        take: 10,
-        select: { name: true, phone: true, totalOrders: true, totalSpent: true },
+      db.order.findMany({
+        select: { customer: true, phone: true, total: true, createdAt: true },
       }).catch(() => []),
     ]);
+
+    // Compute top customers from actual orders, not stale Customer columns
+    const customerMap: Record<string, { name: string; phone: string; totalOrders: number; totalSpent: number; lastOrder: string }> = {};
+    for (const o of allOrdersForCustomers as any[]) {
+      const key = o.customer || o.phone || "Unknown";
+      if (!customerMap[key]) {
+        customerMap[key] = { name: o.customer, phone: o.phone, totalOrders: 0, totalSpent: 0, lastOrder: o.createdAt };
+      }
+      customerMap[key].totalOrders += 1;
+      customerMap[key].totalSpent += o.total || 0;
+      if (o.createdAt > customerMap[key].lastOrder) {
+        customerMap[key].lastOrder = o.createdAt;
+      }
+    }
+    const topCustomers = Object.values(customerMap)
+      .sort((a, b) => b.totalSpent - a.totalSpent)
+      .slice(0, 10);
 
     const totalRevenue = revenueResult._sum?.total || 0;
     const revenueLast30Days = (ordersLast30Days as any[]).reduce((sum: number, o: any) => sum + (o.total || 0), 0);
