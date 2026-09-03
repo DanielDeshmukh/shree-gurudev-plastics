@@ -128,3 +128,14 @@ body {
 .animate-slide-up {
   animation: slide-up 0.25s ease-out;
 }
+
+/* Recharts pie chart label colors */
+.recharts-pie-label-list text {
+  fill: #D1D5DB !important;
+}
+
+/* Recharts tooltip text */
+.recharts-default-tooltip .recharts-tooltip-item,
+.recharts-default-tooltip .recharts-tooltip-label {
+  color: #F3F4F6 !important;
+}

@@ -224,9 +224,7 @@ export default function DashboardPage() {
                   innerRadius={55}
                   outerRadius={90}
                   paddingAngle={3}
-                    label={({ status, count }) => (
-                      <text fill="#D1D5DB" fontSize={12}>{`${status} (${count})`}</text>
-                    )}
+                    label={({ status, count }) => `${status} (${count})`}
                 >
                   {data.orderStatusData.map((entry) => (
                     <Cell key={entry.status} fill={STATUS_COLORS[entry.status] || "#6B7280"} />
@@ -327,9 +325,7 @@ export default function DashboardPage() {
                     innerRadius={50}
                     outerRadius={85}
                     paddingAngle={3}
-                    label={({ category, count }) => (
-                      <text fill="#D1D5DB" fontSize={12}>{`${category} (${count})`}</text>
-                    )}
+                    label={({ category, count }) => `${category} (${count})`}
                   >
                     {analytics.categoryData.map((_, i) => (
                       <Cell key={i} fill={BRAND_COLORS[i % BRAND_COLORS.length]} />
