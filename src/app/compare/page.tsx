@@ -254,9 +254,10 @@ export default function ComparePage() {
         return hasDifference(attr.key);
       });
 
-  const mostBoughtId = compareCount >= 2
-    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])?.id ?? null
+  const mostBoughtCandidate = compareCount >= 2
+    ? items.reduce((max, item) => (ratings[item.id]?.totalOrdered ?? 0) > (ratings[max.id]?.totalOrdered ?? 0) ? item : max, items[0])
     : null;
+  const mostBoughtId = mostBoughtCandidate && (ratings[mostBoughtCandidate.id]?.totalOrdered ?? 0) > 0 ? mostBoughtCandidate.id : null;
 
   const getRowBg = (index: number) => (index % 2 === 0 ? "bg-gray-50" : "bg-white");
 
