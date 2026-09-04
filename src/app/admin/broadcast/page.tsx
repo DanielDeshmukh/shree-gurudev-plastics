@@ -54,7 +54,7 @@ export default function BroadcastPage() {
       })
       .catch(() => toast("Failed to load data", "error"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === customers.length) {

@@ -48,7 +48,7 @@ export default function PriceLockPage() {
       })
       .catch(() => toast("Failed to load price data", "error"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const handleCreateLock = async () => {
     if (!form.productId || !form.lockedPrice) return;

@@ -46,7 +46,7 @@ export default function FollowupPage() {
       .then((d) => setOrders(d.orders || []))
       .catch(() => toast("Failed to load orders", "error"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const handleGenerate = async () => {
     if (!selectedOrder) return;

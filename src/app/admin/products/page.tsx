@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, useCallback } from "react";
 import { AVAILABLE_TAGS } from "@/lib/tags";
 import { useToast } from "@/components/Toast";
 
@@ -59,7 +60,7 @@ export default function ProductsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchProducts = () => {
+  const fetchProducts = useCallback(() => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     params.set("ungrouped", "true");
@@ -69,24 +70,24 @@ export default function ProductsPage() {
       .then((d) => setProducts(d.products || []))
       .catch(() => { toast("Failed to load products", "error"); })
       .finally(() => setLoading(false));
-  };
+  }, [search, toast]);
 
-  const fetchBrands = () => {
+  const fetchBrands = useCallback(() => {
     fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
       .catch(() => { toast("Failed to load brands", "error"); });
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchProducts();
     fetchBrands();
-  }, []);
+  }, [fetchProducts, fetchBrands]);
 
   useEffect(() => {
     const timeout = setTimeout(() => fetchProducts(), 300);
     return () => clearTimeout(timeout);
-  }, [search]);
+  }, [fetchProducts]);
 
   const openAdd = () => {
     setForm(emptyForm);
@@ -209,9 +210,12 @@ export default function ProductsPage() {
                 <tr key={product.id} className="text-gray-300 hover:bg-gray-800/50">
                   <td className="px-4 py-3">
                     {product.imageUrl ? (
-                      <img
+                      <Image
                         src={product.imageUrl}
                         alt={product.name}
+                        width={40}
+                        height={40}
+                        unoptimized
                         className="h-10 w-10 rounded-lg object-cover"
                       />
                     ) : (

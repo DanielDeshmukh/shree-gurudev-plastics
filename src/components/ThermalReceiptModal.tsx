@@ -150,6 +150,7 @@ export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId:
         {/* Hidden receipt content for printing */}
         <div id="thermal-receipt-content" style={{ display: "none" }}>
           <div className="receipt">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/sgp-header.png" className="receipt-header" alt="SGP" />
             <div className="center x-small-text">Ph: +91 85520 84251</div>
 
@@ -225,6 +226,7 @@ export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId:
             <div className="separator-double" />
 
             <div className="center x-small-text mt-2">THANK YOU! VISIT AGAIN</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/sgp-footer.png" className="receipt-footer" alt="" />
             <div className="center xx-small-text italic">Computer Generated Invoice</div>
           </div>
@@ -235,6 +237,7 @@ export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId:
           className="mx-auto bg-white text-black p-3 rounded-lg mb-4"
           style={{ width: 220, fontFamily: "'Courier New', monospace", fontSize: 10, lineHeight: 1.3 }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/sgp-header.png" style={{ width: "100%", display: "block", marginBottom: 4 }} alt="SGP" />
           <div style={{ textAlign: "center", fontSize: 9 }}>Ph: +91 85520 84251</div>
 
@@ -299,6 +302,7 @@ export default function ThermalReceiptModal({ invoiceId, onClose }: { invoiceId:
           <div style={{ borderTop: "1px double #000", borderBottom: "1px double #000", height: 4, margin: "6px 0" }} />
 
           <div style={{ textAlign: "center", fontSize: 9, marginTop: 6 }}>THANK YOU! VISIT AGAIN</div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/sgp-footer.png" style={{ width: "60%", display: "block", margin: "4px auto" }} alt="" />
           <div style={{ textAlign: "center", fontSize: 8, fontStyle: "italic" }}>Computer Generated Invoice</div>
         </div>

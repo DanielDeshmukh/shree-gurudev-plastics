@@ -498,7 +498,7 @@ function ProductsPageInner() {
       const matching = offers.filter(o => o.festivalSlug === festivalParam).map(o => o.id);
       if (matching.length > 0) setSelectedOfferIds(matching);
     }
-  }, [searchParams, offers]);
+  }, [searchParams, offers, selectedOfferIds.length]);
 
   const toggleOffer = (id: number) => {
     setSelectedOfferIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);

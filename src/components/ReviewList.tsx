@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import StarRating from "./StarRating";
 import ReviewForm from "./ReviewForm";
 
@@ -22,17 +22,17 @@ export default function ReviewList({ productId }: ReviewListProps) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const fetchReviews = () => {
+  const fetchReviews = useCallback(() => {
     fetch(`/api/reviews?productId=${productId}`)
       .then((r) => r.json())
       .then((d) => setReviews(d.reviews || []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, [productId]);
 
   useEffect(() => {
     fetchReviews();
-  }, [productId]);
+  }, [fetchReviews]);
 
   const avgRating = reviews.length > 0
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 
 interface Review {
@@ -22,17 +22,17 @@ export default function AdminReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
 
-  const fetchReviews = () => {
+  const fetchReviews = useCallback(() => {
     fetch("/api/admin/reviews", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setReviews(d.reviews || []))
       .catch(() => toast("Failed to load reviews", "error"))
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchReviews();
-  }, []);
+  }, [fetchReviews]);
 
   const handleApprove = async (id: number, approved: boolean) => {
     await fetch(`/api/reviews/${id}`, {

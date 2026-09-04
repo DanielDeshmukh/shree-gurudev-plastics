@@ -60,6 +60,16 @@ export default function NotificationsPage() {
     }
   }, [filter]);
 
+  const markAsRead = useCallback(async (ids: number[]) => {
+    await fetch("/api/notifications", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ ids, read: true }),
+    });
+    fetchNotifications();
+  }, [fetchNotifications]);
+
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 15000);
@@ -74,7 +84,7 @@ export default function NotificationsPage() {
       markAsRead([activeId]);
     }, 5000);
     return () => clearTimeout(timer);
-  }, [activeId, notifications]);
+  }, [activeId, notifications, markAsRead]);
 
   const toggleSelect = (id: number) => {
     setSelected((prev) => {
@@ -91,16 +101,6 @@ export default function NotificationsPage() {
     } else {
       setSelected(new Set(notifications.map((n) => n.id)));
     }
-  };
-
-  const markAsRead = async (ids: number[]) => {
-    await fetch("/api/notifications", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ ids, read: true }),
-    });
-    fetchNotifications();
   };
 
   const markAllAsRead = async () => {

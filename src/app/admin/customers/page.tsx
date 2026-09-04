@@ -32,7 +32,7 @@ export default function CustomersPage() {
       .then((d) => setCustomers(d.customers || []))
       .catch(() => { toast("Failed to load customers", "error"); })
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const filtered = customers.filter(
     (c) =>

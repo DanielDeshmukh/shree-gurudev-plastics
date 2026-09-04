@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MdClose, MdPrint } from "react-icons/md";
 import ThermalReceiptModal from "@/components/ThermalReceiptModal";
 import { useToast } from "@/components/Toast";
@@ -56,17 +56,17 @@ export default function InvoicesPage() {
     items: [{ productName: "", hsnCode: "3924", quantity: 1, unitPrice: 0, gstRate: 18 }],
   });
 
-  useEffect(() => {
-    fetchInvoices();
-  }, []);
-
-  const fetchInvoices = () => {
+  const fetchInvoices = useCallback(() => {
     fetch("/api/admin/invoices", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setInvoices(d.invoices || []))
       .catch(() => toast("Failed to load invoices", "error"))
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   const handleCreate = async () => {
     if (!form.customerName || !form.customerPhone) return;

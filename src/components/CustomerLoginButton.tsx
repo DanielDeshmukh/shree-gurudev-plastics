@@ -2,6 +2,7 @@
 
 import { useCustomerAuth } from "@/context/CustomerAuthContext";
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 
@@ -45,7 +46,7 @@ export default function CustomerLoginButton() {
         className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
       >
         {user.image ? (
-          <img src={user.image} alt={user.name} className="w-8 h-8 rounded-full" />
+          <Image src={user.image} alt={user.name} width={32} height={32} unoptimized className="w-8 h-8 rounded-full" />
         ) : (
           <div className="w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-bold">
             {user.name.charAt(0).toUpperCase()}

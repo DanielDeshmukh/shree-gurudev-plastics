@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 
 interface Brand {
@@ -23,17 +24,17 @@ export default function BrandsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchBrands = () => {
+  const fetchBrands = useCallback(() => {
     fetch("/api/brands", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setBrands(d.brands || []))
       .catch(() => { toast("Failed to load brands", "error"); })
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchBrands();
-  }, []);
+  }, [fetchBrands]);
 
   const openAdd = () => {
     setName("");
@@ -135,9 +136,12 @@ export default function BrandsPage() {
                 <tr key={brand.id} className="text-gray-300 hover:bg-gray-800/50">
                   <td className="px-4 py-3">
                     {brand.logo ? (
-                      <img
+                      <Image
                         src={brand.logo}
                         alt={brand.name}
+                        width={40}
+                        height={40}
+                        unoptimized
                         className="h-10 w-10 rounded-lg object-cover"
                       />
                     ) : (

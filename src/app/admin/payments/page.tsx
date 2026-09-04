@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MdRefresh, MdTrendingUp, MdWarning, MdError, MdPaid, MdSearch, MdUndo } from "react-icons/md";
 import { useToast } from "@/components/Toast";
 
@@ -44,7 +44,7 @@ export default function PaymentsPage() {
   const [search, setSearch] = useState("");
   const [refunding, setRefunding] = useState<number | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/razorpay/payments", { credentials: "include" });
@@ -55,9 +55,9 @@ export default function PaymentsPage() {
       toast("Failed to load payments", "error");
     }
     setLoading(false);
-  };
+  }, [toast]);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleRefund = async (payment: Payment) => {
     if (!confirm(`Refund Rs.${(payment.amount / 100).toLocaleString("en-IN")} for ${payment.order?.customer || "this order"}?`)) return;

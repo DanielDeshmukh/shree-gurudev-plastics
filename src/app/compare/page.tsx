@@ -160,6 +160,7 @@ export default function ComparePage() {
         });
       })
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

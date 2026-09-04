@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getBreadcrumbSchema, getLocalBusinessSchema, getFAQSchema, SITE_URL, BUSINESS_NAME, CITY, PHONE_DISPLAY, PHONE, ADDRESS } from "@/lib/seo";
@@ -54,7 +55,7 @@ export default function AboutPage() {
         <section className="bg-white rounded-xl border border-gray-200 p-8 mb-8">
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="shrink-0">
-              <img src="/logo.png" alt="Shree Gurudev Plastics" className="w-48 h-auto rounded-lg" />
+              <Image src="/logo.png" alt="Shree Gurudev Plastics" width={192} height={192} className="w-48 h-auto rounded-lg" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>

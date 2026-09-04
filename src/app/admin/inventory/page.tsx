@@ -28,7 +28,7 @@ export default function InventoryPage() {
       .then((d) => setProducts(d.products || []))
       .catch(() => toast("Failed to load inventory", "error"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const outOfStock = products.filter((p) => p.stock === 0);
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= p.lowStockThreshold);

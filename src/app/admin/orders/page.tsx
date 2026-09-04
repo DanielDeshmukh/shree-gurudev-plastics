@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, useCallback } from "react";
 import { MdStore, MdLocalShipping, MdContentCopy, MdChat, MdPrint } from "react-icons/md";
 import { SITE_URL } from "@/lib/seo";
 import ThermalReceiptModal from "@/components/ThermalReceiptModal";
@@ -64,17 +65,17 @@ export default function OrdersPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [printInvoiceId, setPrintInvoiceId] = useState<number | null>(null);
 
-  const fetchOrders = () => {
+  const fetchOrders = useCallback(() => {
     fetch("/api/orders", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
       .catch(() => { toast("Failed to load orders", "error"); })
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {
@@ -383,9 +384,12 @@ export default function OrdersPage() {
                                 >
                                   <div className="flex items-center gap-3">
                                     {item.product.imageUrl ? (
-                                      <img
+                                      <Image
                                         src={item.product.imageUrl}
                                         alt={item.product.name}
+                                        width={32}
+                                        height={32}
+                                        unoptimized
                                         className="h-8 w-8 rounded object-cover"
                                       />
                                     ) : null}

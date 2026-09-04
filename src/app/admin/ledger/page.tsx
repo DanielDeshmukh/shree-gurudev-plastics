@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface LedgerEntry { id: number; customerId: number; orderId: number | null; type: string; amount: number; balance: number; description: string; referenceNo: string | null; createdAt: string; }
 
@@ -13,15 +13,15 @@ export default function LedgerPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({ customerId: "", orderId: "", type: "credit", amount: "", description: "", referenceNo: "" });
 
-  const fetchEntries = async () => {
+  const fetchEntries = useCallback(async () => {
     const url = customerFilter ? `/api/admin/ledger?customerId=${customerFilter}` : "/api/admin/ledger";
     const res = await fetch(url, { credentials: "include" });
     const data = await res.json();
     setEntries(data.entries || []);
     setLoading(false);
-  };
+  }, [customerFilter]);
 
-  useEffect(() => { fetchEntries(); }, [customerFilter]);
+  useEffect(() => { fetchEntries(); }, [fetchEntries]);
 
   const handleAdd = async () => {
     if (!form.customerId || !form.amount || !form.description) return;
