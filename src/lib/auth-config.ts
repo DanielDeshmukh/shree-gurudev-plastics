@@ -95,6 +95,20 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      if (token.userId) {
+        try {
+          const dbUser = await db.customerUser.findUnique({
+            where: { id: token.userId as number },
+            select: { hasSeenGuide: true },
+          });
+          if (dbUser) {
+            token.hasSeenGuide = dbUser.hasSeenGuide;
+          }
+        } catch (e) {
+          console.error("JWT hasSeenGuide refresh failed:", e);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
