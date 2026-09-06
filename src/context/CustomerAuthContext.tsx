@@ -29,6 +29,8 @@ function CustomerAuthProviderInner({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
 
   const hasSeenGuide = (session as any)?.hasSeenGuide ?? false;
+  const guideSeenLocal = typeof window !== "undefined" && localStorage.getItem("guideSeen") === "1";
+  const guideSeen = hasSeenGuide || guideSeenLocal;
 
   const user: CustomerUser | null = useMemo(
     () =>
@@ -46,10 +48,10 @@ function CustomerAuthProviderInner({ children }: { children: React.ReactNode }) 
   );
 
   useEffect(() => {
-    if (status === "authenticated" && !hasSeenGuide && pathname !== "/how-to-order") {
+    if (status === "authenticated" && !guideSeen && pathname !== "/how-to-order") {
       router.push("/how-to-order");
     }
-  }, [status, hasSeenGuide, pathname, router]);
+  }, [status, guideSeen, pathname, router]);
 
   const markGuideSeen = useCallback(() => {
     fetch("/api/auth/seen-guide", { method: "POST", credentials: "include" })
