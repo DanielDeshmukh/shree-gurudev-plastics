@@ -27,17 +27,17 @@ const breadcrumbs = getBreadcrumbSchema([
 const steps = [
   {
     num: 1,
-    title: "Browse Products",
-    desc: "Visit our products page and explore 1360+ plastic products across categories like Chairs, Tables, Stools, Houseware, Dustbins, and Cabinets. Filter by brand, price, or category to narrow down your search.",
-    image: "/shree-gurudev-plastics-products-page.png",
-    alt: "Products page showing categories and filters",
+    title: "Search & Filter",
+    desc: "Looking for something specific? Use the search bar to find products instantly. Apply filters for brand (Aristo, Mango Chairs), price range, stock availability, and tags to narrow down exactly what you need.",
+    image: "/shree-gurudev-plastics-products.png",
+    alt: "Search and filter options on products page",
   },
   {
     num: 2,
-    title: "Search & Filter",
-    desc: "Use the search bar to find specific products instantly. Apply filters for brand (Aristo, Mango Chairs), price range, stock availability, and tags to find exactly what you need.",
-    image: "/shree-gurudev-plastics-products.png",
-    alt: "Search and filter options on products page",
+    title: "Browse Products",
+    desc: "Explore 1360+ plastic products across categories like Chairs, Tables, Stools, Houseware, Dustbins, and Cabinets. Sort by price, popularity, or newest arrivals to find the best match.",
+    image: "/shree-gurudev-plastics-products-page.png",
+    alt: "Products page showing categories and filters",
   },
   {
     num: 3,

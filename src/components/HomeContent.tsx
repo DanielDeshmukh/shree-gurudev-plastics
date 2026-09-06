@@ -156,7 +156,7 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
             {brands.map((brand: any) => {
               const isComingSoon = brand.slug !== "mango-chairs" && brand.slug !== "aristo";
               return (
-                <Link
+            <Link
                   key={brand.id}
                   href={`/brand/${brand.slug}`}
                   className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow group"
@@ -387,6 +387,12 @@ export default function HomeContent({ brands, featured }: { brands: any[]; featu
               </svg>
               {t("Get Bulk Quote on WhatsApp", "WhatsApp पर थोक कोटेशन प्राप्त करें")}
             </a>
+            <Link
+              href="/how-to-order"
+              className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {t("How to Order", "ऑर्डर कैसे करें")}
+            </Link>
             <Link
               href="/products"
               className="inline-block bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
