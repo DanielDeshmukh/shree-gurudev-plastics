@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { getBreadcrumbSchema, SITE_URL, BUSINESS_NAME, PHONE_DISPLAY, PHONE } from "@/lib/seo";
+import { getBreadcrumbSchema, SITE_URL, BUSINESS_NAME } from "@/lib/seo";
+import GuideCTA from "@/components/GuideCTA";
 
 export const metadata: Metadata = {
   title: "How to Order — Shree Gurudev Plastics | Step-by-Step Guide",
@@ -136,26 +136,7 @@ export default function HowToOrderPage() {
           </div>
         </section>
 
-        <section className="bg-gray-900 text-white rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-3">Ready to Shop?</h2>
-          <p className="text-gray-300 mb-6">Browse 1360+ plastic products from top brands at the best wholesale prices.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors"
-            >
-              Browse Products
-            </Link>
-            <a
-              href={`https://wa.me/${PHONE}?text=${encodeURIComponent("Hi, I'd like to place an order.")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-600 transition-colors"
-            >
-              WhatsApp Us
-            </a>
-          </div>
-        </section>
+        <GuideCTA />
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />

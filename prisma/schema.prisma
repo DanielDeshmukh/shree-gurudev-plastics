@@ -413,15 +413,16 @@ model BundleItem {
 }
 
 model CustomerUser {
-  id        Int      @id @default(autoincrement())
-  googleId  String   @unique
-  name      String
-  email     String   @unique
-  phone     String?
-  image     String?
-  createdAt DateTime @default(now())
-  wishlist  WishlistItem[]
-  sessions  Session[]
+  id            Int      @id @default(autoincrement())
+  googleId      String   @unique
+  name          String
+  email         String   @unique
+  phone         String?
+  image         String?
+  hasSeenGuide  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  wishlist      WishlistItem[]
+  sessions      Session[]
 }
 
 model WishlistItem {

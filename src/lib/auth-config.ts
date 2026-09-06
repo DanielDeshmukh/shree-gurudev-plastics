@@ -42,12 +42,14 @@ export const authOptions: NextAuthOptions = {
               name: user.name || "Customer",
               email: user.email!,
               image: user.image,
+              hasSeenGuide: false,
             },
           });
         }
 
         (user as any).dbId = existing.id;
         (user as any).dbPhone = existing.phone;
+        (user as any).dbHasSeenGuide = existing.hasSeenGuide;
       } catch (e) {
         console.error("SignIn DB error:", e);
       }
@@ -62,6 +64,7 @@ export const authOptions: NextAuthOptions = {
       if ((user as any)?.dbId) {
         token.userId = (user as any).dbId;
         token.phone = (user as any).dbPhone || null;
+        token.hasSeenGuide = (user as any).dbHasSeenGuide ?? false;
       }
 
       if (token.googleId && !token.userId) {
@@ -72,6 +75,7 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             token.userId = dbUser.id;
             token.phone = dbUser.phone || null;
+            token.hasSeenGuide = dbUser.hasSeenGuide;
           }
         } catch (e) {
           console.error("JWT fallback DB lookup failed:", e);
@@ -97,6 +101,7 @@ export const authOptions: NextAuthOptions = {
       if (token.userId) {
         (session as any).userId = token.userId;
         (session as any).phone = token.phone || null;
+        (session as any).hasSeenGuide = token.hasSeenGuide ?? false;
       }
       return session;
     },
