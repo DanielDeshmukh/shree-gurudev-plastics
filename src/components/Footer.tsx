@@ -32,6 +32,7 @@ const quickLinks = [
   { name: "Service Areas", href: "/locations" },
   { name: "About Us", href: "/about" },
   { name: "Contact", href: "/contact" },
+  { name: "How to Order", href: "/how-to-order" },
   { name: "Request a Quote", href: "/quote" },
   { name: "Privacy Policy", href: "/privacy-policy" },
 ];
