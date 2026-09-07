@@ -24,49 +24,61 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 
 | | |
 |:---:|:---:|
-| **Homepage** | **Logo & Brand** |
-| ![Homepage](public/shree-gurudev-plastics-homepage-ganesh-chaturthi-special.png) | ![Logo](public/shree-gurudev-plastics-logo.png) |
-| Festival-themed homepage with product categories, offer banners, and quick navigation. | Brand identity and logo placement across the site header. |
+| **Homepage** | **Hero Section** |
+| ![Homepage](public/shree-gurudev-plastics-hero.png) | ![Hero](public/shree-gurudev-plastics-homepage-ganesh-chaturthi-special.png) |
+| Main landing page with product categories, brand showcase, and quick navigation. | Festival-themed homepage with offer banners, countdown timers, and seasonal collections. |
 | | |
-| **Products Page** | **Search & Filter** |
-| ![Products Page](public/shree-gurudev-plastics-products-page.png) | ![Products](public/shree-gurudev-plastics-products.png) |
-| Full product catalog with server-side pagination, category sidebar, and brand filters. | Search bar with real-time filtering by brand, price range, stock status, and product tags. |
+| **Logo & Brand** | **Products Page** |
+| ![Logo](public/shree-gurudev-plastics-logo.png) | ![Products Page](public/shree-gurudev-plastics-products-page.png) |
+| Brand identity and logo placement across the site header and footer. | Full product catalog with server-side pagination, category sidebar, and brand filters. |
 | | |
-| **Compare Products** | **Order Completed** |
-| ![Compare](public/shree-gurudev-plastics-compare-page-upto-4-products-with-highlighting-most-bought-among-and-share-option-as-well.png) | ![Order Completed](public/shree-gurudev-plastics-order-completed-modal-with-order-tracking-feature.png) |
-| Side-by-side comparison of up to 4 products with ratings, popularity highlights, and shareable links. | Instant order confirmation modal with tracking link and order summary. |
+| **Search & Filter** | **Most Bought Products** |
+| ![Products](public/shree-gurudev-plastics-products.png) | ![Most Bought](public/shree-gurudev-plastics-most-bought-products.png) |
+| Search bar with real-time filtering by brand, price range, stock status, and product tags. | Popularity-based product recommendations showing best sellers across categories. |
 | | |
-| **Live Order Tracking** | **Order Tracking** |
-| ![Live Tracking](public/shree-gurudev-plastics-live-order-tracking.png) | ![Order Tracking](public/shree-gurudev-plastics-order-tracking-completed-tracks%20within-seconds.png) |
-| Real-time order status updates with auto-refresh every 10 seconds. Shareable tracking links. | Step-by-step order tracking from confirmed to delivered with timestamped status history. |
+| **Compare Products** | **Wishlist** |
+| ![Compare](public/shree-gurudev-plastics-compare-page-upto-4-products-with-highlighting-most-bought-among-and-share-option-as-well.png) | ![Wishlist](public/shree-gurudev-plastics-wishlist.png) |
+| Side-by-side comparison of up to 4 products with ratings, popularity highlights, and shareable links. | Save products for later with persistent wishlist across sessions. |
 | | |
-| **Order Notifications** | **Delivery Locations** |
-| ![Notifications](public/shree-gurudev-plastics-order-notifications.png) | ![Locations](public/shree-gurudev-plastics-locations-available.png) |
-| Instant order status notifications for customers and admin via WhatsApp integration. | Check delivery availability by pincode across 63 verified pincodes in Mumbai region. |
+| **Order Completed** | **Live Order Tracking** |
+| ![Order Completed](public/shree-gurudev-plastics-order-completed-modal-with-order-tracking-feature.png) | ![Live Tracking](public/shree-gurudev-plastics-live-order-tracking.png) |
+| Instant order confirmation modal with tracking link and order summary. | Real-time order status updates with auto-refresh every 10 seconds. Shareable tracking links. |
 | | |
-| **Privacy Policy** | **Footer** |
-| ![Privacy](public/shree-gurudev-plastics-privacy-policy-page.png) | ![Footer](public/shree-gurudev-plastics-footer.png) |
-| Comprehensive privacy policy page with data collection, payment, and cookie information. | Site footer with quick links, service areas, brand catalogs, and developer contact. |
+| **Order Tracking** | **Order Notifications** |
+| ![Order Tracking](public/shree-gurudev-plastics-order-tracking-completed-tracks%20within-seconds.png) | ![Notifications](public/shree-gurudev-plastics-order-notifications.png) |
+| Step-by-step order tracking from confirmed to delivered with timestamped status history. | Instant order status notifications for customers and admin via WhatsApp integration. |
+| | |
+| **Delivery Locations** | **Privacy Policy** |
+| ![Locations](public/shree-gurudev-plastics-locations-available.png) | ![Privacy](public/shree-gurudev-plastics-privacy-policy-page.png) |
+| Check delivery availability by pincode across 63 verified pincodes in Mumbai region. | Comprehensive privacy policy page with data collection, payment, and cookie information. |
+| | |
+| **About Us** | **Footer** |
+| ![About](public/shree-gurudev-plastics-about-us.png) | ![Footer](public/shree-gurudev-plastics-footer.png) |
+| Company story, service areas, contact information, and frequently asked questions. | Site footer with quick links, service areas, brand catalogs, and developer contact. |
 
 ### Admin Panel
 
 | | |
 |:---:|:---:|
-| **Admin Orders** | **Offers Creation** |
-| ![Orders](public/shree-gurudev-plastics-admin-orders-page.png) | ![Offers](public/shree-gurudev-plastics-admin-offers-creation-page.png) |
-| Order management with status updates, payment tracking, stock restoration, and invoice generation. | Create and manage festival-specific offers with product selection checkboxes and discount tiers. |
+| **Admin Dashboard** | **Admin Orders** |
+| ![Dashboard](public/shree-gurudev-plastics-admin-dashboard.png) | ![Orders](public/shree-gurudev-plastics-admin-orders-page.png) |
+| Revenue stats, order counts, customer metrics, low stock alerts, and sales analytics with Recharts. | Order management with status updates, payment tracking, stock restoration, and invoice generation. |
 | | |
-| **Festival Settings** | **Reports** |
-| ![Festival](public/shree-gurudev-plastics-admin-festival-settings.png) | ![Reports](public/shree-gurudev-plastics-reports-page.png) |
-| Configure dynamic festival themes, banners, garlands, and offer scheduling with auto-enable/disable. | Daily and monthly Excel sales reports with branded formatting and category breakdowns. |
+| **Offers Creation** | **Festival Settings** |
+| ![Offers](public/shree-gurudev-plastics-admin-offers-creation-page.png) | ![Festival](public/shree-gurudev-plastics-admin-festival-settings.png) |
+| Create and manage festival-specific offers with product selection checkboxes and discount tiers. | Configure dynamic festival themes, banners, garlands, and offer scheduling with auto-enable/disable. |
 | | |
-| **Top Customers** | **Receipt Sample** |
-| ![Top Customers](public/shree-gurudev-plastics-top-costomers.png) | ![Receipt](public/shree-gurudev-plastics-reciept-sample.png) |
-| Customer analytics showing top spenders, order frequency, and customer tier classification. | 58mm thermal receipt preview with SGP header/footer, GST breakdown, and monospace formatting. |
+| **Reports** | **Top Customers** |
+| ![Reports](public/shree-gurudev-plastics-reports-page.png) | ![Top Customers](public/shree-gurudev-plastics-top-costomers.png) |
+| Daily and monthly Excel sales reports with branded formatting and category breakdowns. | Customer analytics showing top spenders, order frequency, and customer tier classification. |
 | | |
-| **Developer Contact** | **Head Office Map** |
-| ![Developer](public/shree-gurudev-plastics-developer-contact.png) | ![Map](public/shree-gurudev-plastics-head-office-location-map.png) |
-| Developer contact page with project credits and support information. | Interactive Google Maps integration showing head office location with directions. |
+| **Receipt Sample** | **Developer Contact** |
+| ![Receipt](public/shree-gurudev-plastics-reciept-sample.png) | ![Developer](public/shree-gurudev-plastics-developer-contact.png) |
+| 58mm thermal receipt preview with SGP header/footer, GST breakdown, and monospace formatting. | Developer contact page with project credits and support information. |
+| | |
+| **Head Office Map** | **Festival Broadcast** |
+| ![Map](public/shree-gurudev-plastics-head-office-location-map.png) | ![Broadcast](public/shree-gurudev-plastics-festival-broadcast-page.png) |
+| Interactive Google Maps integration showing head office location with directions. | Send Diwali, Raksha Bandhan, Holi greetings to all customers via WhatsApp broadcast. |
 
 ---
 
