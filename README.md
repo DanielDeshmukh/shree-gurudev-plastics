@@ -18,6 +18,58 @@ Premium plastic products distributor and bulk seller in Bhayander, Maharashtra. 
 
 </div>
 
+## Screenshots
+
+### Customer Experience
+
+| | |
+|:---:|:---:|
+| **Homepage** | **Logo & Brand** |
+| ![Homepage](public/shree-gurudev-plastics-homepage-ganesh-chaturthi-special.png) | ![Logo](public/shree-gurudev-plastics-logo.png) |
+| Festival-themed homepage with product categories, offer banners, and quick navigation. | Brand identity and logo placement across the site header. |
+| | |
+| **Products Page** | **Search & Filter** |
+| ![Products Page](public/shree-gurudev-plastics-products-page.png) | ![Products](public/shree-gurudev-plastics-products.png) |
+| Full product catalog with server-side pagination, category sidebar, and brand filters. | Search bar with real-time filtering by brand, price range, stock status, and product tags. |
+| | |
+| **Compare Products** | **Order Completed** |
+| ![Compare](public/shree-gurudev-plastics-compare-page-upto-4-products-with-highlighting-most-bought-among-and-share-option-as-well.png) | ![Order Completed](public/shree-gurudev-plastics-order-completed-modal-with-order-tracking-feature.png) |
+| Side-by-side comparison of up to 4 products with ratings, popularity highlights, and shareable links. | Instant order confirmation modal with tracking link and order summary. |
+| | |
+| **Live Order Tracking** | **Order Tracking** |
+| ![Live Tracking](public/shree-gurudev-plastics-live-order-tracking.png) | ![Order Tracking](public/shree-gurudev-plastics-order-tracking-completed-tracks%20within-seconds.png) |
+| Real-time order status updates with auto-refresh every 10 seconds. Shareable tracking links. | Step-by-step order tracking from confirmed to delivered with timestamped status history. |
+| | |
+| **Order Notifications** | **Delivery Locations** |
+| ![Notifications](public/shree-gurudev-plastics-order-notifications.png) | ![Locations](public/shree-gurudev-plastics-locations-available.png) |
+| Instant order status notifications for customers and admin via WhatsApp integration. | Check delivery availability by pincode across 63 verified pincodes in Mumbai region. |
+| | |
+| **Privacy Policy** | **Footer** |
+| ![Privacy](public/shree-gurudev-plastics-privacy-policy-page.png) | ![Footer](public/shree-gurudev-plastics-footer.png) |
+| Comprehensive privacy policy page with data collection, payment, and cookie information. | Site footer with quick links, service areas, brand catalogs, and developer contact. |
+
+### Admin Panel
+
+| | |
+|:---:|:---:|
+| **Admin Orders** | **Offers Creation** |
+| ![Orders](public/shree-gurudev-plastics-admin-orders-page.png) | ![Offers](public/shree-gurudev-plastics-admin-offers-creation-page.png) |
+| Order management with status updates, payment tracking, stock restoration, and invoice generation. | Create and manage festival-specific offers with product selection checkboxes and discount tiers. |
+| | |
+| **Festival Settings** | **Reports** |
+| ![Festival](public/shree-gurudev-plastics-admin-festival-settings.png) | ![Reports](public/shree-gurudev-plastics-reports-page.png) |
+| Configure dynamic festival themes, banners, garlands, and offer scheduling with auto-enable/disable. | Daily and monthly Excel sales reports with branded formatting and category breakdowns. |
+| | |
+| **Top Customers** | **Receipt Sample** |
+| ![Top Customers](public/shree-gurudev-plastics-top-costomers.png) | ![Receipt](public/shree-gurudev-plastics-reciept-sample.png) |
+| Customer analytics showing top spenders, order frequency, and customer tier classification. | 58mm thermal receipt preview with SGP header/footer, GST breakdown, and monospace formatting. |
+| | |
+| **Developer Contact** | **Head Office Map** |
+| ![Developer](public/shree-gurudev-plastics-developer-contact.png) | ![Map](public/shree-gurudev-plastics-head-office-location-map.png) |
+| Developer contact page with project credits and support information. | Interactive Google Maps integration showing head office location with directions. |
+
+---
+
 ## Client Profile
 
 | Detail | Info |
