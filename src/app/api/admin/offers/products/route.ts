@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getAuthUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const admin = await getAuthUser();
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const search = request.nextUrl.searchParams.get("search") || "";
     const category = request.nextUrl.searchParams.get("category") || "";
