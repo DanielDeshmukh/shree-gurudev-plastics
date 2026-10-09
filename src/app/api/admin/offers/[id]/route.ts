@@ -4,7 +4,8 @@ import { getAuthUser } from "@/lib/auth";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await getAuthUser();
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await params;
 
     const offer = await db.offer.findUnique({
@@ -36,7 +37,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await getAuthUser();
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await params;
     const body = await request.json();
     const { title, description, discountPct, deadline, isActive, festivalSlug, scopeType, scopeValue, productIds } = body;
@@ -84,7 +86,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await getAuthUser();
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await params;
 
     await db.offerProduct.deleteMany({ where: { offerId: parseInt(id) } });

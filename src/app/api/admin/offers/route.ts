@@ -4,7 +4,8 @@ import { getAuthUser } from "@/lib/auth";
 
 export async function GET() {
   try {
-    await getAuthUser();
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const offers = await db.offer.findMany({
       include: {
@@ -30,7 +31,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    await getAuthUser();
+    const admin = await getAuthUser();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await request.json();
     const { title, description, discountPct, deadline, isActive, festivalSlug, scopeType, scopeValue, productIds } = body;
