@@ -27,7 +27,7 @@ beforeEach(() => vi.clearAllMocks());
 describe("offers routes reject anonymous callers", () => {
   it("GET /api/admin/offers -> 401", async () => {
     vi.mocked(getAuthUser).mockResolvedValue(null);
-    expect((await listOffers(req("/api/admin/offers"))).status).toBe(401);
+    expect((await listOffers()).status).toBe(401);
   });
   it("POST /api/admin/offers -> 401", async () => {
     vi.mocked(getAuthUser).mockResolvedValue(null);
