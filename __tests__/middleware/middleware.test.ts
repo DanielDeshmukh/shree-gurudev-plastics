@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
-import { middleware, _resetMaintenanceCache } from "../../middleware";
+import { middleware, _resetMaintenanceCache } from "../../src/middleware";
 import jwt from "jsonwebtoken";
 
 const SECRET = process.env.JWT_SECRET || "test-jwt-secret-for-testing-only-12345678901234567890";
