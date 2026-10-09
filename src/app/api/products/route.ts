@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { validate, productCreateSchema } from "@/lib/validation";
 
 function slugify(text: string): string {
   return text
@@ -172,27 +173,36 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json();
-    const { name, color, size, brandId, imageUrl, price, stock, category, subCategory, description, tags, lowStockThreshold, retailerPrice, dealerPrice, distributorPrice, bulkPrice } = body;
+    const validation = validate(productCreateSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+    const data = validation.data;
+
+    const brand = await db.brand.findUnique({ where: { id: data.brandId } });
+    if (!brand) {
+      return NextResponse.json({ error: "Brand not found" }, { status: 400 });
+    }
 
     const product = await db.product.create({
       data: {
-        name,
-        slug: slugify(name) + "-" + Date.now(),
-        color,
-        size,
-        brandId: parseInt(brandId),
-        imageUrl,
-        price: parseFloat(price) || 0,
-        retailerPrice: parseFloat(retailerPrice) || 0,
-        dealerPrice: parseFloat(dealerPrice) || 0,
-        distributorPrice: parseFloat(distributorPrice) || 0,
-        bulkPrice: parseFloat(bulkPrice) || 0,
-        stock: parseInt(stock) || 0,
-        category: category || "General",
-        subCategory: subCategory || null,
-        description: description || null,
-        tags: tags || "",
-        lowStockThreshold: parseInt(lowStockThreshold) || 10,
+        name: data.name,
+        slug: slugify(data.name) + "-" + Date.now(),
+        color: data.color,
+        size: data.size,
+        brandId: data.brandId,
+        imageUrl: data.imageUrl,
+        price: data.price,
+        retailerPrice: data.retailerPrice || 0,
+        dealerPrice: data.dealerPrice || 0,
+        distributorPrice: data.distributorPrice || 0,
+        bulkPrice: data.bulkPrice || 0,
+        stock: data.stock,
+        category: data.category || "General",
+        subCategory: data.subCategory || null,
+        description: data.description || null,
+        tags: data.tags || "",
+        lowStockThreshold: data.lowStockThreshold || 10,
       },
       include: { brand: true },
     });

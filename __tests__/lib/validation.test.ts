@@ -3,6 +3,7 @@ import {
   createOrderSchema,
   createReviewSchema,
   loginSchema,
+  productCreateSchema,
   validate,
 } from "@/lib/validation";
 
@@ -188,5 +189,38 @@ describe("validation", () => {
         expect(result.error.length).toBeGreaterThan(0);
       }
     });
+  });
+});
+
+describe("productCreateSchema", () => {
+  const valid = {
+    name: "Test Chair",
+    color: "Red",
+    size: "STD",
+    imageUrl: "https://cdn.example/x.png",
+    brandId: 4,
+    price: 100,
+    stock: 5,
+  };
+
+  it("accepts a minimal valid payload", () => {
+    expect(productCreateSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("accepts numeric-string brandId (form data)", () => {
+    expect(productCreateSchema.safeParse({ ...valid, brandId: "4" }).success).toBe(true);
+  });
+
+  it("rejects missing size", () => {
+    const { size: _s, ...rest } = valid;
+    expect(productCreateSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it("rejects non-numeric brandId", () => {
+    expect(productCreateSchema.safeParse({ ...valid, brandId: "abc" }).success).toBe(false);
+  });
+
+  it("rejects negative price", () => {
+    expect(productCreateSchema.safeParse({ ...valid, price: -1 }).success).toBe(false);
   });
 });
