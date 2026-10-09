@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const { username, password } = validation.data;
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
 
-    const rateKey = `login:${ip}`;
+    const rateKey = `login:${username}:${ip}`;
     const { allowed, remaining, resetAt } = checkRateLimit(rateKey, 5, 60_000);
 
     if (!allowed) {
