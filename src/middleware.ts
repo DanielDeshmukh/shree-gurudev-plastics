@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { verifyTokenEdge } from "@/lib/jwt-edge";
 import { securityLogger } from "@/lib/security-logger";
 import { createClient } from "@libsql/client";
 
@@ -113,7 +113,7 @@ export async function middleware(request: NextRequest) {
   // --- Admin API auth ---
   if (pathname.startsWith("/api/admin/")) {
     const token = request.cookies.get("admin_token")?.value;
-    if (!token || !verifyToken(token)) {
+    if (!token || !(await verifyTokenEdge(token))) {
       securityLogger.unauthorizedAccess(pathname, ip);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -135,7 +135,7 @@ export async function middleware(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
-    const payload = verifyToken(token);
+    const payload = await verifyTokenEdge(token);
     if (!payload) {
       const response = NextResponse.redirect(new URL("/admin/login", request.url));
       response.cookies.delete("admin_token");
