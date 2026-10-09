@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET(
   request: NextRequest,
@@ -13,8 +14,10 @@ export async function GET(
     }
 
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid invoice id");
     const invoice = await db.invoice.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
       include: { items: true },
     });
 
@@ -24,6 +27,7 @@ export async function GET(
 
     return NextResponse.json({ invoice });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Invoice not found");
     return NextResponse.json({ error: "Failed to fetch invoice" }, { status: 500 });
   }
 }
@@ -39,6 +43,8 @@ export async function PUT(
     }
 
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid invoice id");
     const body = await request.json();
 
     const data: Record<string, unknown> = {};
@@ -47,13 +53,14 @@ export async function PUT(
     if (body.customerGstin !== undefined) data.customerGstin = body.customerGstin;
 
     const invoice = await db.invoice.update({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
       data,
       include: { items: true },
     });
 
     return NextResponse.json({ invoice });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Invoice not found");
     return NextResponse.json({ error: "Failed to update invoice" }, { status: 500 });
   }
 }
@@ -69,10 +76,13 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    await db.invoice.delete({ where: { id: parseInt(id) } });
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid invoice id");
+    await db.invoice.delete({ where: { id: numericId } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Invoice not found");
     return NextResponse.json({ error: "Failed to delete invoice" }, { status: 500 });
   }
 }
