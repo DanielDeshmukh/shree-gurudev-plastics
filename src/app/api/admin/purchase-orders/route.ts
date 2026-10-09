@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET() {
   try {
@@ -47,13 +48,15 @@ export async function PATCH(request: NextRequest) {
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const body = await request.json();
     const { id, status, receivedDate } = body;
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const numericId = parseId(id == null ? null : String(id));
+    if (!numericId) return badRequest("Invalid id");
     const data: Record<string, unknown> = {};
     if (status !== undefined) data.status = status;
     if (receivedDate !== undefined) data.receivedDate = new Date(receivedDate);
-    const order = await db.purchaseOrder.update({ where: { id: parseInt(id) }, data });
+    const order = await db.purchaseOrder.update({ where: { id: numericId }, data });
     return NextResponse.json({ order });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Purchase order not found");
     return NextResponse.json({ error: "Failed to update purchase order" }, { status: 500 });
   }
 }
@@ -63,11 +66,12 @@ export async function DELETE(request: NextRequest) {
     const username = await getAuthUser();
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    await db.purchaseOrder.delete({ where: { id: parseInt(id) } });
+    const numericId = parseId(searchParams.get("id"));
+    if (!numericId) return badRequest("Invalid id");
+    await db.purchaseOrder.delete({ where: { id: numericId } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Purchase order not found");
     return NextResponse.json({ error: "Failed to delete purchase order" }, { status: 500 });
   }
 }

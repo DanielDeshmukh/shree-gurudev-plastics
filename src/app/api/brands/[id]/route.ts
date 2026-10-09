@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET(
   request: NextRequest,
@@ -37,6 +38,8 @@ export async function PUT(
   }
   try {
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid brand id");
     const body = await request.json();
 
     const data: Record<string, unknown> = {};
@@ -45,12 +48,13 @@ export async function PUT(
     if (body.logo !== undefined) data.logo = body.logo;
 
     const brand = await db.brand.update({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
       data,
     });
 
     return NextResponse.json({ brand });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Brand not found");
     return NextResponse.json(
       { error: "Failed to update brand" },
       { status: 500 }
@@ -68,13 +72,16 @@ export async function DELETE(
   }
   try {
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid brand id");
 
     await db.brand.delete({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Brand not found");
     return NextResponse.json(
       { error: "Failed to delete brand" },
       { status: 500 }

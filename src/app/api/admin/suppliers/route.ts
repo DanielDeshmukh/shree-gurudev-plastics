@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET() {
   try {
@@ -33,7 +34,8 @@ export async function PUT(request: NextRequest) {
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const body = await request.json();
     const { id, ...fields } = body;
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const numericId = parseId(id == null ? null : String(id));
+    if (!numericId) return badRequest("Invalid id");
     const data: Record<string, unknown> = {};
     if (fields.name !== undefined) data.name = fields.name;
     if (fields.phone !== undefined) data.phone = fields.phone;
@@ -41,9 +43,10 @@ export async function PUT(request: NextRequest) {
     if (fields.address !== undefined) data.address = fields.address || null;
     if (fields.gstNumber !== undefined) data.gstNumber = fields.gstNumber || null;
     if (fields.notes !== undefined) data.notes = fields.notes || null;
-    const supplier = await db.supplier.update({ where: { id: parseInt(id) }, data });
+    const supplier = await db.supplier.update({ where: { id: numericId }, data });
     return NextResponse.json({ supplier });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Supplier not found");
     return NextResponse.json({ error: "Failed to update supplier" }, { status: 500 });
   }
 }
@@ -53,11 +56,12 @@ export async function DELETE(request: NextRequest) {
     const username = await getAuthUser();
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    await db.supplier.delete({ where: { id: parseInt(id) } });
+    const numericId = parseId(searchParams.get("id"));
+    if (!numericId) return badRequest("Invalid id");
+    await db.supplier.delete({ where: { id: numericId } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Supplier not found");
     return NextResponse.json({ error: "Failed to delete supplier" }, { status: 500 });
   }
 }

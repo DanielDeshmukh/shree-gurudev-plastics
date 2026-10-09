@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function PUT(
   request: NextRequest,
@@ -13,6 +14,8 @@ export async function PUT(
     }
 
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid customer id");
     const body = await request.json();
     const { tier } = body;
 
@@ -21,12 +24,13 @@ export async function PUT(
     }
 
     const customer = await db.customer.update({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
       data: { tier },
     });
 
     return NextResponse.json({ customer });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Customer not found");
     return NextResponse.json({ error: "Failed to update tier" }, { status: 500 });
   }
 }

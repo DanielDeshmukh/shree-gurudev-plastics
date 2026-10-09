@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET() {
   try {
@@ -33,13 +34,15 @@ export async function PATCH(request: NextRequest) {
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const body = await request.json();
     const { id, active, maxOrders } = body;
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const numericId = parseId(id == null ? null : String(id));
+    if (!numericId) return badRequest("Invalid id");
     const data: Record<string, unknown> = {};
     if (active !== undefined) data.active = active;
     if (maxOrders !== undefined) data.maxOrders = maxOrders;
-    const slot = await db.deliverySlot.update({ where: { id: parseInt(id) }, data });
+    const slot = await db.deliverySlot.update({ where: { id: numericId }, data });
     return NextResponse.json({ slot });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Slot not found");
     return NextResponse.json({ error: "Failed to update slot" }, { status: 500 });
   }
 }
@@ -49,11 +52,12 @@ export async function DELETE(request: NextRequest) {
     const username = await getAuthUser();
     if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    await db.deliverySlot.delete({ where: { id: parseInt(id) } });
+    const numericId = parseId(searchParams.get("id"));
+    if (!numericId) return badRequest("Invalid id");
+    await db.deliverySlot.delete({ where: { id: numericId } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Slot not found");
     return NextResponse.json({ error: "Failed to delete slot" }, { status: 500 });
   }
 }

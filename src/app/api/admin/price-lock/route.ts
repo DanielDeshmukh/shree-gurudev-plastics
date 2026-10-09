@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, sqliteNow, normalizeDate } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET() {
   try {
@@ -60,16 +61,17 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const numericId = parseId(searchParams.get("id"));
 
-    if (!id) {
-      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    if (!numericId) {
+      return badRequest("Invalid id");
     }
 
-    await db.priceLock.delete({ where: { id: parseInt(id) } });
+    await db.priceLock.delete({ where: { id: numericId } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Price lock not found");
     return NextResponse.json({ error: "Failed to delete price lock" }, { status: 500 });
   }
 }

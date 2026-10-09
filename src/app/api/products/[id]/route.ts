@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { parseId, isNotFound, badRequest, notFoundJson } from "@/lib/http";
 
 export async function GET(
   request: NextRequest,
@@ -43,6 +44,8 @@ export async function PUT(
   }
   try {
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid product id");
     const body = await request.json();
 
     const data: Record<string, unknown> = {};
@@ -53,11 +56,11 @@ export async function PUT(
     if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl;
     if (body.price !== undefined) {
       const newPrice = parseFloat(body.price);
-      const existing = await db.product.findUnique({ where: { id: parseInt(id) }, select: { price: true } });
+      const existing = await db.product.findUnique({ where: { id: numericId }, select: { price: true } });
       if (existing && existing.price !== newPrice) {
         await db.priceHistory.create({
           data: {
-            productId: parseInt(id),
+            productId: numericId,
             oldPrice: existing.price,
             newPrice,
             changedBy: body.changedBy || "admin",
@@ -83,13 +86,14 @@ export async function PUT(
     if (body.weight !== undefined) data.weight = parseFloat(body.weight) || null;
 
     const product = await db.product.update({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
       data,
       include: { brand: true },
     });
 
     return NextResponse.json({ product });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Product not found");
     return NextResponse.json(
       { error: "Failed to update product" },
       { status: 500 }
@@ -107,13 +111,16 @@ export async function DELETE(
   }
   try {
     const { id } = await params;
+    const numericId = parseId(id);
+    if (!numericId) return badRequest("Invalid product id");
 
     await db.product.delete({
-      where: { id: parseInt(id) },
+      where: { id: numericId },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (isNotFound(error)) return notFoundJson("Product not found");
     return NextResponse.json(
       { error: "Failed to delete product" },
       { status: 500 }
